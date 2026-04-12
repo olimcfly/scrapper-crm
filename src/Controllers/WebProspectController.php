@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\Database;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\View;
@@ -12,6 +13,7 @@ use App\Models\ProspectNoteModel;
 use App\Models\ProspectStatusModel;
 use App\Models\SourceModel;
 use App\Models\TagModel;
+use App\Services\Auth;
 use App\Services\ProspectValidator;
 
 final class WebProspectController
@@ -22,6 +24,7 @@ final class WebProspectController
     private SourceModel $sources;
     private TagModel $tags;
     private ProspectValidator $validator;
+    private Auth $auth;
 
     public function __construct()
     {
@@ -31,10 +34,15 @@ final class WebProspectController
         $this->sources = new SourceModel();
         $this->tags = new TagModel();
         $this->validator = new ProspectValidator();
+        $this->auth = new Auth(Database::connection());
     }
 
     public function index(Request $request): void
     {
+        if (!$this->requireAuth()) {
+            return;
+        }
+
         unset($request);
         View::render('prospects/list', [
             'title' => 'Prospects',
@@ -44,6 +52,10 @@ final class WebProspectController
 
     public function create(Request $request): void
     {
+        if (!$this->requireAuth()) {
+            return;
+        }
+
         unset($request);
         View::render('prospects/form', [
             'title' => 'Nouveau prospect',
@@ -57,6 +69,10 @@ final class WebProspectController
 
     public function store(Request $request): void
     {
+        if (!$this->requireAuth()) {
+            return;
+        }
+
         $input = $request->input();
         $errors = $this->validator->validate($input);
 
@@ -85,6 +101,10 @@ final class WebProspectController
 
     public function show(Request $request, int $id): void
     {
+        if (!$this->requireAuth()) {
+            return;
+        }
+
         unset($request);
         $prospect = $this->prospects->find($id);
         if ($prospect === null) {
@@ -102,6 +122,10 @@ final class WebProspectController
 
     public function edit(Request $request, int $id): void
     {
+        if (!$this->requireAuth()) {
+            return;
+        }
+
         unset($request);
         $prospect = $this->prospects->find($id);
         if ($prospect === null) {
@@ -121,6 +145,10 @@ final class WebProspectController
 
     public function update(Request $request, int $id): void
     {
+        if (!$this->requireAuth()) {
+            return;
+        }
+
         if ($this->prospects->find($id) === null) {
             View::render('errors/not-found', ['title' => 'Introuvable']);
             return;
@@ -147,6 +175,10 @@ final class WebProspectController
 
     public function destroy(Request $request, int $id): void
     {
+        if (!$this->requireAuth()) {
+            return;
+        }
+
         unset($request);
         $this->prospects->delete($id);
         Response::redirect('/prospects');
@@ -154,6 +186,10 @@ final class WebProspectController
 
     public function addNote(Request $request, int $id): void
     {
+        if (!$this->requireAuth()) {
+            return;
+        }
+
         $content = trim((string) ($request->input()['content'] ?? ''));
         if ($content !== '') {
             $this->notes->create($id, $content);
@@ -164,6 +200,10 @@ final class WebProspectController
 
     public function changeStatus(Request $request, int $id): void
     {
+        if (!$this->requireAuth()) {
+            return;
+        }
+
         $statusId = (int) ($request->input()['status_id'] ?? 0);
         if ($statusId > 0) {
             $this->prospects->updateStatus($id, $statusId);
@@ -171,4 +211,15 @@ final class WebProspectController
 
         Response::redirect('/prospects/' . $id);
     }
+
+    private function requireAuth(): bool
+    {
+        if ($this->auth->check()) {
+            return true;
+        }
+
+        Response::redirect('/login');
+        return false;
+    }
+
 }
