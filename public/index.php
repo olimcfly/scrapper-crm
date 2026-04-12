@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Controllers\AuthController;
 use App\Controllers\LookupController;
 use App\Controllers\ProspectController;
 use App\Controllers\WebProspectController;
@@ -26,10 +27,15 @@ $router = new Router();
 $apiProspects = new ProspectController();
 $apiLookup = new LookupController();
 $webProspects = new WebProspectController();
+$authController = new AuthController();
 
 $router->add('GET', '/', static function (): void {
     Response::redirect('/prospects');
 });
+
+$router->add('GET', '/login', static fn (Request $req): mixed => $authController->showLogin($req));
+$router->add('POST', '/login', static fn (Request $req): mixed => $authController->login($req));
+$router->add('POST', '/logout', static fn (Request $req): mixed => $authController->logout($req));
 
 // Web routes (PHP views)
 $router->add('GET', '/prospects', static fn (Request $req): mixed => $webProspects->index($req));
