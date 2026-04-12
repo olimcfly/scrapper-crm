@@ -32,7 +32,7 @@
       --ds-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
       --ds-shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
       --ds-font-sans: "Inter", "Segoe UI", Arial, sans-serif;
-      --bottom-nav-height: 72px;
+      --bottom-nav-height: 74px;
     }
 
     * { box-sizing: border-box; }
@@ -59,13 +59,7 @@
       border-right: 1px solid rgba(148, 163, 184, 0.2);
     }
 
-    .brand {
-      font-size: 18px;
-      font-weight: 700;
-      color: white;
-      margin-bottom: var(--ds-space-5);
-    }
-
+    .brand { font-size: 18px; font-weight: 700; color: white; margin-bottom: var(--ds-space-5); }
     .sidebar-section-title {
       margin: 0 0 var(--ds-space-3);
       font-size: 12px;
@@ -84,26 +78,10 @@
       border: 1px solid transparent;
     }
 
-    .module-link:hover,
-    .module-link:focus-visible {
-      background: rgba(59, 130, 246, .14);
-      color: #fff;
-      outline: none;
-    }
+    .module-link:hover, .module-link:focus-visible { background: rgba(59, 130, 246, .14); color: #fff; outline: none; }
+    .module-link.active { background: rgba(59, 130, 246, .3); border-color: rgba(148, 163, 184, .35); color: #fff; }
 
-    .module-link.active {
-      background: rgba(59, 130, 246, .3);
-      border-color: rgba(148, 163, 184, .35);
-      color: #fff;
-    }
-
-    .module-link .label-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: var(--ds-space-2);
-    }
-
+    .module-link .label-row { display: flex; justify-content: space-between; align-items: center; gap: var(--ds-space-2); }
     .module-link small { color: #94a3b8; display: block; margin-top: 2px; }
 
     .workspace {
@@ -112,10 +90,7 @@
       padding-bottom: calc(var(--bottom-nav-height) + var(--ds-space-5));
     }
 
-    .container {
-      max-width: 1240px;
-      margin: 0 auto;
-    }
+    .container { max-width: 1240px; margin: 0 auto; }
 
     .topbar {
       position: sticky;
@@ -137,13 +112,7 @@
     .topbar-main h1 { margin: 0; font-size: 18px; }
     .topbar-main .muted { margin-top: 2px; }
 
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: var(--ds-space-2);
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
+    .topbar-actions { display: flex; align-items: center; gap: var(--ds-space-2); flex-wrap: wrap; justify-content: flex-end; }
 
     .search-input {
       max-width: 220px;
@@ -183,8 +152,7 @@
       font-weight: 600;
     }
 
-    .btn:hover,
-    .btn:focus-visible { background: var(--ds-color-primary-strong); outline: none; }
+    .btn:hover, .btn:focus-visible { background: var(--ds-color-primary-strong); outline: none; }
     .btn.secondary { background: #475569; }
     .btn.danger { background: var(--ds-color-danger); }
 
@@ -209,8 +177,8 @@
     }
 
     .status-active { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
-    .status-beta { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
-    .status-dev { background: #e0e7ff; color: #3730a3; border: 1px solid #a5b4fc; }
+    .status-mvp { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+    .status-placeholder { background: #e0e7ff; color: #3730a3; border: 1px solid #a5b4fc; }
 
     .global-state {
       border-radius: var(--ds-radius-md);
@@ -227,17 +195,36 @@
     .global-state.empty { border-color: #cbd5e1; background: #f8fafc; }
     .global-state.error { border-color: #fecaca; background: #fef2f2; }
 
-    .state-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 999px;
-      flex-shrink: 0;
-      background: currentColor;
-    }
-
+    .state-dot { width: 12px; height: 12px; border-radius: 999px; flex-shrink: 0; background: currentColor; }
     .global-state.loading .state-dot { color: var(--ds-color-primary); }
     .global-state.empty .state-dot { color: #64748b; }
     .global-state.error .state-dot { color: var(--ds-color-danger); }
+
+    .primary-cta-button { min-height: 48px; min-width: 48px; border-radius: 12px; }
+
+    .loading-skeleton-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--ds-radius-md);
+      border: 1px solid var(--ds-color-border);
+      background: #fff;
+      padding: var(--ds-space-4);
+      margin-bottom: var(--ds-space-3);
+    }
+
+    .skeleton-line {
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+      background-size: 220% 100%;
+      animation: shimmer 1.6s infinite;
+      margin-bottom: var(--ds-space-2);
+    }
+
+    @keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+
+    .empty-state-guided { text-align: center; padding: var(--ds-space-5); }
+    .empty-state-guided h3 { margin: 0 0 var(--ds-space-2); }
 
     .bottom-nav {
       position: fixed;
@@ -265,11 +252,7 @@
       padding: 6px;
     }
 
-    .bottom-nav-link.active {
-      color: var(--ds-color-primary-strong);
-      font-weight: 700;
-    }
-
+    .bottom-nav-link.active { color: var(--ds-color-primary-strong); font-weight: 700; }
     .bottom-nav-link span[aria-hidden='true'] { font-size: 18px; }
 
     @media (min-width: 900px) {
@@ -289,54 +272,15 @@
   $modules = \App\Config\AdminModules::all();
   $statusLabels = \App\Config\AdminModules::statusLabels();
   $statusClassMap = \App\Config\AdminModules::statusClassMap();
-
-  $bottomNav = [
-    ['label' => 'Dashboard', 'icon' => '🏠', 'path' => '/admin/dashboard'],
-    ['label' => 'Prospects', 'icon' => '👥', 'path' => '/prospects'],
-    ['label' => 'Stratégie', 'icon' => '🎯', 'path' => '/admin/modules/strategie-prospect'],
-    ['label' => 'Messages', 'icon' => '💬', 'path' => '/admin/modules/messages-ia'],
-    ['label' => 'Pipeline', 'icon' => '📈', 'path' => '/admin/modules/pipeline'],
-  ];
 ?>
 <?php if ($isLoginPage): ?>
   <div class="container" style="max-width:760px;padding:30px 20px;">
 <?php else: ?>
   <div class="app-shell">
     <?php if ($isAuthenticated): ?>
-      <aside class="sidebar" aria-label="Navigation principale desktop">
-        <div class="brand">SCRAPPER CRM</div>
-        <p class="sidebar-section-title">MVP mobile-first</p>
-        <?php foreach ($modules as $module): ?>
-          <a class="module-link <?= ($currentPath === $module['path']) ? 'active' : '' ?>" href="<?= htmlspecialchars((string) $module['path']) ?>">
-            <span class="label-row">
-              <span><?= htmlspecialchars((string) $module['label']) ?></span>
-              <span class="status-badge <?= htmlspecialchars((string) ($statusClassMap[$module['status']] ?? '')) ?>">
-                <?= htmlspecialchars((string) ($statusLabels[$module['status']] ?? $module['status'])) ?>
-              </span>
-            </span>
-            <small><?= htmlspecialchars((string) $module['description']) ?></small>
-          </a>
-        <?php endforeach; ?>
-      </aside>
+      <?php require __DIR__ . '/../components/navigation/desktop_sidebar.php'; ?>
     <?php endif; ?>
     <main class="workspace">
       <div class="container">
-        <header class="topbar">
-          <div class="topbar-main">
-            <h1><?= htmlspecialchars((string) ($title ?? 'CRM')) ?></h1>
-            <p class="muted" style="margin-bottom:0;">Pilotage prospect-first · mobile-first</p>
-          </div>
-          <?php if ($isAuthenticated): ?>
-            <div class="topbar-actions">
-              <input class="search-input" type="search" placeholder="Recherche rapide" aria-label="Recherche rapide">
-              <span style="display:inline-block;padding:6px 10px;background:var(--ds-color-surface-soft);border:1px solid #c7d2fe;border-radius:999px;color:#3730a3;font-size:13px;">
-                <?= htmlspecialchars((string) ($authUser['name'] ?? 'Utilisateur')) ?>
-              </span>
-              <form method="post" action="/logout" style="display:inline;">
-                <input type="hidden" name="_csrf" value="<?= htmlspecialchars((string) ($csrfToken ?? '')) ?>">
-                <button type="submit" class="btn secondary" style="min-height:36px;padding:6px 10px;">Déconnexion</button>
-              </form>
-            </div>
-          <?php endif; ?>
-        </header>
+        <?php require __DIR__ . '/../components/navigation/topbar_compact.php'; ?>
 <?php endif; ?>

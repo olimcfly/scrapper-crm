@@ -17,7 +17,7 @@
   </p>
   <div class="row">
     <div>
-      <a class="btn" href="/admin/dashboard">Retour dashboard</a>
+      <a class="btn" href="/dashboard">Retour dashboard</a>
     </div>
     <div>
       <a class="btn secondary" href="/prospects">Aller sur Collecte profils</a>

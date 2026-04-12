@@ -5,23 +5,17 @@ $showError = (bool) ($showError ?? false);
 ?>
 
 <?php if ($showLoading): ?>
-  <section class="global-state loading" role="status" aria-live="polite">
-    <span class="state-dot" aria-hidden="true"></span>
-    <div>
-      <strong>Chargement en cours</strong>
-      <div class="muted">Les données principales arrivent…</div>
-    </div>
-  </section>
+  <?php require __DIR__ . '/states/loading_skeleton_card.php'; ?>
 <?php endif; ?>
 
 <?php if ($showEmpty): ?>
-  <section class="global-state empty">
-    <span class="state-dot" aria-hidden="true"></span>
-    <div>
-      <strong>Aucune donnée disponible</strong>
-      <div class="muted">Commencez par ajouter un prospect pour activer le flux prospect-first.</div>
-    </div>
-  </section>
+  <?php
+    $emptyTitle = 'Aucune donnée disponible';
+    $emptyDescription = 'Commencez par ajouter un prospect pour activer le flux prospect-first.';
+    $emptyCtaLabel = 'Créer un prospect';
+    $emptyCtaHref = '/prospects/create';
+    require __DIR__ . '/states/empty_state_guided.php';
+  ?>
 <?php endif; ?>
 
 <?php if ($showError): ?>
