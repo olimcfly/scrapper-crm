@@ -78,6 +78,18 @@ $router->add('POST', '/prospects/{id}/status', $guard->protect(static fn (Reques
 $router->add('GET', '/settings', $guard->protect(static fn (Request $req): mixed => $settingsController->index($req)));
 $router->add('GET', '/admin', $guard->protect(static fn (Request $req): mixed => $adminController->dashboard($req)));
 $router->add('GET', '/admin/dashboard', $guard->protect(static fn (Request $req): mixed => $adminController->dashboard($req)));
+$router->add('GET', '/dashboard', $guard->protect(static function (): void {
+    Response::redirect('/admin/dashboard');
+}));
+$router->add('GET', '/strategie', $guard->protect(static function (): void {
+    Response::redirect('/admin/modules/strategie-prospect');
+}));
+$router->add('GET', '/messages-ia', $guard->protect(static function (): void {
+    Response::redirect('/admin/modules/messages-ia');
+}));
+$router->add('GET', '/pipeline', $guard->protect(static function (): void {
+    Response::redirect('/admin/modules/pipeline');
+}));
 $router->add('GET', '/admin/modules/{module}', $guard->protect(static fn (Request $req, array $params): mixed => $adminController->module($req, (string) $params['module'])));
 
 // API routes (JSON)

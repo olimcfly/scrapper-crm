@@ -13,15 +13,19 @@ final class AdminController
 {
     public function dashboard(Request $request): void
     {
-        unset($request);
+        $query = $request->input();
+        $state = strtolower((string) ($query['state'] ?? ''));
 
         View::render('admin/dashboard', [
-            'title' => 'Dashboard admin',
+            'title' => 'Dashboard',
             'modules' => AdminModules::all(),
             'coreModules' => AdminModules::coreModules(),
             'statusCounters' => AdminModules::statusCounters(),
             'statusLabels' => AdminModules::statusLabels(),
             'statusClassMap' => AdminModules::statusClassMap(),
+            'showLoading' => $state === 'loading',
+            'showEmpty' => $state === 'empty',
+            'showError' => $state === 'error',
         ]);
     }
 
