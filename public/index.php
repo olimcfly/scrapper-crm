@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Controllers\AdminController;
 use App\Controllers\AuthController;
 use App\Controllers\LookupController;
 use App\Controllers\ProspectController;
@@ -45,11 +46,12 @@ $apiProspects = new ProspectController();
 $apiLookup = new LookupController();
 $webProspects = new WebProspectController();
 $settingsController = new SettingsController();
+$adminController = new AdminController();
 $authController = new AuthController();
 $guard = new AuthGuard(new Auth(Database::connection()));
 
 $router->add('GET', '/', static function (): void {
-    Response::redirect('/prospects');
+    Response::redirect('/admin');
 });
 
 $router->add('GET', '/login', static fn (Request $req): mixed => $authController->showLogin($req));
@@ -71,6 +73,8 @@ $router->add('POST', '/prospects/{id}/delete', $guard->protect(static fn (Reques
 $router->add('POST', '/prospects/{id}/notes', $guard->protect(static fn (Request $req, array $params): mixed => $webProspects->addNote($req, (int) $params['id'])));
 $router->add('POST', '/prospects/{id}/status', $guard->protect(static fn (Request $req, array $params): mixed => $webProspects->changeStatus($req, (int) $params['id'])));
 $router->add('GET', '/settings', $guard->protect(static fn (Request $req): mixed => $settingsController->index($req)));
+$router->add('GET', '/admin', $guard->protect(static fn (Request $req): mixed => $adminController->dashboard($req)));
+$router->add('GET', '/admin/modules/{slug}', $guard->protect(static fn (Request $req, array $params): mixed => $adminController->module($req, (string) $params['slug'])));
 
 // API routes (JSON)
 $router->add('GET', '/api/health', static function (): void {
