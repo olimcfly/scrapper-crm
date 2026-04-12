@@ -43,20 +43,53 @@ final class WebProspectController
 
     public function index(Request $request): void
     {
-        if (!$this->requireAuth()) {
-            return;
+        $input = $request->input();
+
+        $search = trim((string) ($input['q'] ?? ''));
+        $sort = (string) ($input['sort'] ?? 'date');
+        $allowedSorts = ['date', 'name', 'score', 'city'];
+        if (!in_array($sort, $allowedSorts, true)) {
+            $sort = 'date';
         }
 
-        try {
-            unset($request);
-            View::render('prospects/list', [
-                'title' => 'Prospects',
-                'prospects' => $this->prospects->all(),
-            ]);
-        } catch (\Throwable $e) {
-            Logger::error($e->getMessage());
-            View::render('errors/not-found', ['title' => 'Erreur serveur']);
+        $page = filter_var($input['page'] ?? 1, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        $page = $page !== false ? (int) $page : 1;
+
+        $limit = filter_var($input['limit'] ?? 20, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        $limit = $limit !== false ? (int) $limit : 20;
+        $allowedLimits = [10, 20, 50, 100];
+        if (!in_array($limit, $allowedLimits, true)) {
+            $limit = 20;
         }
+
+        $offset = ($page - 1) * $limit;
+        $result = $this->prospects->listPaginated($search, $sort, $limit, $offset);
+        $total = (int) $result['total'];
+        $totalPages = max(1, (int) ceil($total / $limit));
+        if ($page > $totalPages) {
+            $page = $totalPages;
+            $offset = ($page - 1) * $limit;
+            $result = $this->prospects->listPaginated($search, $sort, $limit, $offset);
+        }
+
+        View::render('prospects/list', [
+            'title' => 'Prospects',
+            'prospects' => $result['items'],
+            'filters' => [
+                'q' => $search,
+                'sort' => $sort,
+                'page' => $page,
+                'limit' => $limit,
+            ],
+            'pagination' => [
+                'total' => (int) $result['total'],
+                'page' => $page,
+                'limit' => $limit,
+                'total_pages' => $totalPages,
+                'has_prev' => $page > 1,
+                'has_next' => $page < $totalPages,
+            ],
+        ]);
     }
 
     public function create(Request $request): void
