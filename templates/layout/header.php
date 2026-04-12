@@ -289,6 +289,14 @@
   $modules = \App\Config\AdminModules::all();
   $statusLabels = \App\Config\AdminModules::statusLabels();
   $statusClassMap = \App\Config\AdminModules::statusClassMap();
+
+  $bottomNav = [
+    ['label' => 'Dashboard', 'icon' => '🏠', 'path' => '/admin/dashboard'],
+    ['label' => 'Prospects', 'icon' => '👥', 'path' => '/prospects'],
+    ['label' => 'Stratégie', 'icon' => '🎯', 'path' => '/admin/modules/strategie-prospect'],
+    ['label' => 'Messages', 'icon' => '💬', 'path' => '/admin/modules/messages-ia'],
+    ['label' => 'Pipeline', 'icon' => '📈', 'path' => '/admin/modules/pipeline'],
+  ];
 ?>
 <?php if ($isLoginPage): ?>
   <div class="container" style="max-width:760px;padding:30px 20px;">
