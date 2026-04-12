@@ -9,6 +9,7 @@ use App\Controllers\WebProspectController;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Router;
+use App\Services\Logger;
 
 require dirname(__DIR__) . '/src/Core/bootstrap.php';
 
@@ -79,5 +80,6 @@ $router->add('GET', '/api/tags', static fn (Request $req): mixed => $apiLookup->
 try {
     $router->dispatch($request);
 } catch (Throwable $e) {
+    Logger::error('Unhandled exception: ' . $e->getMessage());
     Response::json(['error' => 'Erreur serveur interne.'], 500);
 }

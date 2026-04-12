@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\Database;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Database;
@@ -33,24 +34,20 @@ final class ProspectController
 
     public function index(Request $request): void
     {
-        if (!$this->requireApiAuth()) {
+        if (!$this->requireAuth()) {
             return;
         }
 
-        $input = $request->input();
-        $result = $this->prospects->search([
-            'q' => trim((string) ($input['q'] ?? '')),
-            'status_id' => (int) ($input['status_id'] ?? 0),
-            'source_id' => (int) ($input['source_id'] ?? 0),
-            'page' => max(1, (int) ($input['page'] ?? 1)),
-            'per_page' => min(100, max(1, (int) ($input['per_page'] ?? 20))),
-        ]);
-
-        Response::json($result);
+        unset($request);
+        Response::json(['data' => $this->prospects->all()]);
     }
 
     public function show(Request $request, int $id): void
     {
+        if (!$this->requireAuth()) {
+            return;
+        }
+
         unset($request);
         if (!$this->requireApiAuth()) {
             return;
@@ -69,7 +66,7 @@ final class ProspectController
 
     public function store(Request $request): void
     {
-        if (!$this->requireApiAuth()) {
+        if (!$this->requireAuth()) {
             return;
         }
 
@@ -87,7 +84,8 @@ final class ProspectController
             $prospect = $this->prospects->find($id);
 
             if (isset($input['tag_ids']) && is_array($input['tag_ids'])) {
-                $this->tags->syncProspectTags($id, $input['tag_ids']);
+                $tagIds = array_values(array_filter(array_map('intval', $input['tag_ids']), static fn (int $tagId): bool => $tagId > 0));
+                $this->tags->syncProspectTags($id, $tagIds);
             }
 
             Response::json(['data' => $prospect], 201);
@@ -99,7 +97,7 @@ final class ProspectController
 
     public function update(Request $request, int $id): void
     {
-        if (!$this->requireApiAuth()) {
+        if (!$this->requireAuth()) {
             return;
         }
 
@@ -121,7 +119,8 @@ final class ProspectController
             $this->prospects->update($id, $payload);
 
             if (isset($input['tag_ids']) && is_array($input['tag_ids'])) {
-                $this->tags->syncProspectTags($id, $input['tag_ids']);
+                $tagIds = array_values(array_filter(array_map('intval', $input['tag_ids']), static fn (int $tagId): bool => $tagId > 0));
+                $this->tags->syncProspectTags($id, $tagIds);
             }
 
             Response::json(['data' => $this->prospects->find($id)]);
@@ -133,6 +132,10 @@ final class ProspectController
 
     public function delete(Request $request, int $id): void
     {
+        if (!$this->requireAuth()) {
+            return;
+        }
+
         unset($request);
         if (!$this->requireApiAuth()) {
             return;
@@ -143,13 +146,18 @@ final class ProspectController
             return;
         }
 
-        $this->prospects->delete($id);
-        Response::json(['message' => 'Prospect supprimé.']);
+        try {
+            $this->prospects->delete($id);
+            Response::json(['message' => 'Prospect supprimé.']);
+        } catch (\Throwable $e) {
+            Logger::error($e->getMessage());
+            Response::json(['error' => 'Impossible de supprimer le prospect.'], 500);
+        }
     }
 
     public function addNote(Request $request, int $id): void
     {
-        if (!$this->requireApiAuth()) {
+        if (!$this->requireAuth()) {
             return;
         }
 
@@ -164,12 +172,21 @@ final class ProspectController
             return;
         }
 
-        $noteId = $this->notes->create($id, $content);
-        Response::json(['data' => ['id' => $noteId, 'prospect_id' => $id, 'content' => $content]], 201);
+        try {
+            $noteId = $this->notes->create($id, $content);
+            Response::json(['data' => ['id' => $noteId, 'prospect_id' => $id, 'content' => $content]], 201);
+        } catch (\Throwable $e) {
+            Logger::error($e->getMessage());
+            Response::json(['error' => 'Impossible d\'ajouter la note.'], 500);
+        }
     }
 
     public function notes(Request $request, int $id): void
     {
+        if (!$this->requireAuth()) {
+            return;
+        }
+
         unset($request);
         if (!$this->requireApiAuth()) {
             return;
@@ -185,7 +202,7 @@ final class ProspectController
 
     public function changeStatus(Request $request, int $id): void
     {
-        if (!$this->requireApiAuth()) {
+        if (!$this->requireAuth()) {
             return;
         }
 
@@ -200,8 +217,23 @@ final class ProspectController
             return;
         }
 
-        $this->prospects->updateStatus($id, $statusId);
-        Response::json(['message' => 'Statut mis à jour.']);
+        try {
+            $this->prospects->updateStatus($id, $statusId);
+            Response::json(['message' => 'Statut mis à jour.']);
+        } catch (\Throwable $e) {
+            Logger::error($e->getMessage());
+            Response::json(['error' => 'Impossible de mettre à jour le statut.'], 500);
+        }
+    }
+
+    private function requireAuth(): bool
+    {
+        if ($this->auth->check()) {
+            return true;
+        }
+
+        Response::json(['error' => 'Authentification requise.'], 401);
+        return false;
     }
 
     private function requireApiAuth(): bool

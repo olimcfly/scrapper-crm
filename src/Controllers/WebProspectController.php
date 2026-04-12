@@ -14,7 +14,7 @@ use App\Models\ProspectStatusModel;
 use App\Models\SourceModel;
 use App\Models\TagModel;
 use App\Services\Auth;
-use App\Services\Csrf;
+use App\Services\Logger;
 use App\Services\ProspectValidator;
 
 final class WebProspectController
@@ -44,23 +44,16 @@ final class WebProspectController
             return;
         }
 
-        $filters = [
-            'q' => trim((string) ($request->input()['q'] ?? '')),
-            'status_id' => (int) ($request->input()['status_id'] ?? 0),
-            'source_id' => (int) ($request->input()['source_id'] ?? 0),
-            'page' => max(1, (int) ($request->input()['page'] ?? 1)),
-            'per_page' => 20,
-        ];
-        $result = $this->prospects->search($filters);
-
-        View::render('prospects/list', [
-            'title' => 'Prospects',
-            'prospects' => $result['data'],
-            'pagination' => $result['pagination'],
-            'filters' => $filters,
-            'statuses' => $this->statuses->all(),
-            'sources' => $this->sources->all(),
-        ]);
+        try {
+            unset($request);
+            View::render('prospects/list', [
+                'title' => 'Prospects',
+                'prospects' => $this->prospects->all(),
+            ]);
+        } catch (\Throwable $e) {
+            Logger::error($e->getMessage());
+            View::render('errors/not-found', ['title' => 'Erreur serveur']);
+        }
     }
 
     public function create(Request $request): void
@@ -105,15 +98,27 @@ final class WebProspectController
             return;
         }
 
-        $payload = $this->validator->normalize($input);
-        $id = $this->prospects->create($payload);
+        try {
+            $payload = $this->validator->normalize($input);
+            $id = $this->prospects->create($payload);
 
-        $tagIds = array_filter(array_map('intval', explode(',', (string) ($input['tag_ids'] ?? ''))));
-        if ($tagIds !== []) {
-            $this->tags->syncProspectTags($id, $tagIds);
+            $tagIds = array_values(array_filter(array_map('intval', explode(',', (string) ($input['tag_ids'] ?? ''))), static fn (int $tagId): bool => $tagId > 0));
+            if ($tagIds !== []) {
+                $this->tags->syncProspectTags($id, $tagIds);
+            }
+
+            Response::redirect('/prospects/' . $id);
+        } catch (\Throwable $e) {
+            Logger::error($e->getMessage());
+            View::render('prospects/form', [
+                'title' => 'Nouveau prospect',
+                'action' => '/prospects/create',
+                'prospect' => $input,
+                'statuses' => $this->statuses->all(),
+                'sources' => $this->sources->all(),
+                'errors' => ['Une erreur serveur est survenue.'],
+            ]);
         }
-
-        Response::redirect('/prospects/' . $id);
     }
 
     public function show(Request $request, int $id): void
@@ -189,9 +194,21 @@ final class WebProspectController
             return;
         }
 
-        $payload = $this->validator->normalize($input);
-        $this->prospects->update($id, $payload);
-        Response::redirect('/prospects/' . $id);
+        try {
+            $payload = $this->validator->normalize($input);
+            $this->prospects->update($id, $payload);
+            Response::redirect('/prospects/' . $id);
+        } catch (\Throwable $e) {
+            Logger::error($e->getMessage());
+            View::render('prospects/form', [
+                'title' => 'Modifier prospect',
+                'action' => '/prospects/' . $id . '/edit',
+                'prospect' => $input,
+                'statuses' => $this->statuses->all(),
+                'sources' => $this->sources->all(),
+                'errors' => ['Une erreur serveur est survenue.'],
+            ]);
+        }
     }
 
     public function destroy(Request $request, int $id): void
@@ -200,12 +217,14 @@ final class WebProspectController
             return;
         }
 
-        if (!$this->validateCsrf($request->input())) {
-            Response::redirect('/prospects/' . $id);
+        try {
+            unset($request);
+            $this->prospects->delete($id);
+            Response::redirect('/prospects');
+        } catch (\Throwable $e) {
+            Logger::error($e->getMessage());
+            View::render('errors/not-found', ['title' => 'Erreur serveur']);
         }
-
-        $this->prospects->delete($id);
-        Response::redirect('/prospects');
     }
 
     public function addNote(Request $request, int $id): void
@@ -220,7 +239,11 @@ final class WebProspectController
 
         $content = trim((string) ($request->input()['content'] ?? ''));
         if ($content !== '') {
-            $this->notes->create($id, $content);
+            try {
+                $this->notes->create($id, $content);
+            } catch (\Throwable $e) {
+                Logger::error($e->getMessage());
+            }
         }
 
         Response::redirect('/prospects/' . $id);
@@ -238,7 +261,11 @@ final class WebProspectController
 
         $statusId = (int) ($request->input()['status_id'] ?? 0);
         if ($statusId > 0) {
-            $this->prospects->updateStatus($id, $statusId);
+            try {
+                $this->prospects->updateStatus($id, $statusId);
+            } catch (\Throwable $e) {
+                Logger::error($e->getMessage());
+            }
         }
 
         Response::redirect('/prospects/' . $id);

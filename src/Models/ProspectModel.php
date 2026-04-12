@@ -65,22 +65,9 @@ final class ProspectModel
             ' ORDER BY p.updated_at DESC LIMIT :limit OFFSET :offset';
 
         $stmt = $this->db->prepare($sql);
-        foreach ($params as $key => $value) {
-            $stmt->bindValue(':' . $key, $value);
-        }
-        $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
 
-        return [
-            'data' => $stmt->fetchAll(),
-            'pagination' => [
-                'page' => $page,
-                'per_page' => $perPage,
-                'total' => $total,
-                'total_pages' => max(1, (int) ceil($total / $perPage)),
-            ],
-        ];
+        return $stmt->fetchAll();
     }
 
     public function find(int $id): ?array
