@@ -58,6 +58,7 @@ $cardState = (string) ($cardState ?? 'default');
   data-card
   data-state="<?= htmlspecialchars($cardState) ?>"
   data-category="<?= htmlspecialchars($category) ?>"
+  data-search="<?= htmlspecialchars($fullName . ' ' . $activity . ' ' . $city) ?>"
   data-city="<?= htmlspecialchars($city) ?>"
   data-awareness="<?= htmlspecialchars($awareness) ?>"
   data-social="<?= $hasSocial ? 'oui' : 'non' ?>"
@@ -88,9 +89,9 @@ $cardState = (string) ($cardState ?? 'default');
   </div>
 
   <div class="quick-actions">
-    <a class="quick-action" href="/prospects/<?= (int) $prospectCard['id'] ?>">Voir</a>
-    <a class="quick-action ia" href="/prospects/<?= (int) $prospectCard['id'] ?>">Analyse IA</a>
-    <a class="quick-action" href="/prospects/<?= (int) $prospectCard['id'] ?>/generated-contents">Générer message</a>
-    <a class="quick-action" href="/pipeline#prospect-<?= (int) $prospectCard['id'] ?>">Ajouter au pipeline</a>
+    <a class="quick-action" data-quick-action="view" href="/prospects/<?= (int) $prospectCard['id'] ?>">Voir</a>
+    <a class="quick-action ia" data-quick-action="ai-analysis" href="/prospects/<?= (int) $prospectCard['id'] ?>">Analyse IA</a>
+    <a class="quick-action" data-quick-action="generate-message" href="/prospects/<?= (int) $prospectCard['id'] ?>/generated-contents">Générer message</a>
+    <a class="quick-action" data-quick-action="add-pipeline" href="/pipeline#prospect-<?= (int) $prospectCard['id'] ?>">Ajouter au pipeline</a>
   </div>
 </article>

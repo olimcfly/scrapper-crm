@@ -232,6 +232,9 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
     font-size: 12px;
     color: #475569;
     text-decoration: none;
+    border: none;
+    background: transparent;
+    cursor: pointer;
   }
 
   .prospect-list {
@@ -527,6 +530,7 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
         placeholder="Nom, activité, ville, email..."
         value="<?= htmlspecialchars((string) ($filters['q'] ?? '')) ?>"
         autocomplete="off"
+        data-search-input
       >
     </div>
 
@@ -560,17 +564,7 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
     <div class="global-state error"><span class="state-dot" aria-hidden="true"></span><div><?= htmlspecialchars((string) $warningMessage) ?></div></div>
   <?php endif; ?>
 
-  <?php if ($activeCategory !== 'Tous' || $cleanFilters !== []): ?>
-    <div class="active-filters">
-      <?php if ($activeCategory !== 'Tous'): ?>
-        <span class="active-filter-pill">Catégorie : <?= htmlspecialchars($activeCategory) ?></span>
-      <?php endif; ?>
-      <?php foreach ($cleanFilters as $label => $value): ?>
-        <span class="active-filter-pill"><?= htmlspecialchars($label) ?> : <?= htmlspecialchars($value) ?></span>
-      <?php endforeach; ?>
-      <a class="active-filter-clear" href="/prospects">Réinitialiser tout</a>
-    </div>
-  <?php endif; ?>
+  <div class="active-filters" data-active-filters></div>
 
   <div class="finder-loading" data-loading-state>
     <p>Chargement intelligent des prospects...</p>
@@ -638,116 +632,4 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
   $sheetActiveCategory = $activeCategory;
   require __DIR__ . '/../components/prospect_filters_bottom_sheet.php';
 ?>
-
-
-<script>
-  (function () {
-    const root = document.querySelector('[data-finder-root]');
-    if (!root) return;
-
-    const loadingState = root.querySelector('[data-loading-state]');
-    const list = root.querySelector('[data-prospect-list]');
-    const cards = Array.from(root.querySelectorAll('[data-card]'));
-    const emptyState = root.querySelector('[data-empty-state]');
-    const categoryInput = root.querySelector('[data-category-input]');
-    const categoryChips = Array.from(root.querySelectorAll('[data-category-chip]'));
-
-    const openSheetBtn = document.querySelector('[data-open-sheet]');
-    const sheetBackdrop = document.querySelector('[data-sheet-backdrop]');
-    const sheet = document.querySelector('[data-filter-sheet]');
-    const sheetCategory = document.querySelector('[data-sheet-category]');
-    const sheetCategorySelect = document.querySelector('[data-sheet-category-select]');
-    const closeSheetBtn = document.querySelector('[data-close-sheet]');
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const selectedCategory = urlParams.get('category') || 'Tous';
-
-    const filter = {
-      category: selectedCategory,
-      city: (urlParams.get('city') || '').toLowerCase().trim(),
-      awareness: (urlParams.get('awareness_level') || '').trim(),
-      social: (urlParams.get('social_presence') || '').trim(),
-      website: (urlParams.get('website_presence') || '').trim(),
-      priority: (urlParams.get('priority') || '').trim(),
-      status: (urlParams.get('status_id') || '').trim(),
-      zone: (urlParams.get('zone_scope') || '').trim(),
-    };
-
-    const normalize = (value) => (value || '').toLowerCase().trim();
-
-    const applyFilter = () => {
-      let visibleCount = 0;
-
-      cards.forEach((card) => {
-        const matchCategory = filter.category === 'Tous' || card.dataset.category === filter.category;
-        const matchCity = !filter.city || normalize(card.dataset.city).includes(filter.city);
-        const matchAwareness = !filter.awareness || card.dataset.awareness === filter.awareness;
-        const matchSocial = !filter.social || card.dataset.social === filter.social;
-        const matchWebsite = !filter.website || card.dataset.website === filter.website;
-        const matchPriority = !filter.priority || card.dataset.priority === filter.priority;
-        const matchStatus = !filter.status || filter.status === '0' || card.dataset.status === filter.status;
-        const matchZone = !filter.zone || card.dataset.zone === filter.zone;
-
-        const visible = matchCategory && matchCity && matchAwareness && matchSocial && matchWebsite && matchPriority && matchStatus && matchZone;
-        card.style.display = visible ? 'grid' : 'none';
-        if (visible) visibleCount += 1;
-      });
-
-      if (list) {
-        list.style.display = visibleCount > 0 ? 'grid' : 'none';
-      }
-      if (emptyState) {
-        emptyState.style.display = visibleCount > 0 ? 'none' : 'block';
-      }
-    };
-
-    const syncChips = () => {
-      categoryChips.forEach((chip) => {
-        const active = chip.dataset.categoryChip === filter.category;
-        chip.setAttribute('aria-pressed', active ? 'true' : 'false');
-      });
-      if (categoryInput) categoryInput.value = filter.category;
-      if (sheetCategory) sheetCategory.value = filter.category;
-      if (sheetCategorySelect) sheetCategorySelect.value = filter.category;
-    };
-
-    categoryChips.forEach((chip) => {
-      chip.addEventListener('click', () => {
-        filter.category = chip.dataset.categoryChip || 'Tous';
-        syncChips();
-        applyFilter();
-      });
-    });
-
-    if (sheetCategorySelect) {
-      sheetCategorySelect.addEventListener('change', (event) => {
-        filter.category = event.target.value || 'Tous';
-        syncChips();
-      });
-    }
-
-    const toggleSheet = (open) => {
-      document.body.classList.toggle('bottom-sheet-open', open);
-      if (sheet) sheet.setAttribute('aria-hidden', open ? 'false' : 'true');
-      if (sheetBackdrop) sheetBackdrop.setAttribute('aria-hidden', open ? 'false' : 'true');
-    };
-
-    if (openSheetBtn && sheet && sheetBackdrop) {
-      openSheetBtn.addEventListener('click', () => toggleSheet(true));
-      sheetBackdrop.addEventListener('click', () => toggleSheet(false));
-      if (closeSheetBtn) {
-        closeSheetBtn.addEventListener('click', () => toggleSheet(false));
-      }
-      document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') toggleSheet(false);
-      });
-      sheet.addEventListener('submit', () => toggleSheet(false));
-    }
-
-    syncChips();
-    window.setTimeout(() => {
-      if (loadingState) loadingState.style.display = 'none';
-      applyFilter();
-    }, 220);
-  })();
-</script>
+<script src="/assets/js/prospects-finder.js" defer></script>

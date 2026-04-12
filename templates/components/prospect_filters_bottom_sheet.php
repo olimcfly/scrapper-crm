@@ -24,13 +24,13 @@ $zoneValue = (string) ($sheetFilters['zone_scope'] ?? '');
     <button type="button" class="sheet-close-btn" data-close-sheet aria-label="Fermer les filtres">✕</button>
   </div>
 
-  <input type="hidden" name="q" value="<?= htmlspecialchars((string) ($sheetFilters['q'] ?? '')) ?>">
+  <input type="hidden" name="q" value="<?= htmlspecialchars((string) ($sheetFilters['q'] ?? '')) ?>" data-sheet-search>
   <input type="hidden" name="category" value="<?= htmlspecialchars($sheetActiveCategory) ?>" data-sheet-category>
 
   <div class="sheet-grid">
     <label>
       Ville
-      <input type="text" name="city" placeholder="Ex: Lyon" value="<?= htmlspecialchars((string) ($sheetFilters['city'] ?? '')) ?>">
+      <input type="text" name="city" placeholder="Ex: Lyon" value="<?= htmlspecialchars((string) ($sheetFilters['city'] ?? '')) ?>" data-sheet-city>
     </label>
 
     <label>
@@ -44,7 +44,7 @@ $zoneValue = (string) ($sheetFilters['zone_scope'] ?? '');
 
     <label>
       Niveau de conscience
-      <select name="awareness_level">
+      <select name="awareness_level" data-sheet-awareness>
         <option value="">Tous</option>
         <option value="À éduquer" <?= $awarenessValue === 'À éduquer' ? 'selected' : '' ?>>À éduquer</option>
         <option value="Conscient du besoin" <?= $awarenessValue === 'Conscient du besoin' ? 'selected' : '' ?>>Conscient du besoin</option>
@@ -54,7 +54,7 @@ $zoneValue = (string) ($sheetFilters['zone_scope'] ?? '');
 
     <label>
       Présence site web
-      <select name="website_presence">
+      <select name="website_presence" data-sheet-website>
         <option value="">Tous</option>
         <option value="oui" <?= $websiteValue === 'oui' ? 'selected' : '' ?>>Oui</option>
         <option value="non" <?= $websiteValue === 'non' ? 'selected' : '' ?>>Non</option>
@@ -63,7 +63,7 @@ $zoneValue = (string) ($sheetFilters['zone_scope'] ?? '');
 
     <label>
       Présence réseaux sociaux
-      <select name="social_presence">
+      <select name="social_presence" data-sheet-social>
         <option value="">Tous</option>
         <option value="oui" <?= $socialValue === 'oui' ? 'selected' : '' ?>>Oui</option>
         <option value="non" <?= $socialValue === 'non' ? 'selected' : '' ?>>Non</option>
@@ -72,7 +72,7 @@ $zoneValue = (string) ($sheetFilters['zone_scope'] ?? '');
 
     <label>
       Priorité
-      <select name="priority">
+      <select name="priority" data-sheet-priority>
         <option value="">Toutes</option>
         <option value="eleve" <?= $priorityValue === 'eleve' ? 'selected' : '' ?>>Haute</option>
         <option value="moyen" <?= $priorityValue === 'moyen' ? 'selected' : '' ?>>Moyenne</option>
@@ -82,7 +82,7 @@ $zoneValue = (string) ($sheetFilters['zone_scope'] ?? '');
 
     <label>
       Statut CRM
-      <select name="status_id">
+      <select name="status_id" data-sheet-status>
         <option value="0">Tous</option>
         <?php foreach ($sheetStatuses as $status): ?>
           <option value="<?= (int) ($status['id'] ?? 0) ?>" <?= ((int) ($sheetFilters['status_id'] ?? 0) === (int) ($status['id'] ?? 0)) ? 'selected' : '' ?>>
@@ -94,7 +94,7 @@ $zoneValue = (string) ($sheetFilters['zone_scope'] ?? '');
 
     <label>
       Zone d’activité
-      <select name="zone_scope">
+      <select name="zone_scope" data-sheet-zone>
         <option value="">Toutes</option>
         <option value="Locale" <?= $zoneValue === 'Locale' ? 'selected' : '' ?>>Locale</option>
         <option value="Multi-zone" <?= $zoneValue === 'Multi-zone' ? 'selected' : '' ?>>Multi-zone</option>
@@ -115,7 +115,7 @@ $zoneValue = (string) ($sheetFilters['zone_scope'] ?? '');
   </div>
 
   <div class="sheet-actions">
-    <a class="btn secondary" href="/prospects" style="flex:1;">Réinitialiser</a>
-    <button class="finder-btn secondary" type="submit" style="flex:1;">Appliquer les filtres</button>
+    <button class="btn secondary" type="button" style="flex:1;" data-reset-filters>Réinitialiser</button>
+    <button class="finder-btn secondary" type="submit" style="flex:1;" data-apply-filters>Appliquer les filtres</button>
   </div>
 </form>
