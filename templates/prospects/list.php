@@ -1,120 +1,901 @@
-<div class="card">
-  <h2>Prospects</h2>
-  <p class="muted">Hub prospect-first : liste consultable en mobile (cartes) et desktop (table).</p>
-  <a class="btn" href="/prospects/create">Créer un prospect</a>
-  <a class="btn secondary" href="/prospects/import" style="margin-left:8px;">Importer CSV</a>
-</div>
+<?php
+$categoryOrder = [
+    'Tous',
+    'Agents immobiliers',
+    'Commerçants',
+    'Thérapeutes',
+    'Coachs',
+    'Artisans',
+    'Indépendants',
+    'Restaurants',
+    'Autres',
+];
 
-<?php if (!empty($successMessage)): ?>
-  <div class="global-state loading"><span class="state-dot" aria-hidden="true"></span><div><?= htmlspecialchars((string) $successMessage) ?></div></div>
-<?php endif; ?>
-<?php if (!empty($warningMessage)): ?>
-  <div class="global-state error"><span class="state-dot" aria-hidden="true"></span><div><?= htmlspecialchars((string) $warningMessage) ?></div></div>
-<?php endif; ?>
+$activeCategory = trim((string) ($filters['category'] ?? 'Tous'));
+if ($activeCategory === '' || !in_array($activeCategory, $categoryOrder, true)) {
+    $activeCategory = 'Tous';
+}
 
-<div class="card">
-  <form method="get" action="/prospects">
-    <div class="row">
-      <div>
-        <label for="q">Recherche</label>
-        <input id="q" type="text" name="q" placeholder="Nom, activité, ville, email..." value="<?= htmlspecialchars((string) ($filters['q'] ?? '')) ?>">
-      </div>
-      <div>
-        <label for="status_id">Statut</label>
-        <select id="status_id" name="status_id">
-          <option value="0">Tous les statuts</option>
-          <?php foreach (($statuses ?? []) as $status): ?>
-            <option value="<?= (int) $status['id'] ?>" <?= ((int) ($filters['status_id'] ?? 0) === (int) $status['id']) ? 'selected' : '' ?>>
-              <?= htmlspecialchars((string) $status['name']) ?>
-            </option>
-          <?php endforeach; ?>
-        </select>
-      </div>
-      <div>
-        <label for="source_id">Source</label>
-        <select id="source_id" name="source_id">
-          <option value="0">Toutes les sources</option>
-          <?php foreach (($sources ?? []) as $source): ?>
-            <option value="<?= (int) $source['id'] ?>" <?= ((int) ($filters['source_id'] ?? 0) === (int) $source['id']) ? 'selected' : '' ?>>
-              <?= htmlspecialchars((string) $source['name']) ?>
-            </option>
-          <?php endforeach; ?>
-        </select>
-      </div>
+$normalize = static fn (string $value): string => mb_strtolower(trim($value));
+$detectCategory = static function (array $prospect) use ($normalize): string {
+    $activity = $normalize((string) ($prospect['activity'] ?? ''));
+    $business = $normalize((string) ($prospect['business_name'] ?? ''));
+    $haystack = $activity . ' ' . $business;
+
+    if ($haystack === '') {
+        return 'Autres';
+    }
+
+    $mapping = [
+        'Agents immobiliers' => ['agent immobilier', 'immobilier', 'mandataire'],
+        'Commerçants' => ['commerce', 'boutique', 'magasin', 'retail', 'e-commerce'],
+        'Thérapeutes' => ['thérapeute', 'therapeute', 'psychologue', 'naturopathe', 'sophrologue'],
+        'Coachs' => ['coach', 'coaching', 'mentor'],
+        'Artisans' => ['artisan', 'plombier', 'électricien', 'electricien', 'menuisier', 'coiffeur'],
+        'Indépendants' => ['freelance', 'indépendant', 'independant', 'consultant', 'solopreneur'],
+        'Restaurants' => ['restaurant', 'restauration', 'traiteur', 'café', 'cafe', 'bar'],
+    ];
+
+    foreach ($mapping as $label => $keywords) {
+        foreach ($keywords as $keyword) {
+            if (str_contains($haystack, $keyword)) {
+                return $label;
+            }
+        }
+    }
+
+    return 'Autres';
+};
+
+$awarenessFromScore = static function (int $score): string {
+    if ($score >= 75) {
+        return 'Prêt à décider';
+    }
+    if ($score >= 45) {
+        return 'Conscient du besoin';
+    }
+    return 'À éduquer';
+};
+
+$awarenessTone = static function (string $awareness): string {
+    return match ($awareness) {
+        'Prêt à décider' => 'awareness-hot',
+        'Conscient du besoin' => 'awareness-warm',
+        default => 'awareness-cold',
+    };
+};
+
+$priorityLabel = static function (string $priority): string {
+    return match ($priority) {
+        'eleve' => 'Haute priorité',
+        'faible' => 'Priorité basse',
+        default => 'Priorité moyenne',
+    };
+};
+
+$priorityTone = static function (string $priority): string {
+    return match ($priority) {
+        'eleve' => 'priority-high',
+        'faible' => 'priority-low',
+        default => 'priority-medium',
+    };
+};
+
+$statusLabel = '';
+$statusFilterId = (int) ($filters['status_id'] ?? 0);
+if ($statusFilterId > 0) {
+    foreach (($statuses ?? []) as $statusItem) {
+        if ((int) ($statusItem['id'] ?? 0) === $statusFilterId) {
+            $statusLabel = (string) ($statusItem['name'] ?? '');
+            break;
+        }
+    }
+}
+
+$activeAdvancedFilters = [
+    'Ville' => trim((string) ($filters['city'] ?? '')),
+    'Niveau conscience' => trim((string) ($filters['awareness_level'] ?? '')),
+    'Réseaux sociaux' => trim((string) ($filters['social_presence'] ?? '')),
+    'Site web' => trim((string) ($filters['website_presence'] ?? '')),
+    'Priorité' => trim((string) ($filters['priority'] ?? '')),
+    'Statut CRM' => $statusLabel,
+    'Activité' => trim((string) ($filters['zone_scope'] ?? '')),
+];
+
+$cleanFilters = array_filter($activeAdvancedFilters, static fn (string $value): bool => $value !== '');
+$totalProspects = (int) ($pagination['total'] ?? 0);
+?>
+
+<style>
+  .prospects-finder {
+    --finder-bg: #f6f8ff;
+    --finder-border: #dbe3f4;
+    --finder-text-muted: #667085;
+    --finder-indigo: #4755ff;
+    --finder-indigo-dark: #323fdf;
+    --finder-surface: #ffffff;
+    --finder-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+    display: grid;
+    gap: 14px;
+  }
+
+  .finder-header {
+    position: sticky;
+    top: 10px;
+    z-index: 12;
+    border-radius: 18px;
+    border: 1px solid var(--finder-border);
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: var(--finder-shadow);
+    backdrop-filter: blur(10px);
+    padding: 14px;
+    display: grid;
+    gap: 10px;
+  }
+
+  .finder-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .finder-title-row h2 {
+    margin: 0;
+    font-size: 20px;
+  }
+
+  .finder-kpi {
+    margin: 0;
+    color: var(--finder-text-muted);
+    font-size: 13px;
+  }
+
+  .finder-search {
+    position: relative;
+  }
+
+  .finder-search input {
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid var(--finder-border);
+    background: var(--finder-bg);
+    padding: 12px 14px 12px 38px;
+    font-size: 15px;
+  }
+
+  .finder-search svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.45;
+  }
+
+  .category-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+
+  .category-chip {
+    border: 1px solid var(--finder-border);
+    background: #fff;
+    color: #0f172a;
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all .2s ease;
+  }
+
+  .category-chip:hover,
+  .category-chip:focus-visible {
+    border-color: #b3c5ff;
+    outline: none;
+    transform: translateY(-1px);
+  }
+
+  .category-chip[aria-pressed="true"] {
+    background: var(--finder-indigo);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 8px 18px rgba(71, 85, 255, 0.28);
+  }
+
+  .finder-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .finder-btn {
+    border: none;
+    border-radius: 12px;
+    background: #0f172a;
+    color: #fff;
+    padding: 11px 14px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background .2s ease, transform .15s ease;
+  }
+
+  .finder-btn:hover,
+  .finder-btn:focus-visible {
+    background: #1e293b;
+    outline: none;
+  }
+
+  .finder-btn:active {
+    transform: scale(0.98);
+  }
+
+  .finder-btn.secondary {
+    background: var(--finder-indigo);
+  }
+
+  .finder-btn.secondary:hover,
+  .finder-btn.secondary:focus-visible {
+    background: var(--finder-indigo-dark);
+  }
+
+  .active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .active-filter-pill {
+    border-radius: 999px;
+    border: 1px solid #cad5ff;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: #1e3a8a;
+    background: #eff3ff;
+  }
+
+  .active-filter-clear {
+    margin-left: auto;
+    font-size: 12px;
+    color: #475569;
+    text-decoration: none;
+  }
+
+  .prospect-list {
+    display: grid;
+    gap: 12px;
+  }
+
+  .prospect-card {
+    background: var(--finder-surface);
+    border: 1px solid var(--finder-border);
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+    display: grid;
+    gap: 12px;
+    transition: transform .15s ease, box-shadow .2s ease;
+  }
+
+  .prospect-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.1);
+  }
+
+  .prospect-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .prospect-name {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.2;
+  }
+
+  .prospect-meta {
+    margin: 4px 0 0;
+    color: var(--finder-text-muted);
+    font-size: 13px;
+  }
+
+  .status-pill,
+  .score-pill,
+  .awareness-pill,
+  .priority-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border-radius: 999px;
+    padding: 5px 9px;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+
+  .score-pill { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+  .awareness-hot { background: #ecfdf3; color: #047857; border-color: #86efac; }
+  .awareness-warm { background: #fff7ed; color: #b45309; border-color: #fed7aa; }
+  .awareness-cold { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+  .priority-high { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+  .priority-medium { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+  .priority-low { background: #f5f3ff; color: #6d28d9; border-color: #ddd6fe; }
+
+  .prospect-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .presence-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    font-size: 12px;
+    color: #334155;
+  }
+
+  .presence-item {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 7px 9px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .presence-ok { color: #16a34a; font-weight: 700; }
+  .presence-off { color: #94a3b8; font-weight: 700; }
+
+  .quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .quick-action {
+    border-radius: 10px;
+    border: 1px solid #d7def0;
+    background: #fff;
+    color: #0f172a;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+    transition: all .18s ease;
+  }
+
+  .quick-action:hover,
+  .quick-action:focus-visible {
+    border-color: #95aafc;
+    color: #2932bf;
+    outline: none;
+  }
+
+  .quick-action:active { transform: scale(0.98); }
+  .quick-action.ia { background: #101828; color: #fff; border-color: #101828; }
+
+  .finder-empty,
+  .finder-loading {
+    border-radius: 16px;
+    border: 1px solid var(--finder-border);
+    background: #fff;
+    padding: 18px;
+  }
+
+  .finder-empty h3 { margin: 0 0 6px; }
+  .finder-empty p,
+  .finder-loading p { margin: 0; color: var(--finder-text-muted); }
+
+  .finder-loading-grid {
+    margin-top: 12px;
+    display: grid;
+    gap: 10px;
+  }
+
+  .finder-skeleton {
+    height: 90px;
+    border-radius: 14px;
+    background: linear-gradient(90deg, #ebf1ff 25%, #f8fbff 50%, #ebf1ff 75%);
+    background-size: 220% 100%;
+    animation: finder-shimmer 1.4s infinite;
+  }
+
+  .finder-pagination {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 2px;
+  }
+
+  .bottom-sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.45);
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease;
+  }
+
+  .bottom-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 55;
+    border-radius: 18px 18px 0 0;
+    background: #fff;
+    padding: 16px;
+    max-height: 84vh;
+    overflow-y: auto;
+    transform: translateY(104%);
+    transition: transform .25s ease;
+    box-shadow: 0 -16px 40px rgba(15, 23, 42, 0.25);
+  }
+
+  .bottom-sheet-open .bottom-sheet-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .bottom-sheet-open .bottom-sheet {
+    transform: translateY(0);
+  }
+
+  .sheet-handle {
+    width: 44px;
+    height: 5px;
+    background: #cbd5e1;
+    border-radius: 999px;
+    margin: 0 auto 10px;
+  }
+
+  .sheet-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .sheet-grid label {
+    display: grid;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #334155;
+  }
+
+  .sheet-grid label.full { grid-column: 1 / -1; }
+  .sheet-actions {
+    position: sticky;
+    bottom: -16px;
+    margin: 12px -16px -16px;
+    background: #fff;
+    border-top: 1px solid #e2e8f0;
+    padding: 12px 16px;
+    display: flex;
+    gap: 8px;
+  }
+
+  @keyframes finder-shimmer {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+  }
+
+  @media (min-width: 700px) {
+    .finder-header { padding: 16px; }
+    .prospect-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .quick-actions { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .bottom-sheet { left: 50%; right: auto; width: 680px; transform: translate(-50%, 104%); }
+    .bottom-sheet-open .bottom-sheet { transform: translate(-50%, 0); }
+  }
+
+  @media (min-width: 1060px) {
+    .prospect-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .finder-header { gap: 12px; }
+    .finder-title-row h2 { font-size: 24px; }
+  }
+</style>
+
+<section class="prospects-finder" data-finder-root>
+  <form method="get" action="/prospects" class="finder-header">
+    <input type="hidden" name="category" value="<?= htmlspecialchars($activeCategory) ?>" data-category-input>
+    <div class="finder-title-row">
+      <h2>Trouver des prospects</h2>
+      <p class="finder-kpi"><?= $totalProspects ?> résultat(s)</p>
     </div>
-    <p>
-      <button class="btn" type="submit">Appliquer</button>
-      <a class="btn secondary" href="/prospects">Réinitialiser</a>
-    </p>
-  </form>
-</div>
 
-<div class="card">
-  <p class="muted">
-    <?= (int) ($pagination['total'] ?? 0) ?> prospect(s) · page <?= (int) ($pagination['page'] ?? 1) ?> / <?= (int) ($pagination['total_pages'] ?? 1) ?>
-  </p>
+    <div class="finder-search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-4.3-4.3m1.3-5.2a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <input
+        type="search"
+        name="q"
+        placeholder="Nom, activité, ville, email..."
+        value="<?= htmlspecialchars((string) ($filters['q'] ?? '')) ?>"
+        autocomplete="off"
+      >
+    </div>
+
+    <div class="category-scroll" role="tablist" aria-label="Catégories de prospects">
+      <?php foreach ($categoryOrder as $category): ?>
+        <?php $isActive = $category === $activeCategory; ?>
+        <button
+          type="button"
+          class="category-chip"
+          data-category-chip="<?= htmlspecialchars($category) ?>"
+          aria-pressed="<?= $isActive ? 'true' : 'false' ?>"
+        >
+          <?= htmlspecialchars($category) ?>
+        </button>
+      <?php endforeach; ?>
+    </div>
+
+    <div class="finder-toolbar">
+      <a class="btn secondary compact" href="/prospects/create">+ Nouveau prospect</a>
+      <button type="button" class="finder-btn" data-open-sheet>
+        Filtres avancés<?= count($cleanFilters) > 0 ? ' • ' . count($cleanFilters) : '' ?>
+      </button>
+    </div>
+  </form>
+
+  <?php if (!empty($successMessage)): ?>
+    <div class="global-state loading"><span class="state-dot" aria-hidden="true"></span><div><?= htmlspecialchars((string) $successMessage) ?></div></div>
+  <?php endif; ?>
+
+  <?php if (!empty($warningMessage)): ?>
+    <div class="global-state error"><span class="state-dot" aria-hidden="true"></span><div><?= htmlspecialchars((string) $warningMessage) ?></div></div>
+  <?php endif; ?>
+
+  <?php if ($activeCategory !== 'Tous' || $cleanFilters !== []): ?>
+    <div class="active-filters">
+      <?php if ($activeCategory !== 'Tous'): ?>
+        <span class="active-filter-pill">Catégorie : <?= htmlspecialchars($activeCategory) ?></span>
+      <?php endif; ?>
+      <?php foreach ($cleanFilters as $label => $value): ?>
+        <span class="active-filter-pill"><?= htmlspecialchars($label) ?> : <?= htmlspecialchars($value) ?></span>
+      <?php endforeach; ?>
+      <a class="active-filter-clear" href="/prospects">Réinitialiser tout</a>
+    </div>
+  <?php endif; ?>
+
+  <div class="finder-loading" data-loading-state>
+    <p>Chargement intelligent des prospects...</p>
+    <div class="finder-loading-grid">
+      <div class="finder-skeleton"></div>
+      <div class="finder-skeleton"></div>
+      <div class="finder-skeleton"></div>
+    </div>
+  </div>
 
   <?php if (empty($prospects)): ?>
-    <?php
-      $title = 'Aucun prospect trouvé';
-      $message = 'Ajustez les filtres ou ajoutez un nouveau prospect pour alimenter la stratégie.';
-      $ctaHref = '/prospects/create';
-      $ctaLabel = 'Créer un prospect';
-      require __DIR__ . '/../components/empty_state_guided.php';
-    ?>
+    <article class="finder-empty" data-empty-state>
+      <h3>Aucun prospect correspondant</h3>
+      <p>Changez de catégorie ou allégez les filtres avancés pour élargir la recherche.</p>
+      <p style="margin-top:10px;"><a class="btn" href="/prospects/create">Ajouter un prospect</a></p>
+    </article>
   <?php else: ?>
-    <div class="prospect-mobile-list" style="display:grid;gap:12px;">
-      <?php foreach ($prospects as $p): ?>
-        <article class="kpi-card">
-          <strong><?= htmlspecialchars((string) ($p['full_name'] ?? (($p['first_name'] ?? '').' '.($p['last_name'] ?? '')))) ?></strong>
-          <p class="muted" style="margin:6px 0;">Statut: <?= htmlspecialchars((string) ($p['status_name'] ?? '—')) ?> · Score: <?= (int) ($p['score'] ?? 0) ?></p>
-          <a class="btn secondary compact" href="/prospects/<?= (int) $p['id'] ?>">Ouvrir</a>
+    <div class="prospect-list" data-prospect-list style="display:none;">
+      <?php foreach ($prospects as $prospect): ?>
+        <?php
+          $fullName = trim((string) ($prospect['full_name'] ?? (($prospect['first_name'] ?? '') . ' ' . ($prospect['last_name'] ?? ''))));
+          $score = (int) ($prospect['score'] ?? 0);
+          $awareness = $awarenessFromScore($score);
+          $awarenessClass = $awarenessTone($awareness);
+          $priorityRaw = (string) ($prospect['niveau_priorite'] ?? 'moyen');
+          $priorityClass = $priorityTone($priorityRaw);
+          $priorityText = $priorityLabel($priorityRaw);
+          $category = $detectCategory($prospect);
+          $status = trim((string) ($prospect['status_name'] ?? 'À qualifier')) ?: 'À qualifier';
+          $hasWebsite = trim((string) ($prospect['website'] ?? '')) !== '';
+          $hasSocial = trim((string) ($prospect['instagram_url'] ?? '')) !== ''
+            || trim((string) ($prospect['facebook_url'] ?? '')) !== ''
+            || trim((string) ($prospect['linkedin_url'] ?? '')) !== ''
+            || trim((string) ($prospect['tiktok_url'] ?? '')) !== '';
+          $zoneScope = (trim((string) ($prospect['country'] ?? '')) === '' || mb_strtolower((string) ($prospect['country'] ?? '')) === 'france')
+            ? 'Locale'
+            : 'Multi-zone';
+        ?>
+        <article
+          class="prospect-card"
+          data-card
+          data-category="<?= htmlspecialchars($category) ?>"
+          data-city="<?= htmlspecialchars((string) ($prospect['city'] ?? '')) ?>"
+          data-awareness="<?= htmlspecialchars($awareness) ?>"
+          data-social="<?= $hasSocial ? 'oui' : 'non' ?>"
+          data-website="<?= $hasWebsite ? 'oui' : 'non' ?>"
+          data-priority="<?= htmlspecialchars($priorityRaw) ?>"
+          data-status="<?= (int) ($prospect['status_id'] ?? 0) ?>"
+          data-zone="<?= htmlspecialchars($zoneScope) ?>"
+        >
+          <div class="prospect-top">
+            <div>
+              <h3 class="prospect-name"><?= htmlspecialchars($fullName !== '' ? $fullName : 'Prospect sans nom') ?></h3>
+              <p class="prospect-meta">
+                <?= htmlspecialchars((string) ($prospect['activity'] ?? 'Activité non renseignée')) ?>
+                · <?= htmlspecialchars((string) ($prospect['city'] ?? 'Ville inconnue')) ?>
+              </p>
+            </div>
+            <span class="status-pill" style="background:#eef2ff;color:#3730a3;border-color:#c7d2fe;"><?= htmlspecialchars($status) ?></span>
+          </div>
+
+          <div class="prospect-badges">
+            <span class="score-pill">Score <?= $score ?></span>
+            <span class="awareness-pill <?= htmlspecialchars($awarenessClass) ?>"><?= htmlspecialchars($awareness) ?></span>
+            <span class="priority-pill <?= htmlspecialchars($priorityClass) ?>"><?= htmlspecialchars($priorityText) ?></span>
+          </div>
+
+          <div class="presence-grid">
+            <div class="presence-item"><span>Site web</span><span class="<?= $hasWebsite ? 'presence-ok' : 'presence-off' ?>"><?= $hasWebsite ? 'Oui' : 'Non' ?></span></div>
+            <div class="presence-item"><span>Réseaux</span><span class="<?= $hasSocial ? 'presence-ok' : 'presence-off' ?>"><?= $hasSocial ? 'Oui' : 'Non' ?></span></div>
+            <div class="presence-item"><span>Catégorie</span><strong><?= htmlspecialchars($category) ?></strong></div>
+            <div class="presence-item"><span>Zone</span><strong><?= htmlspecialchars($zoneScope) ?></strong></div>
+          </div>
+
+          <div class="quick-actions">
+            <a class="quick-action" href="/prospects/<?= (int) $prospect['id'] ?>">Voir</a>
+            <a class="quick-action ia" href="/prospects/<?= (int) $prospect['id'] ?>">Analyser avec IA</a>
+            <a class="quick-action" href="/prospects/<?= (int) $prospect['id'] ?>/generated-contents">Générer message</a>
+            <a class="quick-action" href="/pipeline#prospect-<?= (int) $prospect['id'] ?>">Ajouter au pipeline</a>
+          </div>
         </article>
       <?php endforeach; ?>
     </div>
 
-    <table class="prospect-table" style="display:none;">
-      <thead>
-      <tr><th>Nom</th><th>Statut</th><th>Source</th><th>Activité</th><th>Ville</th><th>Email</th><th>Score</th><th>Actions</th></tr>
-      </thead>
-      <tbody>
-      <?php foreach ($prospects as $p): ?>
-        <tr>
-          <td><?= htmlspecialchars((string) ($p['full_name'] ?? (($p['first_name'] ?? '').' '.($p['last_name'] ?? '')))) ?></td>
-          <td><?= htmlspecialchars((string) ($p['status_name'] ?? '—')) ?></td>
-          <td><?= htmlspecialchars((string) ($p['source_name'] ?? '—')) ?></td>
-          <td><?= htmlspecialchars((string) ($p['activity'] ?? '')) ?></td>
-          <td><?= htmlspecialchars((string) ($p['city'] ?? '')) ?></td>
-          <td><?= htmlspecialchars((string) ($p['professional_email'] ?? '')) ?></td>
-          <td><?= (int) ($p['score'] ?? 0) ?></td>
-          <td><a class="btn secondary compact" href="/prospects/<?= (int) $p['id'] ?>">Voir</a></td>
-        </tr>
-      <?php endforeach; ?>
-      </tbody>
-    </table>
-    <style>@media (min-width:900px){.prospect-mobile-list{display:none!important}.prospect-table{display:table!important}}</style>
-  <?php endif; ?>
+    <article class="finder-empty" data-empty-state style="display:none;">
+      <h3>Aucun prospect après filtrage</h3>
+      <p>Ajustez les filtres actifs, puis relancez la recherche pour retrouver des opportunités.</p>
+    </article>
 
-  <?php
-    $currentPage = (int) ($pagination['page'] ?? 1);
-    $totalPages = (int) ($pagination['total_pages'] ?? 1);
-    $query = [
-      'q' => (string) ($filters['q'] ?? ''),
-      'status_id' => (string) ((int) ($filters['status_id'] ?? 0)),
-      'source_id' => (string) ((int) ($filters['source_id'] ?? 0)),
-    ];
-  ?>
+    <?php
+      $currentPage = (int) ($pagination['page'] ?? 1);
+      $totalPages = (int) ($pagination['total_pages'] ?? 1);
+      $query = [
+        'q' => (string) ($filters['q'] ?? ''),
+        'status_id' => (string) ((int) ($filters['status_id'] ?? 0)),
+        'source_id' => (string) ((int) ($filters['source_id'] ?? 0)),
+        'category' => $activeCategory,
+      ];
+    ?>
 
-  <?php if ($totalPages > 1): ?>
-    <div class="pagination">
-      <?php if ($currentPage > 1): ?>
-        <?php $query['page'] = (string) ($currentPage - 1); ?>
-        <a class="btn secondary" href="/prospects?<?= htmlspecialchars(http_build_query($query)) ?>">← Précédent</a>
-      <?php endif; ?>
-      <?php if ($currentPage < $totalPages): ?>
-        <?php $query['page'] = (string) ($currentPage + 1); ?>
-        <a class="btn secondary" href="/prospects?<?= htmlspecialchars(http_build_query($query)) ?>">Suivant →</a>
-      <?php endif; ?>
-    </div>
+    <?php if ($totalPages > 1): ?>
+      <div class="finder-pagination">
+        <?php if ($currentPage > 1): ?>
+          <?php $query['page'] = (string) ($currentPage - 1); ?>
+          <a class="btn secondary" href="/prospects?<?= htmlspecialchars(http_build_query($query)) ?>">← Précédent</a>
+        <?php endif; ?>
+
+        <?php if ($currentPage < $totalPages): ?>
+          <?php $query['page'] = (string) ($currentPage + 1); ?>
+          <a class="btn secondary" href="/prospects?<?= htmlspecialchars(http_build_query($query)) ?>">Suivant →</a>
+        <?php endif; ?>
+      </div>
+    <?php endif; ?>
   <?php endif; ?>
-</div>
+</section>
+
+<div class="bottom-sheet-backdrop" data-sheet-backdrop></div>
+<form method="get" action="/prospects" class="bottom-sheet" data-filter-sheet>
+  <div class="sheet-handle" aria-hidden="true"></div>
+  <h3 style="margin:0 0 4px;">Filtres avancés</h3>
+  <p class="muted" style="margin:0 0 12px;">Affinez rapidement les prospects les plus actionnables.</p>
+
+  <input type="hidden" name="q" value="<?= htmlspecialchars((string) ($filters['q'] ?? '')) ?>">
+  <input type="hidden" name="category" value="<?= htmlspecialchars($activeCategory) ?>" data-sheet-category>
+
+  <div class="sheet-grid">
+    <label>
+      Ville
+      <input type="text" name="city" placeholder="Ex: Lyon" value="<?= htmlspecialchars((string) ($filters['city'] ?? '')) ?>">
+    </label>
+
+    <label>
+      Catégorie
+      <select name="category_select" data-sheet-category-select>
+        <?php foreach ($categoryOrder as $category): ?>
+          <option value="<?= htmlspecialchars($category) ?>" <?= $category === $activeCategory ? 'selected' : '' ?>><?= htmlspecialchars($category) ?></option>
+        <?php endforeach; ?>
+      </select>
+    </label>
+
+    <label>
+      Niveau de conscience
+      <select name="awareness_level">
+        <?php $awarenessValue = (string) ($filters['awareness_level'] ?? ''); ?>
+        <option value="">Tous</option>
+        <option value="À éduquer" <?= $awarenessValue === 'À éduquer' ? 'selected' : '' ?>>À éduquer</option>
+        <option value="Conscient du besoin" <?= $awarenessValue === 'Conscient du besoin' ? 'selected' : '' ?>>Conscient du besoin</option>
+        <option value="Prêt à décider" <?= $awarenessValue === 'Prêt à décider' ? 'selected' : '' ?>>Prêt à décider</option>
+      </select>
+    </label>
+
+    <label>
+      Réseaux sociaux
+      <?php $socialValue = (string) ($filters['social_presence'] ?? ''); ?>
+      <select name="social_presence">
+        <option value="">Tous</option>
+        <option value="oui" <?= $socialValue === 'oui' ? 'selected' : '' ?>>Présent</option>
+        <option value="non" <?= $socialValue === 'non' ? 'selected' : '' ?>>Absent</option>
+      </select>
+    </label>
+
+    <label>
+      Site web
+      <?php $websiteValue = (string) ($filters['website_presence'] ?? ''); ?>
+      <select name="website_presence">
+        <option value="">Tous</option>
+        <option value="oui" <?= $websiteValue === 'oui' ? 'selected' : '' ?>>Oui</option>
+        <option value="non" <?= $websiteValue === 'non' ? 'selected' : '' ?>>Non</option>
+      </select>
+    </label>
+
+    <label>
+      Note / priorité
+      <?php $priorityValue = (string) ($filters['priority'] ?? ''); ?>
+      <select name="priority">
+        <option value="">Toutes</option>
+        <option value="eleve" <?= $priorityValue === 'eleve' ? 'selected' : '' ?>>Haute</option>
+        <option value="moyen" <?= $priorityValue === 'moyen' ? 'selected' : '' ?>>Moyenne</option>
+        <option value="faible" <?= $priorityValue === 'faible' ? 'selected' : '' ?>>Basse</option>
+      </select>
+    </label>
+
+    <label>
+      Statut CRM
+      <select name="status_id">
+        <option value="0">Tous</option>
+        <?php foreach (($statuses ?? []) as $status): ?>
+          <option value="<?= (int) $status['id'] ?>" <?= ((int) ($filters['status_id'] ?? 0) === (int) $status['id']) ? 'selected' : '' ?>>
+            <?= htmlspecialchars((string) $status['name']) ?>
+          </option>
+        <?php endforeach; ?>
+      </select>
+    </label>
+
+    <label>
+      Activité locale / multi-zone
+      <?php $zoneValue = (string) ($filters['zone_scope'] ?? ''); ?>
+      <select name="zone_scope">
+        <option value="">Toutes</option>
+        <option value="Locale" <?= $zoneValue === 'Locale' ? 'selected' : '' ?>>Locale</option>
+        <option value="Multi-zone" <?= $zoneValue === 'Multi-zone' ? 'selected' : '' ?>>Multi-zone</option>
+      </select>
+    </label>
+
+    <label class="full">
+      Source
+      <select name="source_id">
+        <option value="0">Toutes les sources</option>
+        <?php foreach (($sources ?? []) as $source): ?>
+          <option value="<?= (int) $source['id'] ?>" <?= ((int) ($filters['source_id'] ?? 0) === (int) $source['id']) ? 'selected' : '' ?>>
+            <?= htmlspecialchars((string) $source['name']) ?>
+          </option>
+        <?php endforeach; ?>
+      </select>
+    </label>
+  </div>
+
+  <div class="sheet-actions">
+    <a class="btn secondary" href="/prospects" style="flex:1;">Réinitialiser</a>
+    <button class="finder-btn secondary" type="submit" style="flex:1;">Appliquer</button>
+  </div>
+</form>
+
+<script>
+  (function () {
+    const root = document.querySelector('[data-finder-root]');
+    if (!root) return;
+
+    const loadingState = root.querySelector('[data-loading-state]');
+    const list = root.querySelector('[data-prospect-list]');
+    const cards = Array.from(root.querySelectorAll('[data-card]'));
+    const emptyState = root.querySelector('[data-empty-state]');
+    const categoryInput = root.querySelector('[data-category-input]');
+    const categoryChips = Array.from(root.querySelectorAll('[data-category-chip]'));
+
+    const openSheetBtn = document.querySelector('[data-open-sheet]');
+    const sheetBackdrop = document.querySelector('[data-sheet-backdrop]');
+    const sheet = document.querySelector('[data-filter-sheet]');
+    const sheetCategory = document.querySelector('[data-sheet-category]');
+    const sheetCategorySelect = document.querySelector('[data-sheet-category-select]');
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedCategory = urlParams.get('category') || 'Tous';
+
+    const filter = {
+      category: selectedCategory,
+      city: (urlParams.get('city') || '').toLowerCase().trim(),
+      awareness: (urlParams.get('awareness_level') || '').trim(),
+      social: (urlParams.get('social_presence') || '').trim(),
+      website: (urlParams.get('website_presence') || '').trim(),
+      priority: (urlParams.get('priority') || '').trim(),
+      status: (urlParams.get('status_id') || '').trim(),
+      zone: (urlParams.get('zone_scope') || '').trim(),
+    };
+
+    const normalize = (value) => (value || '').toLowerCase().trim();
+
+    const applyFilter = () => {
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const matchCategory = filter.category === 'Tous' || card.dataset.category === filter.category;
+        const matchCity = !filter.city || normalize(card.dataset.city).includes(filter.city);
+        const matchAwareness = !filter.awareness || card.dataset.awareness === filter.awareness;
+        const matchSocial = !filter.social || card.dataset.social === filter.social;
+        const matchWebsite = !filter.website || card.dataset.website === filter.website;
+        const matchPriority = !filter.priority || card.dataset.priority === filter.priority;
+        const matchStatus = !filter.status || filter.status === '0' || card.dataset.status === filter.status;
+        const matchZone = !filter.zone || card.dataset.zone === filter.zone;
+
+        const visible = matchCategory && matchCity && matchAwareness && matchSocial && matchWebsite && matchPriority && matchStatus && matchZone;
+        card.style.display = visible ? 'grid' : 'none';
+        if (visible) visibleCount += 1;
+      });
+
+      if (list) {
+        list.style.display = visibleCount > 0 ? 'grid' : 'none';
+      }
+      if (emptyState) {
+        emptyState.style.display = visibleCount > 0 ? 'none' : 'block';
+      }
+    };
+
+    const syncChips = () => {
+      categoryChips.forEach((chip) => {
+        const active = chip.dataset.categoryChip === filter.category;
+        chip.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+      if (categoryInput) categoryInput.value = filter.category;
+      if (sheetCategory) sheetCategory.value = filter.category;
+      if (sheetCategorySelect) sheetCategorySelect.value = filter.category;
+    };
+
+    categoryChips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        filter.category = chip.dataset.categoryChip || 'Tous';
+        syncChips();
+        applyFilter();
+      });
+    });
+
+    if (sheetCategorySelect) {
+      sheetCategorySelect.addEventListener('change', (event) => {
+        filter.category = event.target.value || 'Tous';
+        syncChips();
+      });
+    }
+
+    const toggleSheet = (open) => {
+      document.body.classList.toggle('bottom-sheet-open', open);
+    };
+
+    if (openSheetBtn && sheet && sheetBackdrop) {
+      openSheetBtn.addEventListener('click', () => toggleSheet(true));
+      sheetBackdrop.addEventListener('click', () => toggleSheet(false));
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') toggleSheet(false);
+      });
+      sheet.addEventListener('submit', () => toggleSheet(false));
+    }
+
+    syncChips();
+    window.setTimeout(() => {
+      if (loadingState) loadingState.style.display = 'none';
+      applyFilter();
+    }, 220);
+  })();
+</script>
