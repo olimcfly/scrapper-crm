@@ -6,9 +6,11 @@ namespace App\Controllers;
 
 use App\Core\Request;
 use App\Core\Response;
+use App\Core\Database;
 use App\Models\ProspectModel;
 use App\Models\ProspectNoteModel;
 use App\Models\TagModel;
+use App\Services\Auth;
 use App\Services\Logger;
 use App\Services\ProspectValidator;
 
@@ -18,6 +20,7 @@ final class ProspectController
     private ProspectNoteModel $notes;
     private TagModel $tags;
     private ProspectValidator $validator;
+    private Auth $auth;
 
     public function __construct()
     {
@@ -25,17 +28,34 @@ final class ProspectController
         $this->notes = new ProspectNoteModel();
         $this->tags = new TagModel();
         $this->validator = new ProspectValidator();
+        $this->auth = new Auth(Database::connection());
     }
 
     public function index(Request $request): void
     {
-        unset($request);
-        Response::json(['data' => $this->prospects->all()]);
+        if (!$this->requireApiAuth()) {
+            return;
+        }
+
+        $input = $request->input();
+        $result = $this->prospects->search([
+            'q' => trim((string) ($input['q'] ?? '')),
+            'status_id' => (int) ($input['status_id'] ?? 0),
+            'source_id' => (int) ($input['source_id'] ?? 0),
+            'page' => max(1, (int) ($input['page'] ?? 1)),
+            'per_page' => min(100, max(1, (int) ($input['per_page'] ?? 20))),
+        ]);
+
+        Response::json($result);
     }
 
     public function show(Request $request, int $id): void
     {
         unset($request);
+        if (!$this->requireApiAuth()) {
+            return;
+        }
+
         $prospect = $this->prospects->find($id);
 
         if ($prospect === null) {
@@ -49,6 +69,10 @@ final class ProspectController
 
     public function store(Request $request): void
     {
+        if (!$this->requireApiAuth()) {
+            return;
+        }
+
         $input = $request->json();
         $errors = $this->validator->validate($input);
 
@@ -75,6 +99,10 @@ final class ProspectController
 
     public function update(Request $request, int $id): void
     {
+        if (!$this->requireApiAuth()) {
+            return;
+        }
+
         if ($this->prospects->find($id) === null) {
             Response::json(['error' => 'Prospect introuvable.'], 404);
             return;
@@ -106,6 +134,10 @@ final class ProspectController
     public function delete(Request $request, int $id): void
     {
         unset($request);
+        if (!$this->requireApiAuth()) {
+            return;
+        }
+
         if ($this->prospects->find($id) === null) {
             Response::json(['error' => 'Prospect introuvable.'], 404);
             return;
@@ -117,6 +149,10 @@ final class ProspectController
 
     public function addNote(Request $request, int $id): void
     {
+        if (!$this->requireApiAuth()) {
+            return;
+        }
+
         if ($this->prospects->find($id) === null) {
             Response::json(['error' => 'Prospect introuvable.'], 404);
             return;
@@ -135,6 +171,10 @@ final class ProspectController
     public function notes(Request $request, int $id): void
     {
         unset($request);
+        if (!$this->requireApiAuth()) {
+            return;
+        }
+
         if ($this->prospects->find($id) === null) {
             Response::json(['error' => 'Prospect introuvable.'], 404);
             return;
@@ -145,6 +185,10 @@ final class ProspectController
 
     public function changeStatus(Request $request, int $id): void
     {
+        if (!$this->requireApiAuth()) {
+            return;
+        }
+
         if ($this->prospects->find($id) === null) {
             Response::json(['error' => 'Prospect introuvable.'], 404);
             return;
@@ -158,5 +202,15 @@ final class ProspectController
 
         $this->prospects->updateStatus($id, $statusId);
         Response::json(['message' => 'Statut mis à jour.']);
+    }
+
+    private function requireApiAuth(): bool
+    {
+        if ($this->auth->check()) {
+            return true;
+        }
+
+        Response::json(['error' => 'Authentification requise.'], 401);
+        return false;
     }
 }
