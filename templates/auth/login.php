@@ -10,18 +10,19 @@ $randomCitation = $citations[array_rand($citations)];
 
 <style>
   .login-page {
-    min-height: 100vh;
+    min-height: 100dvh;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    background: #f7f3eb;
+    grid-template-columns: 1fr;
+    background:
+      radial-gradient(circle at top, #fdfaf2 0%, #f6f1e7 48%, #efe8db 100%);
   }
 
   .login-visual {
+    display: none;
     position: relative;
-    min-height: 340px;
-    display: flex;
+    min-height: 100dvh;
     align-items: flex-end;
-    padding: 42px;
+    padding: clamp(36px, 4vw, 56px);
     color: #fdfaf5;
     background-image:
       linear-gradient(170deg, rgba(23, 47, 38, 0.35), rgba(70, 93, 80, 0.52)),
@@ -70,51 +71,56 @@ $randomCitation = $citations[array_rand($citations)];
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 42px 28px;
-    background: #fdfaf4;
+    padding: 18px;
   }
 
   .login-card {
     width: 100%;
-    max-width: 430px;
-    padding: 40px 34px 28px;
-    border-radius: 20px;
+    max-width: 460px;
+    padding: 28px 22px 22px;
+    border-radius: 24px;
     background: #fffef9;
-    border: 1px solid #ece5d9;
-    box-shadow: 0 20px 45px rgba(105, 116, 95, 0.12);
+    border: 1px solid #e9e1d3;
+    box-shadow:
+      0 10px 26px rgba(82, 96, 83, 0.1),
+      0 2px 8px rgba(82, 96, 83, 0.08);
   }
 
   .login-title {
     margin: 0;
     font-family: "Cormorant Garamond", Georgia, serif;
-    font-size: 2rem;
-    color: #2e4036;
+    font-size: clamp(2rem, 3.1vw, 2.6rem);
+    color: #2d3f34;
+    line-height: 1.1;
+    letter-spacing: 0.2px;
   }
 
   .login-subtitle {
-    margin: 8px 0 26px;
-    color: #68776b;
-    line-height: 1.5;
+    margin: 10px 0 28px;
+    color: #5f6f64;
+    line-height: 1.55;
+    font-size: 1rem;
   }
 
   .login-field {
-    margin-bottom: 16px;
+    margin-bottom: 18px;
   }
 
   .login-label {
     display: block;
-    margin-bottom: 7px;
-    color: #33483d;
+    margin-bottom: 8px;
+    color: #2d4135;
     font-weight: 600;
+    font-size: 0.95rem;
   }
 
   .login-input {
     width: 100%;
-    border: 1px solid #d8dfd2;
-    border-radius: 12px;
-    background: #fcfdf9;
-    padding: 12px 14px;
-    font-size: 0.98rem;
+    border: 1px solid #cfd8c8;
+    border-radius: 14px;
+    background: #fdfdf9;
+    padding: 14px 16px;
+    font-size: 1rem;
     color: #1f2937;
     transition: border-color 0.18s ease, box-shadow 0.18s ease;
   }
@@ -129,17 +135,20 @@ $randomCitation = $citations[array_rand($citations)];
     width: 100%;
     margin-top: 8px;
     border: none;
-    border-radius: 12px;
-    padding: 13px 14px;
-    background: linear-gradient(135deg, #758f73, #5d7c62);
+    border-radius: 14px;
+    padding: 14px 16px;
+    background: linear-gradient(140deg, #6f8b6e, #57745c);
     color: #f9f7f2;
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
+    letter-spacing: 0.2px;
+    transition: transform 0.16s ease, filter 0.16s ease;
   }
 
   .login-submit:hover {
     filter: brightness(1.04);
+    transform: translateY(-1px);
   }
 
   .login-footnote {
@@ -164,24 +173,42 @@ $randomCitation = $citations[array_rand($citations)];
     padding: 0;
   }
 
-  @media (max-width: 900px) {
+  @media (min-width: 768px) and (max-width: 1023px) {
     .login-page {
       grid-template-columns: 1fr;
-      grid-template-rows: minmax(320px, 42vh) auto;
-    }
-
-    .login-visual {
-      padding: 30px 24px;
-      align-items: flex-end;
     }
 
     .login-form-area {
-      padding: 24px;
-      align-items: flex-start;
+      padding: 48px 28px;
     }
 
     .login-card {
-      max-width: 560px;
+      max-width: 620px;
+      padding: 38px 36px 30px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .login-page {
+      grid-template-columns: minmax(420px, 1.1fr) minmax(520px, 1fr);
+    }
+
+    .login-visual {
+      display: flex;
+    }
+
+    .login-form-area {
+      padding: clamp(40px, 6vw, 84px);
+      background: linear-gradient(180deg, #fbf8f1 0%, #f5efe4 100%);
+    }
+
+    .login-card {
+      max-width: 640px;
+      padding: clamp(42px, 4vw, 56px) clamp(38px, 4.2vw, 54px) 36px;
+      border-radius: 28px;
+      box-shadow:
+        0 28px 56px rgba(67, 82, 69, 0.16),
+        0 6px 16px rgba(67, 82, 69, 0.09);
     }
   }
 </style>
