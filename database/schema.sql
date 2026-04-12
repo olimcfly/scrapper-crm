@@ -43,6 +43,10 @@ CREATE TABLE IF NOT EXISTS prospects (
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_prospects_status_id (status_id),
   INDEX idx_prospects_source_id (source_id),
+  INDEX idx_prospects_full_name (full_name),
+  INDEX idx_prospects_city (city),
+  INDEX idx_prospects_professional_email (professional_email),
+  INDEX idx_prospects_updated_at (updated_at),
   CONSTRAINT fk_prospects_source FOREIGN KEY (source_id) REFERENCES sources(id) ON DELETE SET NULL,
   CONSTRAINT fk_prospects_status FOREIGN KEY (status_id) REFERENCES prospect_statuses(id) ON DELETE SET NULL
 );

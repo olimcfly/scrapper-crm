@@ -14,6 +14,7 @@ use App\Models\ProspectStatusModel;
 use App\Models\SourceModel;
 use App\Models\TagModel;
 use App\Services\Auth;
+use App\Services\Csrf;
 use App\Services\ProspectValidator;
 
 final class WebProspectController
@@ -43,10 +44,22 @@ final class WebProspectController
             return;
         }
 
-        unset($request);
+        $filters = [
+            'q' => trim((string) ($request->input()['q'] ?? '')),
+            'status_id' => (int) ($request->input()['status_id'] ?? 0),
+            'source_id' => (int) ($request->input()['source_id'] ?? 0),
+            'page' => max(1, (int) ($request->input()['page'] ?? 1)),
+            'per_page' => 20,
+        ];
+        $result = $this->prospects->search($filters);
+
         View::render('prospects/list', [
             'title' => 'Prospects',
-            'prospects' => $this->prospects->all(),
+            'prospects' => $result['data'],
+            'pagination' => $result['pagination'],
+            'filters' => $filters,
+            'statuses' => $this->statuses->all(),
+            'sources' => $this->sources->all(),
         ]);
     }
 
@@ -74,6 +87,10 @@ final class WebProspectController
         }
 
         $input = $request->input();
+        if (!$this->validateCsrf($input)) {
+            Response::redirect('/prospects/create');
+        }
+
         $errors = $this->validator->validate($input);
 
         if ($errors !== []) {
@@ -155,6 +172,10 @@ final class WebProspectController
         }
 
         $input = $request->input();
+        if (!$this->validateCsrf($input)) {
+            Response::redirect('/prospects/' . $id . '/edit');
+        }
+
         $errors = $this->validator->validate($input);
         if ($errors !== []) {
             View::render('prospects/form', [
@@ -179,7 +200,10 @@ final class WebProspectController
             return;
         }
 
-        unset($request);
+        if (!$this->validateCsrf($request->input())) {
+            Response::redirect('/prospects/' . $id);
+        }
+
         $this->prospects->delete($id);
         Response::redirect('/prospects');
     }
@@ -188,6 +212,10 @@ final class WebProspectController
     {
         if (!$this->requireAuth()) {
             return;
+        }
+
+        if (!$this->validateCsrf($request->input())) {
+            Response::redirect('/prospects/' . $id);
         }
 
         $content = trim((string) ($request->input()['content'] ?? ''));
@@ -202,6 +230,10 @@ final class WebProspectController
     {
         if (!$this->requireAuth()) {
             return;
+        }
+
+        if (!$this->validateCsrf($request->input())) {
+            Response::redirect('/prospects/' . $id);
         }
 
         $statusId = (int) ($request->input()['status_id'] ?? 0);
@@ -220,6 +252,11 @@ final class WebProspectController
 
         Response::redirect('/login');
         return false;
+    }
+
+    private function validateCsrf(array $input): bool
+    {
+        return Csrf::isValid((string) ($input['_csrf_token'] ?? ''));
     }
 
 }
