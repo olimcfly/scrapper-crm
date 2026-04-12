@@ -51,26 +51,34 @@
     .app-shell { min-height: 100vh; display: grid; grid-template-columns: 1fr; }
     .sidebar {
       display: none;
-      width: 280px;
+      width: 236px;
       background: var(--ds-color-sidebar);
       color: #dbeafe;
-      padding: var(--ds-space-5) var(--ds-space-4);
+      padding: 20px 14px;
       border-right: 1px solid rgba(148, 163, 184, 0.2);
     }
 
-    .brand { font-size: 18px; font-weight: 700; color: white; margin-bottom: var(--ds-space-5); }
+    .brand {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      color: white;
+      margin-bottom: var(--ds-space-4);
+      padding: 0 8px;
+    }
     .sidebar-section-title {
-      margin: 0 0 var(--ds-space-3);
-      font-size: 12px;
+      margin: 0 0 var(--ds-space-2);
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: .08em;
       color: #93c5fd;
+      padding: 0 8px;
     }
 
     .module-link {
       display: block;
-      padding: 10px;
-      border-radius: var(--ds-radius-sm);
+      padding: 10px 10px;
+      border-radius: 12px;
       color: #cbd5e1;
       text-decoration: none;
       margin-bottom: 6px;
@@ -89,7 +97,7 @@
       padding-bottom: calc(var(--bottom-nav-height) + var(--ds-space-5));
     }
 
-    .container { max-width: 1240px; margin: 0 auto; }
+    .container { max-width: 1320px; margin: 0 auto; }
     .container.login-container { max-width: 1200px; padding: 0; }
 
     .topbar {
@@ -373,10 +381,23 @@
     .bottom-nav-link span[aria-hidden='true'] { font-size: 18px; }
 
     @media (min-width: 900px) {
-      .app-shell { grid-template-columns: 280px 1fr; }
+      .app-shell { grid-template-columns: 236px minmax(0, 1fr); }
       .sidebar { display: block; }
       .workspace { padding: var(--ds-space-5); }
       .bottom-nav { display: none; }
+    }
+
+    @media (min-width: 1200px) {
+      .app-shell { grid-template-columns: 244px minmax(0, 1fr); }
+      .workspace { padding: 28px 34px; }
+      .topbar {
+        margin-bottom: 20px;
+        border-radius: 16px;
+        padding: 14px 18px;
+      }
+      .topbar-main h1 { font-size: 22px; }
+      .topbar-subtitle { font-size: 12px; letter-spacing: .02em; }
+      .search-input { max-width: 280px; }
     }
   </style>
 </head>
