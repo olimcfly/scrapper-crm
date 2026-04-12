@@ -27,6 +27,57 @@ final class ProspectModel
         return $this->db->query($sql)->fetchAll();
     }
 
+    public function listPaginated(string $search, string $sort, int $limit, int $offset): array
+    {
+        $sortMap = [
+            'name' => "COALESCE(NULLIF(p.full_name, ''), CONCAT_WS(' ', p.first_name, p.last_name)) ASC",
+            'score' => 'p.score DESC',
+            'city' => 'p.city ASC',
+            'date' => 'p.created_at DESC',
+        ];
+        $orderBy = $sortMap[$sort] ?? $sortMap['date'];
+
+        $where = '';
+        $params = [];
+        if ($search !== '') {
+            $where = 'WHERE (
+                p.first_name LIKE :search OR
+                p.last_name LIKE :search OR
+                p.full_name LIKE :search OR
+                p.activity LIKE :search OR
+                p.city LIKE :search OR
+                p.professional_email LIKE :search
+            )';
+            $params['search'] = '%' . $search . '%';
+        }
+
+        $countSql = "SELECT COUNT(*) FROM prospects p {$where}";
+        $countStmt = $this->db->prepare($countSql);
+        $countStmt->execute($params);
+        $total = (int) $countStmt->fetchColumn();
+
+        $sql = "SELECT p.*, s.name AS status_name, so.name AS source_name
+                FROM prospects p
+                LEFT JOIN prospect_statuses s ON s.id = p.status_id
+                LEFT JOIN sources so ON so.id = p.source_id
+                {$where}
+                ORDER BY {$orderBy}
+                LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->db->prepare($sql);
+        if (isset($params['search'])) {
+            $stmt->bindValue(':search', $params['search']);
+        }
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return [
+            'items' => $stmt->fetchAll(),
+            'total' => $total,
+        ];
+    }
+
     public function find(int $id): ?array
     {
         $stmt = $this->db->prepare('SELECT * FROM prospects WHERE id = :id LIMIT 1');
