@@ -16,6 +16,9 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ------------------------------------------------------------
 DROP TABLE IF EXISTS strategy_profile_analyses;
 DROP TABLE IF EXISTS login_tokens;
+DROP TABLE IF EXISTS messages;
+DROP TABLE IF EXISTS prospect_pipeline;
+DROP TABLE IF EXISTS pipeline_stages;
 DROP TABLE IF EXISTS prospect_tag;
 DROP TABLE IF EXISTS prospect_events;
 DROP TABLE IF EXISTS prospect_notes;
@@ -257,6 +260,54 @@ CREATE TABLE strategy_profile_analyses (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
+-- TABLE : pipeline_stages
+-- Étapes canonique du pipeline de conversion.
+-- ============================================================
+CREATE TABLE pipeline_stages (
+  id         INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  name       VARCHAR(100)  NOT NULL,
+  position   INT           NOT NULL DEFAULT 0,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_pipeline_stages_position (position)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- TABLE : prospect_pipeline
+-- État actionnable d'un prospect dans le pipeline.
+-- ============================================================
+CREATE TABLE prospect_pipeline (
+  id          INT UNSIGNED                         NOT NULL AUTO_INCREMENT,
+  prospect_id INT UNSIGNED                         NOT NULL,
+  stage_id    INT UNSIGNED                         NOT NULL,
+  last_action VARCHAR(255)                                  DEFAULT NULL,
+  next_action VARCHAR(255)                                  DEFAULT NULL,
+  status      ENUM('active', 'won', 'lost')       NOT NULL DEFAULT 'active',
+  updated_at  DATETIME                             NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_prospect_pipeline_prospect_id (prospect_id),
+  KEY idx_prospect_pipeline_stage_id (stage_id),
+  CONSTRAINT fk_prospect_pipeline_prospect FOREIGN KEY (prospect_id) REFERENCES prospects(id) ON DELETE CASCADE,
+  CONSTRAINT fk_prospect_pipeline_stage FOREIGN KEY (stage_id) REFERENCES pipeline_stages(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- TABLE : messages
+-- Historique de conversation et notes rapides.
+-- ============================================================
+CREATE TABLE messages (
+  id          INT UNSIGNED                            NOT NULL AUTO_INCREMENT,
+  prospect_id INT UNSIGNED                            NOT NULL,
+  content     TEXT                                    NOT NULL,
+  type        ENUM('dm', 'reply', 'note')            NOT NULL DEFAULT 'note',
+  direction   ENUM('sent', 'received')               NOT NULL DEFAULT 'sent',
+  created_at  DATETIME                                NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_messages_prospect_id (prospect_id),
+  KEY idx_messages_created_at  (created_at),
+  CONSTRAINT fk_messages_prospect FOREIGN KEY (prospect_id) REFERENCES prospects(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
 -- SEED — Données minimales nécessaires au fonctionnement
 -- ============================================================
 
@@ -282,3 +333,15 @@ INSERT INTO sources (name) VALUES
 INSERT INTO users (first_name, last_name, email, password, role, is_active) VALUES
   ('Coralie', 'Montreuil', 'contact@coraliemontreuil.fr', '!DISABLED', 'user',  1),
   ('Admin',   'CRM',       'admin@coraliemontreuil.fr',   '!DISABLED', 'admin', 1);
+
+-- Pipeline conversion orienté closing naturel
+INSERT INTO pipeline_stages (name, position) VALUES
+  ('Nouveau', 1),
+  ('Interaction', 2),
+  ('Conversation', 3),
+  ('Opportunité', 4),
+  ('Client', 5);
+
+INSERT INTO prospect_pipeline (prospect_id, stage_id, last_action, next_action, status, updated_at)
+SELECT p.id, 1, 'Prospect importé', 'Initier une interaction', 'active', NOW()
+FROM prospects p;

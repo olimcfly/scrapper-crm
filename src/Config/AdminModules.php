@@ -18,7 +18,7 @@ final class AdminModules
             ['key' => 'generation-contenu', 'label' => 'Contenu', 'description' => 'Génération de contenu orientée objectif commercial.', 'path' => '/admin/modules/generation-contenu', 'status' => 'mvp', 'core' => true, 'ready' => false, 'nav' => 'secondary'],
             ['key' => 'messages-ia', 'label' => 'Messages IA', 'description' => 'Flow guidé générer → éditer → envoyer.', 'path' => '/messages-ia', 'status' => 'mvp', 'core' => true, 'ready' => false, 'nav' => 'messages'],
             ['key' => 'contacts', 'label' => 'Contacts', 'description' => 'Contacts actionnables avec prochaine action visible.', 'path' => '/admin/modules/contacts', 'status' => 'mvp', 'core' => true, 'ready' => false, 'nav' => 'secondary'],
-            ['key' => 'pipeline', 'label' => 'Pipeline', 'description' => 'Suivi des opportunités en mode mobile tactile.', 'path' => '/pipeline', 'status' => 'mvp', 'core' => true, 'ready' => false, 'nav' => 'pipeline'],
+            ['key' => 'pipeline', 'label' => 'Pipeline', 'description' => 'Kanban mobile pour guider chaque prochaine action de conversion.', 'path' => '/pipeline', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'pipeline'],
             ['key' => 'settings', 'label' => 'Paramètres', 'description' => 'Configuration de l’espace et préférences.', 'path' => '/settings', 'status' => 'placeholder', 'core' => false, 'ready' => true, 'nav' => 'secondary'],
         ];
     }

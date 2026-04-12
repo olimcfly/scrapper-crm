@@ -6,6 +6,7 @@ use App\Controllers\AdminController;
 use App\Controllers\AuthController;
 use App\Controllers\GeneratedContentController;
 use App\Controllers\LookupController;
+use App\Controllers\PipelineController;
 use App\Controllers\ProspectController;
 use App\Controllers\SettingsController;
 use App\Controllers\StrategyController;
@@ -43,6 +44,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
 
 $request = new Request();
 $router = new Router();
+$adminController = new AdminController();
+$settingsController = new SettingsController();
+$pipelineController = new PipelineController();
 
 $guard = new AuthGuard(new Auth(Database::connection()));
 
@@ -74,20 +78,26 @@ $router->add('GET', '/prospects/{id}/generated-contents', $guard->protect(static
 $router->add('POST', '/prospects/{id}/generated-contents/generate', $guard->protect(static fn (Request $req, array $params): mixed => (new GeneratedContentController())->generate($req, (int) $params['id'])));
 $router->add('GET', '/settings', $guard->protect(static fn (Request $req): mixed => (new SettingsController())->index($req)));
 
-$router->add('GET', '/dashboard', $guard->protect(static fn (Request $req): mixed => (new AdminController())->dashboard($req)));
-$router->add('GET', '/strategie', $guard->protect(static fn (Request $req): mixed => (new StrategyController())->index($req)));
-$router->add('POST', '/strategie/analyse', $guard->protect(static fn (Request $req): mixed => (new StrategyController())->analyze($req)));
+$router->add('GET', '/dashboard', $guard->protect(static fn (Request $req): mixed => $adminController->dashboard($req)));
+$router->add('GET', '/strategie', $guard->protect(static function (): void {
+    Response::redirect('/admin/modules/strategie-prospect');
+}));
 $router->add('GET', '/messages-ia', $guard->protect(static function (): void {
     Response::redirect('/admin/modules/messages-ia');
 }));
-$router->add('GET', '/pipeline', $guard->protect(static function (): void {
-    Response::redirect('/admin/modules/pipeline');
-}));
+$router->add('GET', '/pipeline', $guard->protect(static fn (Request $req): mixed => $pipelineController->index($req)));
+$router->add('POST', '/pipeline/{id}/move', $guard->protect(static fn (Request $req, array $params): mixed => $pipelineController->moveStage($req, (int) $params['id'])));
+$router->add('POST', '/prospects/{id}/messages', $guard->protect(static fn (Request $req, array $params): mixed => $pipelineController->addMessage($req, (int) $params['id'])));
+$router->add('POST', '/prospects/{id}/suggest-next-action', $guard->protect(static fn (Request $req, array $params): mixed => $pipelineController->suggest($req, (int) $params['id'])));
 $router->add('GET', '/admin', $guard->protect(static function (): void {
     Response::redirect('/dashboard');
 }));
-$router->add('GET', '/admin/dashboard', $guard->protect(static fn (Request $req): mixed => (new AdminController())->dashboard($req)));
-$router->add('GET', '/admin/modules/{module}', $guard->protect(static fn (Request $req, array $params): mixed => (new AdminController())->module($req, (string) $params['module'])));
+$router->add('GET', '/admin/dashboard', $guard->protect(static fn (Request $req): mixed => $adminController->dashboard($req)));
+$router->add('GET', '/admin/modules/{module}', $guard->protect(static fn (Request $req, array $params): mixed => $adminController->module($req, (string) $params['module'])));
+
+$router->add('GET', '/strategie', $guard->protect(static fn (Request $req): mixed => $adminController->moduleAlias($req, 'strategie-prospect')));
+$router->add('GET', '/messages-ia', $guard->protect(static fn (Request $req): mixed => $adminController->moduleAlias($req, 'messages-ia')));
+$router->add('GET', '/parametres', $guard->protect(static fn (Request $req): mixed => $settingsController->index($req)));
 
 // API routes (JSON)
 $router->add('GET', '/api/health', static function (): void {
