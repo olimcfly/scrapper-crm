@@ -24,6 +24,7 @@
     <?php if ($isAuthenticated): ?>
       <a href="/prospects">Prospects</a> · <a href="/prospects/create">Nouveau prospect</a> · <a href="/prospects/import">Import CSV</a>
       <form method="post" action="/logout" style="display:inline;margin-left:10px;">
+        <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars(\App\Services\Csrf::token()) ?>">
         <button type="submit" class="btn secondary" style="padding:4px 8px;">Déconnexion</button>
       </form>
     <?php else: ?>

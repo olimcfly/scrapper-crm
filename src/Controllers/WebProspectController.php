@@ -47,11 +47,16 @@ final class WebProspectController
             return;
         }
 
-        unset($request);
-        View::render('prospects/list', [
-            'title' => 'Prospects',
-            'prospects' => $this->prospects->all(),
-        ]);
+        try {
+            unset($request);
+            View::render('prospects/list', [
+                'title' => 'Prospects',
+                'prospects' => $this->prospects->all(),
+            ]);
+        } catch (\Throwable $e) {
+            Logger::error($e->getMessage());
+            View::render('errors/not-found', ['title' => 'Erreur serveur']);
+        }
     }
 
     public function create(Request $request): void
@@ -174,6 +179,10 @@ final class WebProspectController
         }
 
         $input = $request->input();
+        if (!$this->validateCsrf($input)) {
+            Response::redirect('/prospects/create');
+        }
+
         $errors = $this->validator->validate($input);
 
         if ($errors !== []) {
@@ -188,15 +197,27 @@ final class WebProspectController
             return;
         }
 
-        $payload = $this->validator->normalize($input);
-        $id = $this->prospects->create($payload);
+        try {
+            $payload = $this->validator->normalize($input);
+            $id = $this->prospects->create($payload);
 
-        $tagIds = array_filter(array_map('intval', explode(',', (string) ($input['tag_ids'] ?? ''))));
-        if ($tagIds !== []) {
-            $this->tags->syncProspectTags($id, $tagIds);
+            $tagIds = array_values(array_filter(array_map('intval', explode(',', (string) ($input['tag_ids'] ?? ''))), static fn (int $tagId): bool => $tagId > 0));
+            if ($tagIds !== []) {
+                $this->tags->syncProspectTags($id, $tagIds);
+            }
+
+            Response::redirect('/prospects/' . $id);
+        } catch (\Throwable $e) {
+            Logger::error($e->getMessage());
+            View::render('prospects/form', [
+                'title' => 'Nouveau prospect',
+                'action' => '/prospects/create',
+                'prospect' => $input,
+                'statuses' => $this->statuses->all(),
+                'sources' => $this->sources->all(),
+                'errors' => ['Une erreur serveur est survenue.'],
+            ]);
         }
-
-        Response::redirect('/prospects/' . $id);
     }
 
     public function show(Request $request, int $id): void
@@ -255,6 +276,10 @@ final class WebProspectController
         }
 
         $input = $request->input();
+        if (!$this->validateCsrf($input)) {
+            Response::redirect('/prospects/' . $id . '/edit');
+        }
+
         $errors = $this->validator->validate($input);
         if ($errors !== []) {
             View::render('prospects/form', [
@@ -268,9 +293,21 @@ final class WebProspectController
             return;
         }
 
-        $payload = $this->validator->normalize($input);
-        $this->prospects->update($id, $payload);
-        Response::redirect('/prospects/' . $id);
+        try {
+            $payload = $this->validator->normalize($input);
+            $this->prospects->update($id, $payload);
+            Response::redirect('/prospects/' . $id);
+        } catch (\Throwable $e) {
+            Logger::error($e->getMessage());
+            View::render('prospects/form', [
+                'title' => 'Modifier prospect',
+                'action' => '/prospects/' . $id . '/edit',
+                'prospect' => $input,
+                'statuses' => $this->statuses->all(),
+                'sources' => $this->sources->all(),
+                'errors' => ['Une erreur serveur est survenue.'],
+            ]);
+        }
     }
 
     public function destroy(Request $request, int $id): void
@@ -279,9 +316,14 @@ final class WebProspectController
             return;
         }
 
-        unset($request);
-        $this->prospects->delete($id);
-        Response::redirect('/prospects');
+        try {
+            unset($request);
+            $this->prospects->delete($id);
+            Response::redirect('/prospects');
+        } catch (\Throwable $e) {
+            Logger::error($e->getMessage());
+            View::render('errors/not-found', ['title' => 'Erreur serveur']);
+        }
     }
 
     public function addNote(Request $request, int $id): void
@@ -290,9 +332,17 @@ final class WebProspectController
             return;
         }
 
+        if (!$this->validateCsrf($request->input())) {
+            Response::redirect('/prospects/' . $id);
+        }
+
         $content = trim((string) ($request->input()['content'] ?? ''));
         if ($content !== '') {
-            $this->notes->create($id, $content);
+            try {
+                $this->notes->create($id, $content);
+            } catch (\Throwable $e) {
+                Logger::error($e->getMessage());
+            }
         }
 
         Response::redirect('/prospects/' . $id);
@@ -304,9 +354,17 @@ final class WebProspectController
             return;
         }
 
+        if (!$this->validateCsrf($request->input())) {
+            Response::redirect('/prospects/' . $id);
+        }
+
         $statusId = (int) ($request->input()['status_id'] ?? 0);
         if ($statusId > 0) {
-            $this->prospects->updateStatus($id, $statusId);
+            try {
+                $this->prospects->updateStatus($id, $statusId);
+            } catch (\Throwable $e) {
+                Logger::error($e->getMessage());
+            }
         }
 
         Response::redirect('/prospects/' . $id);
