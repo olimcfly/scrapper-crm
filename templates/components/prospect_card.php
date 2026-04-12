@@ -51,33 +51,6 @@ $zoneScope = (trim((string) ($prospectCard['country'] ?? '')) === '' || mb_strto
     ? 'Locale'
     : 'Multi-zone';
 
-$priorityBoost = match ($priorityRaw) {
-    'eleve' => 12,
-    'faible' => -8,
-    default => 0,
-};
-$opportunityScore = max(0, min(100, $score + $priorityBoost));
-
-$approachAngle = match ($awareness) {
-    'Prêt à décider' => 'Proposer une offre claire avec preuve sociale locale.',
-    'Conscient du besoin' => 'Éduquer sur le ROI avec un cas concret proche de son activité.',
-    default => 'Créer de la confiance via contenu pédagogique et valeur rapide.',
-};
-
-$contentStrategy = match ($category) {
-    'Restaurants' => 'Story courte “avant/après” + post coulisses du service.',
-    'Agents immobiliers' => 'Mini analyse de quartier + preuve terrain en carrousel.',
-    'Thérapeutes' => 'Post éducatif + témoignage anonymisé pour rassurer.',
-    'Commerçants' => 'UGC client + offre locale en série de 3 posts.',
-    default => 'Contenu preuve + pédagogie + appel à action local.',
-};
-
-$firstMessage = match ($awareness) {
-    'Prêt à décider' => 'Bonjour ' . $fullName . ', je vous propose un plan court pour générer plus de demandes qualifiées dès ce mois-ci.',
-    'Conscient du besoin' => 'Bonjour ' . $fullName . ', j’ai identifié 2 leviers simples pour améliorer votre acquisition organique localement.',
-    default => 'Bonjour ' . $fullName . ', je partage une idée de contenu simple pour attirer vos prochains prospects sans pub.',
-};
-
 $cardState = (string) ($cardState ?? 'default');
 ?>
 <article
@@ -99,12 +72,11 @@ $cardState = (string) ($cardState ?? 'default');
       <h3 class="prospect-name"><?= htmlspecialchars($fullName) ?></h3>
       <p class="prospect-meta"><?= htmlspecialchars($activity) ?> · <?= htmlspecialchars($city) ?></p>
     </div>
-    <span class="status-pill crm-status-pill"><?= htmlspecialchars($status) ?></span>
+    <span class="status-pill" style="background:#eef2ff;color:#3730a3;border-color:#c7d2fe;"><?= htmlspecialchars($status) ?></span>
   </div>
 
   <div class="prospect-badges">
     <?php $badgeLabel = 'Score ' . $score; $badgeClass = 'score-pill'; require __DIR__ . '/prospect_badge.php'; ?>
-    <?php $badgeLabel = 'Opportunité ' . $opportunityScore . '/100'; $badgeClass = 'ia-opportunity-pill'; require __DIR__ . '/prospect_badge.php'; ?>
     <?php $badgeLabel = $awareness; $badgeClass = 'awareness-pill ' . $awarenessClass; require __DIR__ . '/prospect_badge.php'; ?>
     <?php $badgeLabel = $priorityLabel; $badgeClass = 'priority-pill ' . $priorityClass; require __DIR__ . '/prospect_badge.php'; ?>
   </div>
@@ -116,18 +88,10 @@ $cardState = (string) ($cardState ?? 'default');
     <?php $indicatorLabel = 'Zone'; $indicatorValue = $zoneScope; $indicatorState = 'neutral'; require __DIR__ . '/prospect_indicator.php'; ?>
   </div>
 
-  <section class="ai-assist-block">
-    <p class="ai-assist-kicker">Assistant IA</p>
-    <p class="ai-assist-line"><strong>Angle d’approche :</strong> <?= htmlspecialchars($approachAngle) ?></p>
-    <p class="ai-assist-line"><strong>Stratégie contenu :</strong> <?= htmlspecialchars($contentStrategy) ?></p>
-    <p class="ai-assist-preview"><?= htmlspecialchars($firstMessage) ?></p>
-  </section>
-
   <div class="quick-actions">
     <a class="quick-action" data-quick-action="view" href="/prospects/<?= (int) $prospectCard['id'] ?>">Voir</a>
-    <a class="quick-action ia" data-quick-action="ai-analysis" href="/prospects/<?= (int) $prospectCard['id'] ?>">Analyser profil</a>
-    <a class="quick-action" data-quick-action="generate-message" href="/prospects/<?= (int) $prospectCard['id'] ?>/generated-contents">Générer message IA</a>
-    <a class="quick-action" data-quick-action="content-strategy" href="/prospects/<?= (int) $prospectCard['id'] ?>/generated-contents?type=post">Stratégie contenu</a>
+    <a class="quick-action ia" data-quick-action="ai-analysis" href="/prospects/<?= (int) $prospectCard['id'] ?>">Analyse IA</a>
+    <a class="quick-action" data-quick-action="generate-message" href="/prospects/<?= (int) $prospectCard['id'] ?>/generated-contents">Générer message</a>
     <a class="quick-action" data-quick-action="add-pipeline" href="/pipeline#prospect-<?= (int) $prospectCard['id'] ?>">Ajouter au pipeline</a>
   </div>
 </article>

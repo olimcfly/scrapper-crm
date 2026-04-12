@@ -74,45 +74,30 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
 
 <style>
   .prospects-finder {
-    --finder-bg: #f4f6fb;
-    --finder-border: #e4e8f2;
-    --finder-border-strong: #cfd7ea;
+    --finder-bg: #f6f8ff;
+    --finder-border: #dbe3f4;
     --finder-text-muted: #667085;
-    --finder-text-strong: #0f172a;
-    --finder-indigo: #3f4bff;
-    --finder-indigo-dark: #2e39d8;
+    --finder-indigo: #4755ff;
+    --finder-indigo-dark: #323fdf;
     --finder-surface: #ffffff;
-    --finder-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
-    --finder-shadow-soft: 0 8px 24px rgba(15, 23, 42, 0.06);
+    --finder-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
     display: grid;
-    gap: 16px;
+    gap: 14px;
   }
 
   .finder-header {
     position: sticky;
     top: 10px;
     z-index: 12;
-    border-radius: 20px;
+    border-radius: 18px;
     border: 1px solid var(--finder-border);
-    background:
-      radial-gradient(140% 120% at 10% -20%, rgba(63, 75, 255, 0.12) 0%, rgba(63, 75, 255, 0) 45%),
-      rgba(255, 255, 255, 0.94);
+    background: rgba(255, 255, 255, 0.94);
     box-shadow: var(--finder-shadow);
     backdrop-filter: blur(10px);
     padding: 14px;
     display: grid;
-    gap: 12px;
-    grid-template-areas:
-      "title"
-      "search"
-      "category"
-      "actions";
+    gap: 10px;
   }
-
-  .finder-title-row { grid-area: title; }
-  .finder-search { grid-area: search; }
-  .category-scroll { grid-area: category; }
-  .finder-toolbar { grid-area: actions; }
 
   .finder-title-row {
     display: flex;
@@ -123,9 +108,7 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
 
   .finder-title-row h2 {
     margin: 0;
-    font-size: 21px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-size: 20px;
   }
 
   .finder-kpi {
@@ -142,16 +125,9 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
     width: 100%;
     border-radius: 14px;
     border: 1px solid var(--finder-border);
-    background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
+    background: var(--finder-bg);
     padding: 12px 14px 12px 38px;
     font-size: 15px;
-    transition: border-color .2s ease, box-shadow .2s ease;
-  }
-
-  .finder-search input:focus-visible {
-    outline: none;
-    border-color: #98a6ff;
-    box-shadow: 0 0 0 4px rgba(63, 75, 255, 0.14);
   }
 
   .finder-search svg {
@@ -168,15 +144,14 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
     overflow-x: auto;
     padding-bottom: 4px;
     scrollbar-width: thin;
-    scrollbar-color: #cfd8ec transparent;
   }
 
   .category-chip {
     border: 1px solid var(--finder-border);
-    background: linear-gradient(180deg, #fff 0%, #f8faff 100%);
+    background: #fff;
     color: #0f172a;
     border-radius: 999px;
-    padding: 8px 13px;
+    padding: 8px 12px;
     font-size: 13px;
     font-weight: 600;
     white-space: nowrap;
@@ -186,7 +161,7 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
 
   .category-chip:hover,
   .category-chip:focus-visible {
-    border-color: #aab8ff;
+    border-color: #b3c5ff;
     outline: none;
     transform: translateY(-1px);
   }
@@ -195,7 +170,7 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
     background: var(--finder-indigo);
     color: #fff;
     border-color: transparent;
-    box-shadow: 0 8px 22px rgba(71, 85, 255, 0.32);
+    box-shadow: 0 8px 18px rgba(71, 85, 255, 0.28);
   }
 
   .finder-toolbar {
@@ -208,7 +183,7 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
   .finder-btn {
     border: none;
     border-radius: 12px;
-    background: #111827;
+    background: #0f172a;
     color: #fff;
     padding: 11px 14px;
     font-weight: 600;
@@ -219,7 +194,7 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
 
   .finder-btn:hover,
   .finder-btn:focus-visible {
-    background: #1f2937;
+    background: #1e293b;
     outline: none;
   }
 
@@ -245,11 +220,11 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
 
   .active-filter-pill {
     border-radius: 999px;
-    border: 1px solid #d8def7;
-    padding: 7px 11px;
+    border: 1px solid #cad5ff;
+    padding: 6px 10px;
     font-size: 12px;
-    color: #334155;
-    background: #f8faff;
+    color: #1e3a8a;
+    background: #eff3ff;
   }
 
   .active-filter-clear {
@@ -268,20 +243,19 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
   }
 
   .prospect-card {
-    background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%);
+    background: var(--finder-surface);
     border: 1px solid var(--finder-border);
-    border-radius: 18px;
-    padding: 15px;
-    box-shadow: var(--finder-shadow-soft);
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
     display: grid;
     gap: 12px;
-    transition: transform .18s ease, box-shadow .22s ease, border-color .2s ease;
+    transition: transform .15s ease, box-shadow .2s ease;
   }
 
   .prospect-card:hover {
     transform: translateY(-2px);
-    border-color: var(--finder-border-strong);
-    box-shadow: 0 16px 30px rgba(15, 23, 42, 0.12);
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.1);
   }
 
   .prospect-card:focus-within {
@@ -305,11 +279,10 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
     margin: 0;
     font-size: 16px;
     line-height: 1.2;
-    letter-spacing: -0.01em;
   }
 
   .prospect-meta {
-    margin: 5px 0 0;
+    margin: 4px 0 0;
     color: var(--finder-text-muted);
     font-size: 13px;
   }
@@ -329,20 +302,13 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
     white-space: nowrap;
   }
 
-  .crm-status-pill {
-    background: #eef2ff;
-    color: #3730a3;
-    border-color: #c7d2fe;
-  }
-
-  .score-pill { background: #eef3ff; color: #1e40af; border-color: #c8d6ff; }
-  .ia-opportunity-pill { background: #ecfeff; color: #0f766e; border-color: #99f6e4; }
-  .awareness-hot { background: #edfdf4; color: #047857; border-color: #a7f3d0; }
-  .awareness-warm { background: #fff7ed; color: #b45309; border-color: #fdba74; }
-  .awareness-cold { background: #f4f6fa; color: #475569; border-color: #d8dee8; }
-  .priority-high { background: #fef2f2; color: #b91c1c; border-color: #fca5a5; }
-  .priority-medium { background: #eef4ff; color: #1d4ed8; border-color: #bfdbfe; }
-  .priority-low { background: #f6f3ff; color: #6d28d9; border-color: #ddd6fe; }
+  .score-pill { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+  .awareness-hot { background: #ecfdf3; color: #047857; border-color: #86efac; }
+  .awareness-warm { background: #fff7ed; color: #b45309; border-color: #fed7aa; }
+  .awareness-cold { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+  .priority-high { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+  .priority-medium { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+  .priority-low { background: #f5f3ff; color: #6d28d9; border-color: #ddd6fe; }
 
   .prospect-badges {
     display: flex;
@@ -360,7 +326,7 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
 
   .presence-item {
     background: #f8fafc;
-    border-radius: 11px;
+    border-radius: 10px;
     padding: 7px 9px;
     border: 1px solid #e2e8f0;
     display: flex;
@@ -372,38 +338,6 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
   .presence-off { color: #94a3b8; font-weight: 700; }
   .presence-neutral { color: #334155; font-weight: 700; }
 
-  .ai-assist-block {
-    border: 1px solid #dbe5ff;
-    background: linear-gradient(180deg, #f8faff 0%, #f2f6ff 100%);
-    border-radius: 12px;
-    padding: 10px;
-    display: grid;
-    gap: 6px;
-  }
-
-  .ai-assist-kicker {
-    margin: 0;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #334155;
-  }
-
-  .ai-assist-line {
-    margin: 0;
-    font-size: 12px;
-    color: #1e293b;
-  }
-
-  .ai-assist-preview {
-    margin: 2px 0 0;
-    font-size: 12px;
-    color: #475569;
-    border-top: 1px dashed #cbd5e1;
-    padding-top: 6px;
-  }
-
   .quick-actions {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -411,9 +345,9 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
   }
 
   .quick-action {
-    border-radius: 11px;
+    border-radius: 10px;
     border: 1px solid #d7def0;
-    background: linear-gradient(180deg, #fff 0%, #fafbff 100%);
+    background: #fff;
     color: #0f172a;
     min-height: 40px;
     display: inline-flex;
@@ -433,11 +367,11 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
   }
 
   .quick-action:active { transform: scale(0.98); }
-  .quick-action.ia { background: #101828; color: #fff; border-color: #101828; box-shadow: 0 8px 18px rgba(16, 24, 40, 0.18); }
+  .quick-action.ia { background: #101828; color: #fff; border-color: #101828; }
 
   .finder-empty,
   .finder-loading {
-    border-radius: 18px;
+    border-radius: 16px;
     border: 1px solid var(--finder-border);
     background: #fff;
     padding: 18px;
@@ -484,14 +418,14 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
     right: 0;
     bottom: 0;
     z-index: 55;
-    border-radius: 22px 22px 0 0;
+    border-radius: 18px 18px 0 0;
     background: #fff;
-    padding: 18px 16px 16px;
+    padding: 16px;
     max-height: 84vh;
     overflow-y: auto;
     transform: translateY(104%);
     transition: transform .25s ease;
-    box-shadow: 0 -18px 46px rgba(15, 23, 42, 0.26);
+    box-shadow: 0 -16px 40px rgba(15, 23, 42, 0.25);
   }
 
   .bottom-sheet-open .bottom-sheet-backdrop {
@@ -521,7 +455,7 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
 
   .sheet-close-btn {
     border: 1px solid #d8e0f4;
-    background: linear-gradient(180deg, #fff 0%, #f8faff 100%);
+    background: #fff;
     color: #334155;
     width: 36px;
     height: 36px;
@@ -558,7 +492,6 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
     padding: 12px 16px;
     display: flex;
     gap: 8px;
-    box-shadow: 0 -8px 22px rgba(15, 23, 42, 0.06);
   }
 
   @keyframes finder-shimmer {
@@ -567,63 +500,17 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
   }
 
   @media (min-width: 700px) {
-    .prospects-finder { gap: 18px; }
-    .finder-header {
-      padding: 18px;
-      grid-template-columns: minmax(0, 1fr) auto;
-      grid-template-areas:
-        "title actions"
-        "search search"
-        "category category";
-      align-items: center;
-    }
-    .finder-title-row h2 { font-size: 22px; }
-    .finder-search input { font-size: 15px; padding-top: 13px; padding-bottom: 13px; }
-    .finder-toolbar { justify-content: flex-end; gap: 10px; }
-    .active-filters { gap: 10px; }
-    .prospect-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-    .prospect-card { padding: 16px; }
-    .quick-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .bottom-sheet { left: 50%; right: auto; width: min(740px, calc(100vw - 32px)); transform: translate(-50%, 104%); }
+    .finder-header { padding: 16px; }
+    .prospect-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .quick-actions { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .bottom-sheet { left: 50%; right: auto; width: 680px; transform: translate(-50%, 104%); }
     .bottom-sheet-open .bottom-sheet { transform: translate(-50%, 0); }
   }
 
   @media (min-width: 1060px) {
-    .prospects-finder { gap: 20px; }
-    .finder-header {
-      grid-template-columns: minmax(220px, 0.9fr) minmax(280px, 1.1fr) auto;
-      grid-template-areas:
-        "title search actions"
-        "category category category";
-      gap: 14px;
-    }
-    .finder-title-row { align-items: baseline; }
-    .finder-title-row h2 { font-size: 24px; }
-    .finder-kpi { font-size: 12px; }
-    .category-scroll { padding-bottom: 2px; }
-    .prospect-list { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-    .prospect-card { gap: 13px; }
-    .presence-grid { gap: 10px; }
-    .quick-actions { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-  }
-
-  @media (min-width: 1280px) {
-    .finder-header {
-      grid-template-columns: minmax(240px, 0.9fr) minmax(380px, 1.2fr) auto;
-    }
     .prospect-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .bottom-sheet {
-      left: auto;
-      right: 24px;
-      width: 430px;
-      border-radius: 18px;
-      bottom: 24px;
-      max-height: calc(100vh - 48px);
-      transform: translateY(120%);
-    }
-    .bottom-sheet-open .bottom-sheet { transform: translateY(0); }
-    .sheet-grid { grid-template-columns: 1fr; }
-    .sheet-grid label.full { grid-column: auto; }
+    .finder-header { gap: 12px; }
+    .finder-title-row h2 { font-size: 24px; }
   }
 </style>
 
