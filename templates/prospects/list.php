@@ -99,6 +99,11 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
     gap: 10px;
   }
 
+  .finder-toolbar-head {
+    display: grid;
+    gap: 10px;
+  }
+
   .finder-title-row {
     display: flex;
     justify-content: space-between;
@@ -119,6 +124,7 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
 
   .finder-search {
     position: relative;
+    width: 100%;
   }
 
   .finder-search input {
@@ -178,6 +184,14 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
     justify-content: space-between;
     align-items: center;
     gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .finder-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
   }
 
   .finder-btn {
@@ -508,30 +522,129 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
   }
 
   @media (min-width: 1060px) {
-    .prospect-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .finder-header { gap: 12px; }
-    .finder-title-row h2 { font-size: 24px; }
+    .prospects-finder {
+      gap: 18px;
+    }
+
+    .finder-header {
+      top: 16px;
+      border-radius: 20px;
+      padding: 18px 20px;
+      gap: 14px;
+    }
+
+    .finder-toolbar-head {
+      grid-template-columns: minmax(240px, 1fr) minmax(360px, 520px);
+      align-items: center;
+      gap: 16px;
+    }
+
+    .finder-title-row h2 { font-size: 28px; }
+    .finder-kpi { font-size: 14px; }
+
+    .finder-search input {
+      border-radius: 12px;
+      padding: 12px 14px 12px 40px;
+      font-size: 15px;
+      background: #fff;
+    }
+
+    .finder-toolbar {
+      border-top: 1px solid #e7ebf4;
+      padding-top: 14px;
+    }
+
+    .category-scroll {
+      overflow: visible;
+      flex-wrap: wrap;
+      row-gap: 10px;
+    }
+
+    .category-chip {
+      padding: 8px 14px;
+      font-size: 12px;
+    }
+
+    .active-filters {
+      background: #fff;
+      border: 1px solid var(--finder-border);
+      border-radius: 14px;
+      padding: 10px 12px;
+      min-height: 52px;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
+    }
+
+    .prospect-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .prospect-card {
+      border-radius: 18px;
+      padding: 18px;
+      min-height: 266px;
+      gap: 14px;
+    }
+
+    .prospect-name {
+      font-size: 18px;
+    }
+
+    .prospect-meta {
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    .presence-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .presence-item {
+      min-height: 52px;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .quick-actions {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .quick-actions .quick-action:nth-child(n+3) {
+      display: none;
+    }
+  }
+
+  @media (min-width: 1380px) {
+    .prospect-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
   }
 </style>
 
 <section class="prospects-finder" data-finder-root>
   <form method="get" action="/prospects" class="finder-header">
     <input type="hidden" name="category" value="<?= htmlspecialchars($activeCategory) ?>" data-category-input>
-    <div class="finder-title-row">
-      <h2>Trouver des prospects</h2>
-      <p class="finder-kpi"><?= $totalProspects ?> résultat(s)</p>
-    </div>
+    <div class="finder-toolbar-head">
+      <div class="finder-title-row">
+        <h2>Trouver des prospects</h2>
+        <p class="finder-kpi"><?= $totalProspects ?> résultat(s)</p>
+      </div>
 
-    <div class="finder-search">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-4.3-4.3m1.3-5.2a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-      <input
-        type="search"
-        name="q"
-        placeholder="Nom, activité, ville, email..."
-        value="<?= htmlspecialchars((string) ($filters['q'] ?? '')) ?>"
-        autocomplete="off"
-        data-search-input
-      >
+      <div class="finder-search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-4.3-4.3m1.3-5.2a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <input
+          type="search"
+          name="q"
+          placeholder="Nom, activité, ville, email..."
+          value="<?= htmlspecialchars((string) ($filters['q'] ?? '')) ?>"
+          autocomplete="off"
+          data-search-input
+        >
+      </div>
     </div>
 
     <div class="category-scroll" role="tablist" aria-label="Catégories de prospects">
@@ -549,10 +662,13 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
     </div>
 
     <div class="finder-toolbar">
-      <a class="btn secondary compact" href="/prospects/create">+ Nouveau prospect</a>
-      <button type="button" class="finder-btn" data-open-sheet>
-        Filtres avancés<?= count($cleanFilters) > 0 ? ' • ' . count($cleanFilters) : '' ?>
-      </button>
+      <div class="finder-kpi">Pipeline de recherche et priorisation CRM</div>
+      <div class="finder-actions">
+        <button type="button" class="finder-btn" data-open-sheet>
+          Filtres avancés<?= count($cleanFilters) > 0 ? ' • ' . count($cleanFilters) : '' ?>
+        </button>
+        <a class="btn secondary compact" href="/prospects/create">+ Nouveau prospect</a>
+      </div>
     </div>
   </form>
 
