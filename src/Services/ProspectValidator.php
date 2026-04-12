@@ -6,6 +6,9 @@ namespace App\Services;
 
 final class ProspectValidator
 {
+    private const CANAUX_PRIORITAIRES = ['appel', 'email', 'sms', 'whatsapp'];
+    private const NIVEAUX_PRIORITE = ['faible', 'moyen', 'eleve'];
+
     /** @return array<int, string> */
     public function validate(array $data): array
     {
@@ -29,6 +32,26 @@ final class ProspectValidator
             $errors[] = 'Le score doit être compris entre 0 et 100.';
         }
 
+        $canalPrioritaire = trim((string) ($data['canal_prioritaire'] ?? ''));
+        if ($canalPrioritaire !== '' && !in_array($canalPrioritaire, self::CANAUX_PRIORITAIRES, true)) {
+            $errors[] = 'Le canal prioritaire est invalide.';
+        }
+
+        $niveauPriorite = trim((string) ($data['niveau_priorite'] ?? 'moyen'));
+        if (!in_array($niveauPriorite, self::NIVEAUX_PRIORITE, true)) {
+            $errors[] = 'Le niveau de priorité est invalide.';
+        }
+
+        $dateProchaineAction = trim((string) ($data['date_prochaine_action'] ?? ''));
+        if ($dateProchaineAction !== '') {
+            $parsedDate = \DateTimeImmutable::createFromFormat('Y-m-d', $dateProchaineAction);
+            $dateErrors = \DateTimeImmutable::getLastErrors();
+            $hasDateErrors = $dateErrors !== false && ($dateErrors['warning_count'] > 0 || $dateErrors['error_count'] > 0);
+            if ($parsedDate === false || $hasDateErrors) {
+                $errors[] = 'La date de prochaine action doit être au format AAAA-MM-JJ.';
+            }
+        }
+
         return $errors;
     }
 
@@ -36,6 +59,11 @@ final class ProspectValidator
     {
         $firstName = trim((string) ($data['first_name'] ?? ''));
         $lastName = trim((string) ($data['last_name'] ?? ''));
+
+        $niveauPriorite = trim((string) ($data['niveau_priorite'] ?? 'moyen'));
+        if (!in_array($niveauPriorite, self::NIVEAUX_PRIORITE, true)) {
+            $niveauPriorite = 'moyen';
+        }
 
         return [
             'first_name' => $firstName,
@@ -56,6 +84,12 @@ final class ProspectValidator
             'status_id' => (int) ($data['status_id'] ?? 1),
             'score' => (int) ($data['score'] ?? 0),
             'notes_summary' => trim((string) ($data['notes_summary'] ?? '')),
+            'objectif_contact' => trim((string) ($data['objectif_contact'] ?? '')),
+            'prochaine_action' => trim((string) ($data['prochaine_action'] ?? '')),
+            'date_prochaine_action' => trim((string) ($data['date_prochaine_action'] ?? '')) ?: null,
+            'canal_prioritaire' => trim((string) ($data['canal_prioritaire'] ?? '')) ?: null,
+            'niveau_priorite' => $niveauPriorite,
+            'blocages' => trim((string) ($data['blocages'] ?? '')),
         ];
     }
 }

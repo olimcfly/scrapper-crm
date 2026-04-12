@@ -41,11 +41,13 @@ final class ProspectModel
         $sql = 'INSERT INTO prospects (
                     first_name, last_name, full_name, business_name, activity, city, country, website,
                     professional_email, professional_phone, instagram_url, facebook_url, linkedin_url, tiktok_url,
-                    source_id, status_id, score, notes_summary, created_at, updated_at
+                    source_id, status_id, score, notes_summary, objectif_contact, prochaine_action,
+                    date_prochaine_action, canal_prioritaire, niveau_priorite, blocages, created_at, updated_at
                 ) VALUES (
                     :first_name, :last_name, :full_name, :business_name, :activity, :city, :country, :website,
                     :professional_email, :professional_phone, :instagram_url, :facebook_url, :linkedin_url, :tiktok_url,
-                    :source_id, :status_id, :score, :notes_summary, NOW(), NOW()
+                    :source_id, :status_id, :score, :notes_summary, :objectif_contact, :prochaine_action,
+                    :date_prochaine_action, :canal_prioritaire, :niveau_priorite, :blocages, NOW(), NOW()
                 )';
 
         $stmt = $this->db->prepare($sql);
@@ -75,6 +77,12 @@ final class ProspectModel
                     status_id = :status_id,
                     score = :score,
                     notes_summary = :notes_summary,
+                    objectif_contact = :objectif_contact,
+                    prochaine_action = :prochaine_action,
+                    date_prochaine_action = :date_prochaine_action,
+                    canal_prioritaire = :canal_prioritaire,
+                    niveau_priorite = :niveau_priorite,
+                    blocages = :blocages,
                     updated_at = NOW()
                 WHERE id = :id';
 
