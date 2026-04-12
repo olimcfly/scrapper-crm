@@ -27,9 +27,70 @@ final class ProspectModel
         return $this->db->query($sql)->fetchAll();
     }
 
+    public function search(array $filters, int $page = 1, int $perPage = 15): array
+    {
+        $page = max(1, $page);
+        $perPage = max(1, min(100, $perPage));
+        $offset = ($page - 1) * $perPage;
+
+        $where = [];
+        $params = [];
+
+        $query = trim((string) ($filters['q'] ?? ''));
+        if ($query !== '') {
+            $where[] = '(p.full_name LIKE :q OR p.business_name LIKE :q OR p.activity LIKE :q OR p.city LIKE :q OR p.professional_email LIKE :q)';
+            $params['q'] = '%' . $query . '%';
+        }
+
+        $statusId = (int) ($filters['status_id'] ?? 0);
+        if ($statusId > 0) {
+            $where[] = 'p.status_id = :status_id';
+            $params['status_id'] = $statusId;
+        }
+
+        $sourceId = (int) ($filters['source_id'] ?? 0);
+        if ($sourceId > 0) {
+            $where[] = 'p.source_id = :source_id';
+            $params['source_id'] = $sourceId;
+        }
+
+        $whereClause = $where === [] ? '' : ' WHERE ' . implode(' AND ', $where);
+
+        $countStmt = $this->db->prepare('SELECT COUNT(*) FROM prospects p' . $whereClause);
+        $countStmt->execute($params);
+        $total = (int) $countStmt->fetchColumn();
+
+        $sql = 'SELECT p.*, s.name AS status_name, so.name AS source_name
+                FROM prospects p
+                LEFT JOIN prospect_statuses s ON s.id = p.status_id
+                LEFT JOIN sources so ON so.id = p.source_id' . $whereClause . '
+                ORDER BY p.updated_at DESC
+                LIMIT :limit OFFSET :offset';
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(':' . $key, $value);
+        }
+        $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return [
+            'items' => $stmt->fetchAll(),
+            'total' => $total,
+            'page' => $page,
+            'per_page' => $perPage,
+            'total_pages' => max(1, (int) ceil($total / $perPage)),
+        ];
+    }
+
     public function find(int $id): ?array
     {
-        $stmt = $this->db->prepare('SELECT * FROM prospects WHERE id = :id LIMIT 1');
+        $stmt = $this->db->prepare('SELECT p.*, s.name AS status_name, so.name AS source_name
+                                    FROM prospects p
+                                    LEFT JOIN prospect_statuses s ON s.id = p.status_id
+                                    LEFT JOIN sources so ON so.id = p.source_id
+                                    WHERE p.id = :id
+                                    LIMIT 1');
         $stmt->execute(['id' => $id]);
         $prospect = $stmt->fetch();
 
