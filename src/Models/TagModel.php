@@ -18,7 +18,10 @@ final class TagModel
 
     public function all(): array
     {
-        return $this->db->query('SELECT * FROM tags ORDER BY name ASC')->fetchAll();
+        $stmt = $this->db->prepare('SELECT * FROM tags ORDER BY name ASC');
+        $stmt->execute();
+
+        return $stmt->fetchAll();
     }
 
     public function syncProspectTags(int $prospectId, array $tagIds): void

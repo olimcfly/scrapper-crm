@@ -52,10 +52,20 @@ CREATE TABLE IF NOT EXISTS prospects (
   status_id INT NULL,
   score INT NOT NULL DEFAULT 0,
   notes_summary TEXT,
+  objectif_contact VARCHAR(255) DEFAULT '',
+  prochaine_action VARCHAR(255) DEFAULT '',
+  date_prochaine_action DATE NULL,
+  canal_prioritaire ENUM('appel', 'email', 'sms', 'whatsapp') DEFAULT NULL,
+  niveau_priorite ENUM('faible', 'moyen', 'eleve') NOT NULL DEFAULT 'moyen',
+  blocages TEXT,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_prospects_status_id (status_id),
   INDEX idx_prospects_source_id (source_id),
+  INDEX idx_prospects_full_name (full_name),
+  INDEX idx_prospects_city (city),
+  INDEX idx_prospects_professional_email (professional_email),
+  INDEX idx_prospects_updated_at (updated_at),
   CONSTRAINT fk_prospects_source FOREIGN KEY (source_id) REFERENCES sources(id) ON DELETE SET NULL,
   CONSTRAINT fk_prospects_status FOREIGN KEY (status_id) REFERENCES prospect_statuses(id) ON DELETE SET NULL
 );
@@ -69,12 +79,37 @@ CREATE TABLE IF NOT EXISTS prospect_notes (
   CONSTRAINT fk_notes_prospect FOREIGN KEY (prospect_id) REFERENCES prospects(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS prospect_events (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  prospect_id INT NOT NULL,
+  event_type VARCHAR(50) NOT NULL,
+  details TEXT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_events_prospect_id (prospect_id),
+  INDEX idx_events_created_at (created_at),
+  CONSTRAINT fk_events_prospect FOREIGN KEY (prospect_id) REFERENCES prospects(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS prospect_tag (
   prospect_id INT NOT NULL,
   tag_id INT NOT NULL,
   PRIMARY KEY (prospect_id, tag_id),
   CONSTRAINT fk_prospect_tag_prospect FOREIGN KEY (prospect_id) REFERENCES prospects(id) ON DELETE CASCADE,
   CONSTRAINT fk_prospect_tag_tag FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(190) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  role VARCHAR(50) NOT NULL DEFAULT 'user',
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_users_email (email),
+  INDEX idx_users_role (role),
+  INDEX idx_users_is_active (is_active)
 );
 
 INSERT INTO prospect_statuses (name, sort_order)
@@ -97,3 +132,11 @@ SELECT * FROM (
   SELECT 'Referral'
 ) AS defaults
 WHERE NOT EXISTS (SELECT 1 FROM sources LIMIT 1);
+
+-- Sprint 2 (Stratégie par prospect) - migration incrémentale pour base existante
+ALTER TABLE prospects ADD COLUMN IF NOT EXISTS objectif_contact VARCHAR(255) DEFAULT '' AFTER notes_summary;
+ALTER TABLE prospects ADD COLUMN IF NOT EXISTS prochaine_action VARCHAR(255) DEFAULT '' AFTER objectif_contact;
+ALTER TABLE prospects ADD COLUMN IF NOT EXISTS date_prochaine_action DATE NULL AFTER prochaine_action;
+ALTER TABLE prospects ADD COLUMN IF NOT EXISTS canal_prioritaire ENUM('appel', 'email', 'sms', 'whatsapp') DEFAULT NULL AFTER date_prochaine_action;
+ALTER TABLE prospects ADD COLUMN IF NOT EXISTS niveau_priorite ENUM('faible', 'moyen', 'eleve') NOT NULL DEFAULT 'moyen' AFTER canal_prioritaire;
+ALTER TABLE prospects ADD COLUMN IF NOT EXISTS blocages TEXT AFTER niveau_priorite;
