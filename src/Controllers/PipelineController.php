@@ -46,8 +46,9 @@ final class PipelineController
             return;
         }
 
-        $stages = $this->stages->all();
-        $rows = $this->pipeline->board();
+        $stagesAvailable = $this->stages->isTableAvailable();
+        $stages = $stagesAvailable ? $this->stages->all() : [];
+        $rows = $stagesAvailable ? $this->pipeline->board() : [];
         $grouped = [];
 
         foreach ($stages as $stage) {
@@ -62,6 +63,7 @@ final class PipelineController
             'title' => 'Pipeline',
             'stages' => $stages,
             'grouped' => $grouped,
+            'pipelineStagesAvailable' => $stagesAvailable,
             'successMessage' => Session::consumeFlash('success'),
             'warningMessage' => Session::consumeFlash('warning'),
         ]);
@@ -76,6 +78,12 @@ final class PipelineController
         $stageId = (int) ($request->input()['stage_id'] ?? 0);
         if ($stageId <= 0) {
             Session::flash('warning', 'Étape invalide.');
+            Response::redirect('/pipeline');
+            return;
+        }
+
+        if (!$this->stages->isTableAvailable()) {
+            Session::flash('warning', 'Pipeline indisponible : table des étapes manquante.');
             Response::redirect('/pipeline');
             return;
         }
@@ -128,6 +136,12 @@ final class PipelineController
 
         if ($content === '') {
             Session::flash('warning', 'Le message est vide.');
+            Response::redirect('/prospects/' . $prospectId);
+            return;
+        }
+
+        if (!$this->messages->isTableAvailable()) {
+            Session::flash('warning', 'Messagerie indisponible : table messages manquante.');
             Response::redirect('/prospects/' . $prospectId);
             return;
         }

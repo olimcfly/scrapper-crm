@@ -54,36 +54,40 @@ $pipelineHeat = (string) ($iaSuggestion['heat'] ?? '❄️ froid');
 
 <div class="card">
   <h3 style="margin-top:0;">Historique messages</h3>
-  <form method="post" action="/prospects/<?= (int) $prospect['id'] ?>/messages">
-    <input type="hidden" name="_csrf" value="<?= htmlspecialchars((string) ($csrfToken ?? '')) ?>">
-    <div class="row">
-      <div>
-        <select name="type">
-          <option value="dm">DM</option>
-          <option value="reply">Reply</option>
-          <option value="note">Note</option>
-        </select>
+  <?php if (($messagesTableAvailable ?? true) === false): ?>
+    <p class="muted">Messagerie non initialisée pour cet environnement. Exécutez la migration pour activer l’historique.</p>
+  <?php else: ?>
+    <form method="post" action="/prospects/<?= (int) $prospect['id'] ?>/messages">
+      <input type="hidden" name="_csrf" value="<?= htmlspecialchars((string) ($csrfToken ?? '')) ?>">
+      <div class="row">
+        <div>
+          <select name="type">
+            <option value="dm">DM</option>
+            <option value="reply">Reply</option>
+            <option value="note">Note</option>
+          </select>
+        </div>
+        <div>
+          <select name="direction">
+            <option value="sent">Envoyé</option>
+            <option value="received">Reçu</option>
+          </select>
+        </div>
       </div>
-      <div>
-        <select name="direction">
-          <option value="sent">Envoyé</option>
-          <option value="received">Reçu</option>
-        </select>
-      </div>
-    </div>
-    <textarea name="content" placeholder="Ajouter un message ou une note" required></textarea>
-    <p><button class="btn" type="submit">Enregistrer message</button></p>
-  </form>
+      <textarea name="content" placeholder="Ajouter un message ou une note" required></textarea>
+      <p><button class="btn" type="submit">Enregistrer message</button></p>
+    </form>
 
-  <?php if (($messages ?? []) === []): ?>
-    <p class="muted">Aucun message enregistré pour ce prospect.</p>
+    <?php if (($messages ?? []) === []): ?>
+      <p class="muted">Aucun message enregistré pour ce prospect.</p>
+    <?php endif; ?>
+    <?php foreach (($messages ?? []) as $message): ?>
+      <article style="border-top:1px solid #e2e8f0;padding-top:8px;margin-top:8px;">
+        <p class="muted" style="margin:0;"><?= htmlspecialchars((string) ($message['created_at'] ?? '')) ?> · <?= htmlspecialchars((string) ($message['type'] ?? 'note')) ?> · <?= htmlspecialchars((string) ($message['direction'] ?? 'sent')) ?></p>
+        <p style="margin:4px 0 0;"><?= nl2br(htmlspecialchars((string) ($message['content'] ?? ''))) ?></p>
+      </article>
+    <?php endforeach; ?>
   <?php endif; ?>
-  <?php foreach (($messages ?? []) as $message): ?>
-    <article style="border-top:1px solid #e2e8f0;padding-top:8px;margin-top:8px;">
-      <p class="muted" style="margin:0;"><?= htmlspecialchars((string) ($message['created_at'] ?? '')) ?> · <?= htmlspecialchars((string) ($message['type'] ?? 'note')) ?> · <?= htmlspecialchars((string) ($message['direction'] ?? 'sent')) ?></p>
-      <p style="margin:4px 0 0;"><?= nl2br(htmlspecialchars((string) ($message['content'] ?? ''))) ?></p>
-    </article>
-  <?php endforeach; ?>
 </div>
 
 <div class="card" id="add-note">
