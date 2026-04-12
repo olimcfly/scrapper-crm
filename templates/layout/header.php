@@ -15,7 +15,7 @@
       --ds-color-primary: #2563eb;
       --ds-color-primary-strong: #1d4ed8;
       --ds-color-success: #16a34a;
-      --ds-color-warning: #ca8a04;
+      --ds-color-warning: #d97706;
       --ds-color-danger: #dc2626;
       --ds-color-sidebar: #0b1220;
       --ds-space-1: 4px;
@@ -30,7 +30,7 @@
       --ds-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
       --ds-shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
       --ds-font-sans: "Inter", "Segoe UI", Arial, sans-serif;
-      --bottom-nav-height: 72px;
+      --bottom-nav-height: 74px;
     }
     * { box-sizing: border-box; }
     body {
@@ -68,7 +68,6 @@
       z-index: 30;
       margin-bottom: var(--ds-space-4);
       background: rgba(248, 250, 252, 0.96);
-      backdrop-filter: blur(8px);
       border: 1px solid var(--ds-color-border);
       border-radius: var(--ds-radius-md);
       padding: var(--ds-space-3) var(--ds-space-4);
@@ -77,6 +76,7 @@
       justify-content: space-between;
       gap: var(--ds-space-3);
       box-shadow: var(--ds-shadow-sm);
+      backdrop-filter: blur(8px);
     }
     .topbar-main h1 { margin: 0; font-size: 18px; }
     .topbar-main .muted { margin-top: 2px; }
@@ -160,6 +160,7 @@ $bottomNav = [
     <?php if ($isAuthenticated): ?>
       <?php require __DIR__ . '/../components/desktop_sidebar.php'; ?>
     <?php endif; ?>
+
     <main class="workspace">
       <div class="container">
         <?php require __DIR__ . '/../components/topbar_compact.php'; ?>

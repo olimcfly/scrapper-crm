@@ -4,12 +4,7 @@
   <p style="margin:0;max-width:780px;">Structure lisible et navigable : priorités du jour, KPI courts, quick actions et accès direct aux pages clés.</p>
 </div>
 
-<?php
-  $showLoading = false;
-  $showEmpty = false;
-  $showError = false;
-  require __DIR__ . '/../components/global_states.php';
-?>
+<?php require __DIR__ . '/../components/global_states.php'; ?>
 
 <section class="card">
   <p class="muted" style="margin-top:0;">Aujourd’hui</p>

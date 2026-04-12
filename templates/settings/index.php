@@ -12,3 +12,9 @@
     <li>Configuration modules secondaires.</li>
   </ul>
 </div>
+
+<section class="card empty-guided" style="max-width:760px;">
+  <h3 style="margin-top:0;">Espace bientôt enrichi</h3>
+  <p class="muted">Aucune erreur ni écran vide : vous pouvez revenir au Dashboard et continuer le flux prospect-first.</p>
+  <?php $label = 'Retour Dashboard'; $href = '/admin/dashboard'; $icon = '🏠'; include __DIR__ . '/../components/PrimaryCTAButton.php'; ?>
+</section>
