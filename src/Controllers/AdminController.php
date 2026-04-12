@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Config\AdminModules;
 use App\Core\Request;
+use App\Core\Response;
 use App\Core\View;
-use App\Support\AdminModules;
 
 final class AdminController
 {
@@ -15,30 +16,30 @@ final class AdminController
         unset($request);
 
         View::render('admin/dashboard', [
-            'title' => 'Admin premium',
+            'title' => 'Dashboard admin',
             'modules' => AdminModules::all(),
             'coreModules' => AdminModules::coreModules(),
-            'statusCounts' => AdminModules::statusCounts(),
+            'statusCounters' => AdminModules::statusCounters(),
+            'statusLabels' => AdminModules::statusLabels(),
+            'statusClassMap' => AdminModules::statusClassMap(),
         ]);
     }
 
-    public function module(Request $request, string $slug): void
+    public function module(Request $request, string $moduleKey): void
     {
         unset($request);
 
-        $module = AdminModules::findBySlug($slug);
+        $module = AdminModules::findByKey($moduleKey);
         if ($module === null) {
-            View::render('errors/not-found', ['title' => 'Module introuvable']);
+            Response::json(['error' => 'Module introuvable'], 404);
             return;
         }
 
-        $isPlaceholderRoute = str_starts_with($module['route'], '/admin/modules/');
-
-        View::render('admin/module_placeholder', [
+        View::render('admin/module', [
             'title' => $module['label'],
             'module' => $module,
-            'isPlaceholderRoute' => $isPlaceholderRoute,
-            'coreModules' => AdminModules::coreModules(),
+            'statusLabels' => AdminModules::statusLabels(),
+            'statusClassMap' => AdminModules::statusClassMap(),
         ]);
     }
 }
