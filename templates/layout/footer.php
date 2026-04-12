@@ -7,17 +7,7 @@
   </div>
 
   <?php if (is_array($authUser ?? null) && isset($authUser['id'])): ?>
-    <?php
-      $currentPath = parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH) ?: '';
-      $bottomNavItems = [
-        ['label' => 'Dashboard', 'icon' => '🏠', 'path' => '/admin/dashboard'],
-        ['label' => 'Prospects', 'icon' => '👥', 'path' => '/prospects'],
-        ['label' => 'Stratégie', 'icon' => '🎯', 'path' => '/strategie'],
-        ['label' => 'Messages IA', 'icon' => '💬', 'path' => '/messages-ia'],
-        ['label' => 'Pipeline', 'icon' => '📈', 'path' => '/pipeline'],
-      ];
-      include __DIR__ . '/../components/BottomNav.php';
-    ?>
+    <?php require __DIR__ . '/../components/bottom_nav.php'; ?>
   <?php endif; ?>
 <?php endif; ?>
 </body>

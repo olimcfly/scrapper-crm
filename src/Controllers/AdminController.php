@@ -29,6 +29,11 @@ final class AdminController
         ]);
     }
 
+    public function moduleAlias(Request $request, string $moduleKey): void
+    {
+        $this->module($request, $moduleKey);
+    }
+
     public function module(Request $request, string $moduleKey): void
     {
         unset($request);

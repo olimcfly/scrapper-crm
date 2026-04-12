@@ -5,11 +5,11 @@ $showError = (bool) ($showError ?? false);
 ?>
 
 <?php if ($showLoading): ?>
-  <?php include __DIR__ . '/LoadingSkeletonCard.php'; ?>
+  <?php require __DIR__ . '/loading_skeleton_card.php'; ?>
 <?php endif; ?>
 
 <?php if ($showEmpty): ?>
-  <?php include __DIR__ . '/EmptyStateGuided.php'; ?>
+  <?php require __DIR__ . '/empty_state_guided.php'; ?>
 <?php endif; ?>
 
 <?php if ($showError): ?>

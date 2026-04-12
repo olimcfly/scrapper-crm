@@ -1,7 +1,16 @@
-<div class="card" style="background:linear-gradient(135deg,#0f172a,#1e293b);color:#e2e8f0;border:none;">
-  <p class="eyebrow" style="color:#cbd5e1;">Paramètres</p>
-  <h2 style="margin:0 0 8px;color:#fff;">Module secondaire en placeholder</h2>
-  <p style="margin:0;">Phase 1 valide l’accès et la lisibilité. La configuration avancée sera traitée en Phase 2+.</p>
+<div class="card premium-hero">
+  <p class="eyebrow" style="text-transform:uppercase;letter-spacing:.08em;font-size:12px;margin-top:0;">Placeholder premium</p>
+  <h2 style="margin-top:0;">Paramètres & modules secondaires</h2>
+  <p class="muted" style="margin-bottom:0;">Ce périmètre reste volontairement léger en Phase 1. La page est active pour garantir une navigation fluide sans écran vide.</p>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0;">Ce qui arrive en Phase 2+</h3>
+  <ul style="margin:0;padding-left:20px;">
+    <li>Préférences équipe et permissions avancées.</li>
+    <li>Paramétrage des canaux et templates.</li>
+    <li>Configuration modules secondaires.</li>
+  </ul>
 </div>
 
 <section class="card empty-guided" style="max-width:760px;">

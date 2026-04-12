@@ -92,6 +92,12 @@ $router->add('GET', '/pipeline', $guard->protect(static function (): void {
 }));
 $router->add('GET', '/admin/modules/{module}', $guard->protect(static fn (Request $req, array $params): mixed => $adminController->module($req, (string) $params['module'])));
 
+$router->add('GET', '/dashboard', $guard->protect(static fn (Request $req): mixed => $adminController->dashboard($req)));
+$router->add('GET', '/strategie', $guard->protect(static fn (Request $req): mixed => $adminController->moduleAlias($req, 'strategie-prospect')));
+$router->add('GET', '/messages-ia', $guard->protect(static fn (Request $req): mixed => $adminController->moduleAlias($req, 'messages-ia')));
+$router->add('GET', '/pipeline', $guard->protect(static fn (Request $req): mixed => $adminController->moduleAlias($req, 'pipeline')));
+$router->add('GET', '/parametres', $guard->protect(static fn (Request $req): mixed => $settingsController->index($req)));
+
 // API routes (JSON)
 $router->add('GET', '/api/health', static function (): void {
     Response::json(['status' => 'ok']);
