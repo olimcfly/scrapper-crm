@@ -14,7 +14,11 @@
   <h3 style="margin:6px 0 8px;">Ce module est prêt côté navigation</h3>
   <p class="muted">La logique métier profonde sera branchée en phase suivante. En attendant, la route est stable et exploitable sur mobile comme desktop.</p>
   <div class="row">
-    <div><?php $label = 'Retour dashboard'; $href = '/admin/dashboard'; $icon = '🏠'; include __DIR__ . '/../components/PrimaryCTAButton.php'; ?></div>
-    <div><?php $label = 'Ouvrir Prospects'; $href = '/prospects'; $icon = '👥'; include __DIR__ . '/../components/PrimaryCTAButton.php'; ?></div>
+    <div>
+      <a class="btn" href="/dashboard">Retour dashboard</a>
+    </div>
+    <div>
+      <a class="btn secondary" href="/prospects">Aller sur Collecte profils</a>
+    </div>
   </div>
 </section>

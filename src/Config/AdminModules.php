@@ -12,13 +12,13 @@ final class AdminModules
     public static function all(): array
     {
         return [
-            ['key' => 'dashboard', 'label' => 'Dashboard', 'description' => 'Vue de démarrage avec prochaines actions prioritaires.', 'path' => '/admin/dashboard', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'dashboard'],
+            ['key' => 'dashboard', 'label' => 'Dashboard', 'description' => 'Vue de démarrage avec prochaines actions prioritaires.', 'path' => '/dashboard', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'dashboard'],
             ['key' => 'collecte-profils', 'label' => 'Prospects', 'description' => 'Collecte profils, liste des prospects et accès fiches.', 'path' => '/prospects', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'prospects'],
-            ['key' => 'strategie-prospect', 'label' => 'Stratégie', 'description' => 'Pivot prospect-first : objectifs et prochaine action IA.', 'path' => '/admin/modules/strategie-prospect', 'status' => 'mvp', 'core' => true, 'ready' => false, 'nav' => 'strategy'],
+            ['key' => 'strategie-prospect', 'label' => 'Stratégie', 'description' => 'Pivot prospect-first : objectifs et prochaine action IA.', 'path' => '/strategie', 'status' => 'mvp', 'core' => true, 'ready' => false, 'nav' => 'strategy'],
             ['key' => 'generation-contenu', 'label' => 'Contenu', 'description' => 'Génération de contenu orientée objectif commercial.', 'path' => '/admin/modules/generation-contenu', 'status' => 'mvp', 'core' => true, 'ready' => false, 'nav' => 'secondary'],
-            ['key' => 'messages-ia', 'label' => 'Messages IA', 'description' => 'Flow guidé générer → éditer → envoyer.', 'path' => '/admin/modules/messages-ia', 'status' => 'mvp', 'core' => true, 'ready' => false, 'nav' => 'messages'],
+            ['key' => 'messages-ia', 'label' => 'Messages IA', 'description' => 'Flow guidé générer → éditer → envoyer.', 'path' => '/messages-ia', 'status' => 'mvp', 'core' => true, 'ready' => false, 'nav' => 'messages'],
             ['key' => 'contacts', 'label' => 'Contacts', 'description' => 'Contacts actionnables avec prochaine action visible.', 'path' => '/admin/modules/contacts', 'status' => 'mvp', 'core' => true, 'ready' => false, 'nav' => 'secondary'],
-            ['key' => 'pipeline', 'label' => 'Pipeline', 'description' => 'Suivi des opportunités en mode mobile tactile.', 'path' => '/admin/modules/pipeline', 'status' => 'mvp', 'core' => true, 'ready' => false, 'nav' => 'pipeline'],
+            ['key' => 'pipeline', 'label' => 'Pipeline', 'description' => 'Suivi des opportunités en mode mobile tactile.', 'path' => '/pipeline', 'status' => 'mvp', 'core' => true, 'ready' => false, 'nav' => 'pipeline'],
             ['key' => 'settings', 'label' => 'Paramètres', 'description' => 'Configuration de l’espace et préférences.', 'path' => '/settings', 'status' => 'placeholder', 'core' => false, 'ready' => true, 'nav' => 'secondary'],
         ];
     }

@@ -42,45 +42,35 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
 $request = new Request();
 $router = new Router();
 
-$apiProspects = new ProspectController();
-$apiLookup = new LookupController();
-$webProspects = new WebProspectController();
-$settingsController = new SettingsController();
-$adminController = new AdminController();
-$authController = new AuthController();
-$adminController = new AdminController();
 $guard = new AuthGuard(new Auth(Database::connection()));
 
 $router->add('GET', '/', static function (): void {
-    Response::redirect('/admin');
+    Response::redirect('/dashboard');
 });
 
-$router->add('GET', '/login', static fn (Request $req): mixed => $authController->showLogin($req));
-$router->add('POST', '/login', static fn (Request $req): mixed => $authController->login($req));
-$router->add('GET', '/login/verify', static fn (Request $req): mixed => $authController->showVerify($req));
-$router->add('POST', '/login/verify', static fn (Request $req): mixed => $authController->verify($req));
-$router->add('POST', '/logout', static fn (Request $req): mixed => $authController->logout($req));
+$router->add('GET', '/login', static fn (Request $req): mixed => (new AuthController())->showLogin($req));
+$router->add('POST', '/login', static fn (Request $req): mixed => (new AuthController())->login($req));
+$router->add('GET', '/login/verify', static fn (Request $req): mixed => (new AuthController())->showVerify($req));
+$router->add('POST', '/login/verify', static fn (Request $req): mixed => (new AuthController())->verify($req));
+$router->add('POST', '/logout', static fn (Request $req): mixed => (new AuthController())->logout($req));
 
 // Web routes (PHP views)
-$router->add('GET', '/prospects', $guard->protect(static fn (Request $req): mixed => $webProspects->index($req)));
-$router->add('GET', '/prospects/create', $guard->protect(static fn (Request $req): mixed => $webProspects->create($req)));
-$router->add('POST', '/prospects/create', $guard->protect(static fn (Request $req): mixed => $webProspects->store($req)));
+$router->add('GET', '/prospects', $guard->protect(static fn (Request $req): mixed => (new WebProspectController())->index($req)));
+$router->add('GET', '/prospects/create', $guard->protect(static fn (Request $req): mixed => (new WebProspectController())->create($req)));
+$router->add('POST', '/prospects/create', $guard->protect(static fn (Request $req): mixed => (new WebProspectController())->store($req)));
 // Routes statiques avant les routes paramétrées (évite que /prospects/{id} capture "import")
-$router->add('GET', '/prospects/import', $guard->protect(static fn (Request $req): mixed => $webProspects->importForm($req)));
-$router->add('POST', '/prospects/import/upload', $guard->protect(static fn (Request $req): mixed => $webProspects->importUpload($req)));
-$router->add('POST', '/prospects/import/process', $guard->protect(static fn (Request $req): mixed => $webProspects->importProcess($req)));
-$router->add('GET', '/prospects/{id}', $guard->protect(static fn (Request $req, array $params): mixed => $webProspects->show($req, (int) $params['id'])));
-$router->add('GET', '/prospects/{id}/edit', $guard->protect(static fn (Request $req, array $params): mixed => $webProspects->edit($req, (int) $params['id'])));
-$router->add('POST', '/prospects/{id}/edit', $guard->protect(static fn (Request $req, array $params): mixed => $webProspects->update($req, (int) $params['id'])));
-$router->add('POST', '/prospects/{id}/delete', $guard->protect(static fn (Request $req, array $params): mixed => $webProspects->destroy($req, (int) $params['id'])));
-$router->add('POST', '/prospects/{id}/notes', $guard->protect(static fn (Request $req, array $params): mixed => $webProspects->addNote($req, (int) $params['id'])));
-$router->add('POST', '/prospects/{id}/status', $guard->protect(static fn (Request $req, array $params): mixed => $webProspects->changeStatus($req, (int) $params['id'])));
-$router->add('GET', '/settings', $guard->protect(static fn (Request $req): mixed => $settingsController->index($req)));
-$router->add('GET', '/admin', $guard->protect(static fn (Request $req): mixed => $adminController->dashboard($req)));
-$router->add('GET', '/admin/dashboard', $guard->protect(static fn (Request $req): mixed => $adminController->dashboard($req)));
-$router->add('GET', '/dashboard', $guard->protect(static function (): void {
-    Response::redirect('/admin/dashboard');
-}));
+$router->add('GET', '/prospects/import', $guard->protect(static fn (Request $req): mixed => (new WebProspectController())->importForm($req)));
+$router->add('POST', '/prospects/import/upload', $guard->protect(static fn (Request $req): mixed => (new WebProspectController())->importUpload($req)));
+$router->add('POST', '/prospects/import/process', $guard->protect(static fn (Request $req): mixed => (new WebProspectController())->importProcess($req)));
+$router->add('GET', '/prospects/{id}', $guard->protect(static fn (Request $req, array $params): mixed => (new WebProspectController())->show($req, (int) $params['id'])));
+$router->add('GET', '/prospects/{id}/edit', $guard->protect(static fn (Request $req, array $params): mixed => (new WebProspectController())->edit($req, (int) $params['id'])));
+$router->add('POST', '/prospects/{id}/edit', $guard->protect(static fn (Request $req, array $params): mixed => (new WebProspectController())->update($req, (int) $params['id'])));
+$router->add('POST', '/prospects/{id}/delete', $guard->protect(static fn (Request $req, array $params): mixed => (new WebProspectController())->destroy($req, (int) $params['id'])));
+$router->add('POST', '/prospects/{id}/notes', $guard->protect(static fn (Request $req, array $params): mixed => (new WebProspectController())->addNote($req, (int) $params['id'])));
+$router->add('POST', '/prospects/{id}/status', $guard->protect(static fn (Request $req, array $params): mixed => (new WebProspectController())->changeStatus($req, (int) $params['id'])));
+$router->add('GET', '/settings', $guard->protect(static fn (Request $req): mixed => (new SettingsController())->index($req)));
+
+$router->add('GET', '/dashboard', $guard->protect(static fn (Request $req): mixed => (new AdminController())->dashboard($req)));
 $router->add('GET', '/strategie', $guard->protect(static function (): void {
     Response::redirect('/admin/modules/strategie-prospect');
 }));
@@ -90,7 +80,11 @@ $router->add('GET', '/messages-ia', $guard->protect(static function (): void {
 $router->add('GET', '/pipeline', $guard->protect(static function (): void {
     Response::redirect('/admin/modules/pipeline');
 }));
-$router->add('GET', '/admin/modules/{module}', $guard->protect(static fn (Request $req, array $params): mixed => $adminController->module($req, (string) $params['module'])));
+$router->add('GET', '/admin', $guard->protect(static function (): void {
+    Response::redirect('/dashboard');
+}));
+$router->add('GET', '/admin/dashboard', $guard->protect(static fn (Request $req): mixed => (new AdminController())->dashboard($req)));
+$router->add('GET', '/admin/modules/{module}', $guard->protect(static fn (Request $req, array $params): mixed => (new AdminController())->module($req, (string) $params['module'])));
 
 $router->add('GET', '/dashboard', $guard->protect(static fn (Request $req): mixed => $adminController->dashboard($req)));
 $router->add('GET', '/strategie', $guard->protect(static fn (Request $req): mixed => $adminController->moduleAlias($req, 'strategie-prospect')));
@@ -102,17 +96,17 @@ $router->add('GET', '/parametres', $guard->protect(static fn (Request $req): mix
 $router->add('GET', '/api/health', static function (): void {
     Response::json(['status' => 'ok']);
 });
-$router->add('GET', '/api/prospects', static fn (Request $req): mixed => $apiProspects->index($req));
-$router->add('GET', '/api/prospects/{id}', static fn (Request $req, array $params): mixed => $apiProspects->show($req, (int) $params['id']));
-$router->add('POST', '/api/prospects', static fn (Request $req): mixed => $apiProspects->store($req));
-$router->add('PUT', '/api/prospects/{id}', static fn (Request $req, array $params): mixed => $apiProspects->update($req, (int) $params['id']));
-$router->add('DELETE', '/api/prospects/{id}', static fn (Request $req, array $params): mixed => $apiProspects->delete($req, (int) $params['id']));
-$router->add('GET', '/api/prospects/{id}/notes', static fn (Request $req, array $params): mixed => $apiProspects->notes($req, (int) $params['id']));
-$router->add('POST', '/api/prospects/{id}/notes', static fn (Request $req, array $params): mixed => $apiProspects->addNote($req, (int) $params['id']));
-$router->add('PATCH', '/api/prospects/{id}/status', static fn (Request $req, array $params): mixed => $apiProspects->changeStatus($req, (int) $params['id']));
-$router->add('GET', '/api/prospect-statuses', static fn (Request $req): mixed => $apiLookup->statuses($req));
-$router->add('GET', '/api/sources', static fn (Request $req): mixed => $apiLookup->sources($req));
-$router->add('GET', '/api/tags', static fn (Request $req): mixed => $apiLookup->tags($req));
+$router->add('GET', '/api/prospects', static fn (Request $req): mixed => (new ProspectController())->index($req));
+$router->add('GET', '/api/prospects/{id}', static fn (Request $req, array $params): mixed => (new ProspectController())->show($req, (int) $params['id']));
+$router->add('POST', '/api/prospects', static fn (Request $req): mixed => (new ProspectController())->store($req));
+$router->add('PUT', '/api/prospects/{id}', static fn (Request $req, array $params): mixed => (new ProspectController())->update($req, (int) $params['id']));
+$router->add('DELETE', '/api/prospects/{id}', static fn (Request $req, array $params): mixed => (new ProspectController())->delete($req, (int) $params['id']));
+$router->add('GET', '/api/prospects/{id}/notes', static fn (Request $req, array $params): mixed => (new ProspectController())->notes($req, (int) $params['id']));
+$router->add('POST', '/api/prospects/{id}/notes', static fn (Request $req, array $params): mixed => (new ProspectController())->addNote($req, (int) $params['id']));
+$router->add('PATCH', '/api/prospects/{id}/status', static fn (Request $req, array $params): mixed => (new ProspectController())->changeStatus($req, (int) $params['id']));
+$router->add('GET', '/api/prospect-statuses', static fn (Request $req): mixed => (new LookupController())->statuses($req));
+$router->add('GET', '/api/sources', static fn (Request $req): mixed => (new LookupController())->sources($req));
+$router->add('GET', '/api/tags', static fn (Request $req): mixed => (new LookupController())->tags($req));
 
 try {
     $router->dispatch($request);

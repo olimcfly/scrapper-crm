@@ -5,11 +5,17 @@ $showError = (bool) ($showError ?? false);
 ?>
 
 <?php if ($showLoading): ?>
-  <?php require __DIR__ . '/loading_skeleton_card.php'; ?>
+  <?php require __DIR__ . '/states/loading_skeleton_card.php'; ?>
 <?php endif; ?>
 
 <?php if ($showEmpty): ?>
-  <?php require __DIR__ . '/empty_state_guided.php'; ?>
+  <?php
+    $emptyTitle = 'Aucune donnée disponible';
+    $emptyDescription = 'Commencez par ajouter un prospect pour activer le flux prospect-first.';
+    $emptyCtaLabel = 'Créer un prospect';
+    $emptyCtaHref = '/prospects/create';
+    require __DIR__ . '/states/empty_state_guided.php';
+  ?>
 <?php endif; ?>
 
 <?php if ($showError): ?>
