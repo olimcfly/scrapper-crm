@@ -14,6 +14,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ------------------------------------------------------------
 -- DROP (ordre inverse des clés étrangères)
 -- ------------------------------------------------------------
+DROP TABLE IF EXISTS strategy_profile_analyses;
 DROP TABLE IF EXISTS login_tokens;
 DROP TABLE IF EXISTS prospect_tag;
 DROP TABLE IF EXISTS prospect_events;
@@ -209,6 +210,29 @@ CREATE TABLE prospect_tag (
   KEY idx_pt_tag_id (tag_id),
   CONSTRAINT fk_pt_prospect FOREIGN KEY (prospect_id) REFERENCES prospects(id) ON DELETE CASCADE,
   CONSTRAINT fk_pt_tag      FOREIGN KEY (tag_id)      REFERENCES tags(id)      ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
+-- ============================================================
+-- TABLE : strategy_profile_analyses
+-- Historique des analyses IA générées depuis le module Stratégie.
+-- ============================================================
+CREATE TABLE strategy_profile_analyses (
+  id                  INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id             INT UNSIGNED NOT NULL,
+  profile_text        TEXT         NOT NULL,
+  awareness_level     VARCHAR(120) NOT NULL DEFAULT '',
+  summary             TEXT         NULL,
+  pain_points_json    JSON         NULL,
+  desires_json        JSON         NULL,
+  content_angles_json JSON         NULL,
+  hooks_json          JSON         NULL,
+  created_at          DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_strategy_user_id (user_id),
+  KEY idx_strategy_created_at (created_at),
+  CONSTRAINT fk_strategy_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
