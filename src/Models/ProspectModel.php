@@ -18,13 +18,56 @@ final class ProspectModel
 
     public function all(): array
     {
+        return $this->search([
+            'page' => 1,
+            'per_page' => 10000,
+        ])['data'];
+    }
+
+    public function search(array $filters): array
+    {
+        $page = max(1, (int) ($filters['page'] ?? 1));
+        $perPage = min(100, max(1, (int) ($filters['per_page'] ?? 20)));
+        $offset = ($page - 1) * $perPage;
+
+        $conditions = [];
+        $params = [];
+
+        $query = trim((string) ($filters['q'] ?? ''));
+        if ($query !== '') {
+            $conditions[] = '(p.full_name LIKE :q OR p.business_name LIKE :q OR p.activity LIKE :q OR p.city LIKE :q OR p.professional_email LIKE :q)';
+            $params['q'] = '%' . $query . '%';
+        }
+
+        $statusId = (int) ($filters['status_id'] ?? 0);
+        if ($statusId > 0) {
+            $conditions[] = 'p.status_id = :status_id';
+            $params['status_id'] = $statusId;
+        }
+
+        $sourceId = (int) ($filters['source_id'] ?? 0);
+        if ($sourceId > 0) {
+            $conditions[] = 'p.source_id = :source_id';
+            $params['source_id'] = $sourceId;
+        }
+
+        $where = $conditions !== [] ? ' WHERE ' . implode(' AND ', $conditions) : '';
+
+        $countStmt = $this->db->prepare('SELECT COUNT(*) FROM prospects p' . $where);
+        $countStmt->execute($params);
+        $total = (int) $countStmt->fetchColumn();
+
         $sql = 'SELECT p.*, s.name AS status_name, so.name AS source_name
                 FROM prospects p
                 LEFT JOIN prospect_statuses s ON s.id = p.status_id
-                LEFT JOIN sources so ON so.id = p.source_id
-                ORDER BY p.updated_at DESC';
+                LEFT JOIN sources so ON so.id = p.source_id'
+            . $where .
+            ' ORDER BY p.updated_at DESC LIMIT :limit OFFSET :offset';
 
-        return $this->db->query($sql)->fetchAll();
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
     }
 
     public function listPaginated(string $search, string $sort, int $limit, int $offset): array
@@ -92,11 +135,13 @@ final class ProspectModel
         $sql = 'INSERT INTO prospects (
                     first_name, last_name, full_name, business_name, activity, city, country, website,
                     professional_email, professional_phone, instagram_url, facebook_url, linkedin_url, tiktok_url,
-                    source_id, status_id, score, notes_summary, created_at, updated_at
+                    source_id, status_id, score, notes_summary, objectif_contact, prochaine_action,
+                    date_prochaine_action, canal_prioritaire, niveau_priorite, blocages, created_at, updated_at
                 ) VALUES (
                     :first_name, :last_name, :full_name, :business_name, :activity, :city, :country, :website,
                     :professional_email, :professional_phone, :instagram_url, :facebook_url, :linkedin_url, :tiktok_url,
-                    :source_id, :status_id, :score, :notes_summary, NOW(), NOW()
+                    :source_id, :status_id, :score, :notes_summary, :objectif_contact, :prochaine_action,
+                    :date_prochaine_action, :canal_prioritaire, :niveau_priorite, :blocages, NOW(), NOW()
                 )';
 
         $stmt = $this->db->prepare($sql);
@@ -126,6 +171,12 @@ final class ProspectModel
                     status_id = :status_id,
                     score = :score,
                     notes_summary = :notes_summary,
+                    objectif_contact = :objectif_contact,
+                    prochaine_action = :prochaine_action,
+                    date_prochaine_action = :date_prochaine_action,
+                    canal_prioritaire = :canal_prioritaire,
+                    niveau_priorite = :niveau_priorite,
+                    blocages = :blocages,
                     updated_at = NOW()
                 WHERE id = :id';
 

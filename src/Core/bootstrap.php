@@ -18,3 +18,5 @@ spl_autoload_register(static function (string $class): void {
 
 $appConfig = require dirname(__DIR__, 2) . '/config/app.php';
 date_default_timezone_set($appConfig['timezone']);
+
+App\Core\Session::start($appConfig['session'] ?? []);

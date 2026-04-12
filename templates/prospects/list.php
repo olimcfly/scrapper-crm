@@ -1,6 +1,44 @@
 <div class="card">
   <h2>Liste prospects</h2>
   <a class="btn" href="/prospects/create">Créer un prospect</a>
+  <a class="btn secondary" href="/prospects/import" style="margin-left:8px;">Importer CSV</a>
+</div>
+
+<div class="card">
+  <form method="get" action="/prospects">
+    <div class="row">
+      <div>
+        <label>Recherche</label>
+        <input type="text" name="q" value="<?= htmlspecialchars((string) ($filters['q'] ?? '')) ?>" placeholder="Nom, activité, ville, email...">
+      </div>
+      <div>
+        <label>Statut</label>
+        <select name="status_id">
+          <option value="0">Tous</option>
+          <?php foreach (($statuses ?? []) as $status): ?>
+            <option value="<?= (int) $status['id'] ?>" <?= ((int) ($filters['status_id'] ?? 0) === (int) $status['id']) ? 'selected' : '' ?>>
+              <?= htmlspecialchars((string) $status['name']) ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div>
+        <label>Source</label>
+        <select name="source_id">
+          <option value="0">Toutes</option>
+          <?php foreach (($sources ?? []) as $source): ?>
+            <option value="<?= (int) $source['id'] ?>" <?= ((int) ($filters['source_id'] ?? 0) === (int) $source['id']) ? 'selected' : '' ?>>
+              <?= htmlspecialchars((string) $source['name']) ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+    </div>
+    <p>
+      <button type="submit" class="btn">Filtrer</button>
+      <a href="/prospects" class="btn secondary">Réinitialiser</a>
+    </p>
+  </form>
 </div>
 
 <div class="card">

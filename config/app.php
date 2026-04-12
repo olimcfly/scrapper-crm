@@ -8,4 +8,19 @@ return [
     'base_path' => dirname(__DIR__),
     'timezone' => getenv('APP_TIMEZONE') ?: 'Europe/Paris',
     'log_file' => dirname(__DIR__) . '/storage/logs/app.log',
+    'session' => [
+        'name' => getenv('SESSION_NAME') ?: 'scrapper_crm_session',
+        'lifetime' => (int) (getenv('SESSION_LIFETIME') ?: 0),
+        'path' => '/',
+        'domain' => getenv('SESSION_DOMAIN') ?: '',
+        'secure' => filter_var(getenv('SESSION_SECURE') ?: false, FILTER_VALIDATE_BOOL),
+        'httponly' => true,
+        'samesite' => getenv('SESSION_SAMESITE') ?: 'Lax',
+    ],
+    'cors' => [
+        'allowed_origins' => array_values(array_filter(array_map(
+            static fn (string $origin): string => trim($origin),
+            explode(',', (string) (getenv('CORS_ALLOWED_ORIGINS') ?: 'http://localhost:8000'))
+        ))),
+    ],
 ];
