@@ -209,8 +209,8 @@
     }
 
     .status-active { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
-    .status-mvp { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
-    .status-placeholder { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; }
+    .status-beta { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+    .status-dev { background: #e0e7ff; color: #3730a3; border: 1px solid #a5b4fc; }
 
     .global-state {
       border-radius: var(--ds-radius-md);

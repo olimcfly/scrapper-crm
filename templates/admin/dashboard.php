@@ -47,12 +47,12 @@
       <p style="font-size:24px;font-weight:700;margin:4px 0 0;"><?= (int) ($statusCounters['active'] ?? 0) ?></p>
     </div>
     <div>
-      <p class="muted" style="margin:0;">MVP</p>
-      <p style="font-size:24px;font-weight:700;margin:4px 0 0;"><?= (int) ($statusCounters['mvp'] ?? 0) ?></p>
+      <p class="muted" style="margin:0;">Bêta</p>
+      <p style="font-size:24px;font-weight:700;margin:4px 0 0;"><?= (int) ($statusCounters['beta'] ?? 0) ?></p>
     </div>
     <div>
-      <p class="muted" style="margin:0;">Placeholders</p>
-      <p style="font-size:24px;font-weight:700;margin:4px 0 0;"><?= (int) ($statusCounters['placeholder'] ?? 0) ?></p>
+      <p class="muted" style="margin:0;">En développement</p>
+      <p style="font-size:24px;font-weight:700;margin:4px 0 0;"><?= (int) ($statusCounters['in_progress'] ?? 0) ?></p>
     </div>
   </div>
 </div>
