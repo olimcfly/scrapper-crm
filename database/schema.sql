@@ -64,6 +64,20 @@ CREATE TABLE IF NOT EXISTS prospect_tag (
   CONSTRAINT fk_prospect_tag_tag FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(190) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  role VARCHAR(50) NOT NULL DEFAULT 'user',
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_users_email (email),
+  INDEX idx_users_role (role),
+  INDEX idx_users_is_active (is_active)
+);
+
 INSERT INTO prospect_statuses (name, sort_order)
 SELECT * FROM (
   SELECT 'Nouveau', 1 UNION ALL
