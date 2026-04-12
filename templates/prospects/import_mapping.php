@@ -14,6 +14,7 @@
   <?php endif; ?>
 
   <form method="post" action="/prospects/import/process">
+    <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken ?? '') ?>">
     <div class="row">
       <?php foreach (($fieldLabels ?? []) as $field => $label): ?>
         <div>

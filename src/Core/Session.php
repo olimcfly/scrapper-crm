@@ -42,6 +42,20 @@ final class Session
         session_regenerate_id($deleteOldSession);
     }
 
+    public static function flash(string $key, string $value): void
+    {
+        self::start();
+        $_SESSION['_flash'][$key] = $value;
+    }
+
+    public static function consumeFlash(string $key): ?string
+    {
+        self::start();
+        $value = $_SESSION['_flash'][$key] ?? null;
+        unset($_SESSION['_flash'][$key]);
+        return is_string($value) ? $value : null;
+    }
+
     public static function destroy(): void
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {

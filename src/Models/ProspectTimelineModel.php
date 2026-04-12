@@ -22,18 +22,18 @@ final class ProspectTimelineModel
                 FROM (
                     SELECT pn.created_at, "note" AS event_type, pn.content AS details
                     FROM prospect_notes pn
-                    WHERE pn.prospect_id = :prospect_id
+                    WHERE pn.prospect_id = :pid_notes
 
                     UNION ALL
 
                     SELECT pe.created_at, pe.event_type, pe.details
                     FROM prospect_events pe
-                    WHERE pe.prospect_id = :prospect_id
+                    WHERE pe.prospect_id = :pid_events
                 ) timeline
                 ORDER BY created_at DESC';
 
         $stmt = $this->db->prepare($sql);
-        $stmt->execute(['prospect_id' => $prospectId]);
+        $stmt->execute(['pid_notes' => $prospectId, 'pid_events' => $prospectId]);
 
         return $stmt->fetchAll();
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Csrf;
+use App\Core\Database;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Session;
@@ -49,49 +50,24 @@ final class WebProspectController
     {
         $input = $request->input();
 
-        $search = trim((string) ($input['q'] ?? ''));
-        $sort = (string) ($input['sort'] ?? 'date');
-        $allowedSorts = ['date', 'name', 'score', 'city'];
-        if (!in_array($sort, $allowedSorts, true)) {
-            $sort = 'date';
-        }
-
-        $page = filter_var($input['page'] ?? 1, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-        $page = $page !== false ? (int) $page : 1;
-
-        $limit = filter_var($input['limit'] ?? 20, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-        $limit = $limit !== false ? (int) $limit : 20;
-        $allowedLimits = [10, 20, 50, 100];
-        if (!in_array($limit, $allowedLimits, true)) {
-            $limit = 20;
-        }
-
-        $offset = ($page - 1) * $limit;
-        $result = $this->prospects->listPaginated($search, $sort, $limit, $offset);
-        $total = (int) $result['total'];
-        $totalPages = max(1, (int) ceil($total / $limit));
-        if ($page > $totalPages) {
-            $page = $totalPages;
-            $offset = ($page - 1) * $limit;
-            $result = $this->prospects->listPaginated($search, $sort, $limit, $offset);
-        }
-
-        $input = $request->input();
         $filters = [
-            'q' => trim((string) ($input['q'] ?? '')),
+            'q'         => trim((string) ($input['q'] ?? '')),
             'status_id' => (int) ($input['status_id'] ?? 0),
             'source_id' => (int) ($input['source_id'] ?? 0),
         ];
-        $page = max(1, (int) ($input['page'] ?? 1));
-        $result = $this->prospects->search($filters, $page, 15);
+
+        $page    = max(1, (int) ($input['page'] ?? 1));
+        $perPage = 20;
+
+        $result = $this->prospects->search($filters, $page, $perPage);
 
         View::render('prospects/list', [
-            'title' => 'Prospects',
-            'prospects' => $result['items'],
-            'filters' => $filters,
-            'statuses' => $this->statuses->all(),
-            'sources' => $this->sources->all(),
-            'pagination' => $result,
+            'title'          => 'Prospects',
+            'prospects'      => $result['items'],
+            'filters'        => $filters,
+            'statuses'       => $this->statuses->all(),
+            'sources'        => $this->sources->all(),
+            'pagination'     => $result,
             'successMessage' => Session::consumeFlash('success'),
             'warningMessage' => Session::consumeFlash('warning'),
         ]);
@@ -217,10 +193,6 @@ final class WebProspectController
         }
 
         $input = $request->input();
-        if (!$this->validateCsrf($input)) {
-            Response::redirect('/prospects/create');
-        }
-
         $errors = $this->validator->validate($input);
 
         if ($errors !== []) {
@@ -244,9 +216,20 @@ final class WebProspectController
                 $this->tags->syncProspectTags($id, $tagIds);
             }
 
-        $this->timeline->create($id, 'creation', 'Prospect créé');
-        Session::flash('success', 'Prospect créé avec succès.');
-        Response::redirect('/prospects/' . $id);
+            $this->timeline->create($id, 'creation', 'Prospect créé');
+            Session::flash('success', 'Prospect créé avec succès.');
+            Response::redirect('/prospects/' . $id);
+        } catch (\Throwable $e) {
+            Session::flash('warning', 'Erreur lors de la création du prospect.');
+            View::render('prospects/form', [
+                'title' => 'Nouveau prospect',
+                'action' => '/prospects/create',
+                'prospect' => $input,
+                'statuses' => $this->statuses->all(),
+                'sources' => $this->sources->all(),
+                'errors' => ['Une erreur est survenue, veuillez réessayer.'],
+            ]);
+        }
     }
 
     public function show(Request $request, int $id): void
@@ -308,10 +291,6 @@ final class WebProspectController
         }
 
         $input = $request->input();
-        if (!$this->validateCsrf($input)) {
-            Response::redirect('/prospects/' . $id . '/edit');
-        }
-
         $errors = $this->validator->validate($input);
         if ($errors !== []) {
             View::render('prospects/form', [
@@ -391,6 +370,16 @@ final class WebProspectController
         Response::redirect('/prospects/' . $id);
     }
 
+    private function requireAuth(): bool
+    {
+        if (!$this->auth->check()) {
+            Response::redirect('/login');
+            return false;
+        }
+
+        return true;
+    }
+
     private function ensureValidCsrf(Request $request): bool
     {
         $input = $request->input();
@@ -401,6 +390,32 @@ final class WebProspectController
         }
 
         return true;
+    }
+
+    /** @return array<string, string> */
+    private function importFieldLabels(): array
+    {
+        return [
+            'first_name'           => 'Prénom',
+            'last_name'            => 'Nom',
+            'business_name'        => 'Société',
+            'activity'             => 'Activité',
+            'city'                 => 'Ville',
+            'country'              => 'Pays',
+            'professional_email'   => 'Email pro',
+            'professional_phone'   => 'Téléphone pro',
+            'website'              => 'Site web',
+            'score'                => 'Score',
+            'status_id'            => 'Statut',
+            'source_id'            => 'Source',
+            'notes_summary'        => 'Résumé',
+            'objectif_contact'     => 'Objectif de contact',
+            'prochaine_action'     => 'Prochaine action',
+            'date_prochaine_action'=> 'Date prochaine action',
+            'canal_prioritaire'    => 'Canal prioritaire',
+            'niveau_priorite'      => 'Niveau priorité',
+            'blocages'             => 'Blocages',
+        ];
     }
 
 }

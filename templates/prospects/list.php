@@ -58,29 +58,19 @@
     <tr><th>Nom</th><th>Statut</th><th>Source</th><th>Activité</th><th>Ville</th><th>Email</th><th>Score</th><th>Actions</th></tr>
     </thead>
     <tbody>
-    <?php if (($prospects ?? []) === []): ?>
+    <?php if (empty($prospects)): ?>
       <tr><td colspan="8" class="muted">Aucun prospect trouvé avec ces filtres.</td></tr>
-    <?php endif; ?>
-    <?php foreach (($prospects ?? []) as $p): ?>
-      <tr>
-        <td><?= htmlspecialchars((string) ($p['full_name'] ?? (($p['first_name'] ?? '').' '.($p['last_name'] ?? '')))) ?></td>
-        <td><?= htmlspecialchars((string) ($p['status_name'] ?? '—')) ?></td>
-        <td><?= htmlspecialchars((string) ($p['source_name'] ?? '—')) ?></td>
-        <td><?= htmlspecialchars((string) ($p['activity'] ?? '')) ?></td>
-        <td><?= htmlspecialchars((string) ($p['city'] ?? '')) ?></td>
-        <td><?= htmlspecialchars((string) ($p['professional_email'] ?? '')) ?></td>
-        <td><?= (int) ($p['score'] ?? 0) ?></td>
-        <td><a class="btn secondary" href="/prospects/<?= (int) $p['id'] ?>">Voir</a></td>
-      </tr>
     <?php else: ?>
-      <?php foreach (($prospects ?? []) as $p): ?>
+      <?php foreach ($prospects as $p): ?>
         <tr>
-          <td><?= htmlspecialchars($p['full_name'] ?? ($p['first_name'].' '.$p['last_name'])) ?></td>
-          <td><?= htmlspecialchars($p['activity'] ?? '') ?></td>
-          <td><?= htmlspecialchars($p['city'] ?? '') ?></td>
-          <td><?= htmlspecialchars($p['professional_email'] ?? '') ?></td>
-          <td><?= (int)($p['score'] ?? 0) ?></td>
-          <td><a class="btn secondary" href="/prospects/<?= (int)$p['id'] ?>">Voir</a></td>
+          <td><?= htmlspecialchars((string) ($p['full_name'] ?? (($p['first_name'] ?? '').' '.($p['last_name'] ?? '')))) ?></td>
+          <td><?= htmlspecialchars((string) ($p['status_name'] ?? '—')) ?></td>
+          <td><?= htmlspecialchars((string) ($p['source_name'] ?? '—')) ?></td>
+          <td><?= htmlspecialchars((string) ($p['activity'] ?? '')) ?></td>
+          <td><?= htmlspecialchars((string) ($p['city'] ?? '')) ?></td>
+          <td><?= htmlspecialchars((string) ($p['professional_email'] ?? '')) ?></td>
+          <td><?= (int) ($p['score'] ?? 0) ?></td>
+          <td><a class="btn secondary" href="/prospects/<?= (int) $p['id'] ?>">Voir</a></td>
         </tr>
       <?php endforeach; ?>
     <?php endif; ?>

@@ -212,6 +212,7 @@ $randomCitation = $citations[array_rand($citations)];
       <?php endif; ?>
 
       <form method="post" action="/login" novalidate>
+        <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken ?? '') ?>">
         <div class="login-field">
           <label class="login-label" for="email">Email professionnel</label>
           <input

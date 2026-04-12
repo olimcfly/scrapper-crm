@@ -1,0 +1,26 @@
+# Dépendances
+/vendor/
+/node_modules/
+
+# Fichiers d'environnement
+.env
+.env.*
+!.env.example
+
+# Stockage / uploads
+/storage/logs/
+/storage/uploads/
+
+# Cache / session
+/storage/cache/
+/storage/sessions/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

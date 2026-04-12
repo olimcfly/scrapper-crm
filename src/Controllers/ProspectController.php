@@ -7,7 +7,6 @@ namespace App\Controllers;
 use App\Core\Database;
 use App\Core\Request;
 use App\Core\Response;
-use App\Core\Database;
 use App\Models\ProspectModel;
 use App\Models\ProspectNoteModel;
 use App\Models\TagModel;

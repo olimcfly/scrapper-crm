@@ -13,6 +13,7 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Core\Router;
 use App\Services\Auth;
+use App\Services\Logger;
 
 require dirname(__DIR__) . '/src/Core/bootstrap.php';
 
@@ -59,6 +60,10 @@ $router->add('POST', '/logout', static fn (Request $req): mixed => $authControll
 $router->add('GET', '/prospects', $guard->protect(static fn (Request $req): mixed => $webProspects->index($req)));
 $router->add('GET', '/prospects/create', $guard->protect(static fn (Request $req): mixed => $webProspects->create($req)));
 $router->add('POST', '/prospects/create', $guard->protect(static fn (Request $req): mixed => $webProspects->store($req)));
+// Routes statiques avant les routes paramétrées (évite que /prospects/{id} capture "import")
+$router->add('GET', '/prospects/import', $guard->protect(static fn (Request $req): mixed => $webProspects->importForm($req)));
+$router->add('POST', '/prospects/import/upload', $guard->protect(static fn (Request $req): mixed => $webProspects->importUpload($req)));
+$router->add('POST', '/prospects/import/process', $guard->protect(static fn (Request $req): mixed => $webProspects->importProcess($req)));
 $router->add('GET', '/prospects/{id}', $guard->protect(static fn (Request $req, array $params): mixed => $webProspects->show($req, (int) $params['id'])));
 $router->add('GET', '/prospects/{id}/edit', $guard->protect(static fn (Request $req, array $params): mixed => $webProspects->edit($req, (int) $params['id'])));
 $router->add('POST', '/prospects/{id}/edit', $guard->protect(static fn (Request $req, array $params): mixed => $webProspects->update($req, (int) $params['id'])));

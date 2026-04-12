@@ -13,6 +13,7 @@
   <?php endif; ?>
 
   <form method="post" action="/prospects/import/upload" enctype="multipart/form-data">
+    <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken ?? '') ?>">
     <label for="csv_file">Fichier CSV</label>
     <input id="csv_file" type="file" name="csv_file" accept=".csv,text/csv" required>
     <p style="color:#6b7280">Format attendu: 1 ligne d'en-têtes + lignes de données.</p>
