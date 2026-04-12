@@ -1,262 +1,232 @@
-# Refonte CRM IA Prospection — Mobile-first, accessible, app-like
+# Plan d’implémentation CRM IA Prospection
+## Mobile-first, prospect-first, exécutable en sprints courts
 
-## Vision produit
-Transformer l’application en **web app mobile-first** avec une sensation proche du natif :
-- navigation rapide au pouce,
-- actions principales accessibles en 1–2 taps,
-- interfaces épurées et lisibles,
-- UX orientée terrain (consultation + action immédiate),
-- continuité desktop sans sacrifier la productivité bureau.
+## Objectif
+Transformer la vision produit en **plan d’exécution concret** :
+- page par page,
+- composant par composant,
+- data backend par écran,
+- ordre de build précis,
+- statut explicite de chaque module.
 
----
-
-## A) Architecture UX mobile + desktop
-
-## 1) Schéma de navigation global
-
-### Mobile (prioritaire)
-- **Bottom navigation fixe (5 entrées max)** :
-  1. Dashboard
-  2. Prospects (collecte + liste)
-  3. Stratégie
-  4. Messages IA
-  5. Pipeline
-- **FAB contextuel** (floating action button) : “+ Prospect”, “+ Message”, “+ Note” selon écran.
-- **Header compact sticky** : titre, recherche, menu secondaire.
-- **Gestes tactiles** : swipe horizontal entre onglets d’une fiche prospect, swipe action sur cartes (archiver, relancer, tag).
-
-### Desktop
-- **Sidebar gauche** (navigation complète + secondaire):
-  - Dashboard
-  - Collecte profils
-  - Stratégie par prospect
-  - Génération contenu
-  - Messages IA
-  - Contacts
-  - Pipeline
-  - Paramètres
-- **Top bar** : recherche globale, raccourcis IA, notifications.
-- **Zones multitâches** : listes + panneau détail côte à côte pour productivité.
-
-## 2) Architecture informationnelle (IA)
-- Noyau “**Prospect-first**” : toute action part d’un prospect.
-- Hiérarchie fonctionnelle :
-  - Niveau 1 (usage quotidien) : Dashboard, Prospects, Stratégie, Messages, Pipeline.
-  - Niveau 2 (support) : Génération contenu, Contacts.
-  - Niveau 3 (admin/config) : Paramètres, modules en cours.
+Contraintes structurantes :
+- **Mobile-first** (l’écran téléphone dicte la structure).
+- **Prospect-first** (toute action part d’un prospect).
+- **Stratégie par prospect = pivot** (collecte → stratégie → contenu/messages → pipeline).
+- **MVP cible** : collecte profils, stratégie, contenu, messages IA, contacts.
 
 ---
 
-## B) Organisation des écrans principaux
+## 1) Matrice des écrans principaux (avec statut)
 
-## 1) Dashboard (mobile prioritaire)
-- **Bloc “Aujourd’hui”** :
-  - relances à faire,
-  - prospects chauds,
-  - messages en attente,
-  - progression pipeline du jour.
-- **KPI ultra-courts** (4 cartes max visible sans scroll).
-- **Actions rapides** :
-  - Relancer maintenant,
-  - Générer message IA,
-  - Ouvrir stratégie du prospect chaud,
-  - Ajouter un prospect.
-- **Feed d’activité** compact : dernière action par prospect.
+### Légende statut
+- **Actif** : à livrer complètement dans l’itération en cours.
+- **MVP** : à livrer avec périmètre réduit mais utilisable en production.
+- **Placeholder** : écran non livré fonctionnellement, carte informative “bientôt disponible”.
 
-## 2) Collecte profils
-- Entrée simple : import, saisie manuelle, enrichissement.
-- **Mobile** : flux en 3 étapes (source → mapping léger → validation).
-- Résultat : cartes prospect nettoyées avec score de complétude.
-
-## 3) Stratégie par prospect (module central)
-- Écran structuré en sections :
-  1. Contexte prospect (résumé)
-  2. Objectif de conversion
-  3. Angle de contact recommandé IA
-  4. Prochaines actions (to-do)
-  5. Historique stratégie
-- Bouton principal : **“Générer prochaine action IA”**.
-
-## 4) Génération contenu
-- Templates orientés objectif (1er contact, relance, nurturing).
-- Variables préremplies depuis fiche prospect.
-- Prévisualisation mobile courte + mode “copier/envoyer”.
-
-## 5) Messages IA
-- UX type “assistant actionnable” :
-  - prompt guidé,
-  - proposition de message,
-  - édition rapide,
-  - validation.
-- Boutons clairs : “Régénérer”, “Raccourcir”, “Personnaliser”, “Envoyer”.
-
-## 6) Contacts
-- Liste filtrable, centrée sur statut et prochaine action.
-- Fiche contact en sections repliables (infos, interactions, tags).
-
-## 7) Pipeline
-- Mobile : cartes par étape avec scroll horizontal.
-- Desktop : vue kanban + métriques de conversion.
-- Actions rapides in-card : avancer/reculer, annoter, relancer.
-
-## 8) Modules non développés
-- Cartes propres avec badge **“En cours de développement”**.
-- Inclure :
-  - objectif du module,
-  - bénéfice attendu,
-  - CTA “Être notifié”.
+| ID | Écran | Rôle métier | Mobile (priorité) | Desktop | Dépendances | Statut |
+|---|---|---|---|---|---|---|
+| SCR-01 | Dashboard | Orchestrer la journée commerciale | Carte “Aujourd’hui”, KPI compacts, quick actions | Vue synthèse + panneau activité | API summary global + tâches | **MVP** |
+| SCR-02 | Prospects – Liste | Hub principal de travail prospect | Liste cartes + filtres rapides + recherche | Table + panneau détail | Collecte + score + next action | **Actif** |
+| SCR-03 | Prospect – Fiche | Vue 360 d’un prospect | Onglets: Résumé / Stratégie / Interactions / Pipeline | Split view liste + détail | Données prospect consolidées | **Actif** |
+| SCR-04 | Collecte profils | Entrée de nouveaux prospects | Stepper 3 étapes (source → mapping → validation) | Assistant import enrichi | Import + normalisation + dédup | **MVP** |
+| SCR-05 | Stratégie par prospect | Définir l’angle et la prochaine action | Sections courtes + CTA IA principal | Vue enrichie historique | Moteur IA stratégie | **Actif (pivot)** |
+| SCR-06 | Génération contenu | Produire assets textuels | Templates + preview mobile + copier | Édition plus large | Variables prospect + templates | **MVP** |
+| SCR-07 | Messages IA | Créer/éditer/envoyer message | Flow guidé prompt → proposition → édition | Mode batch + historique | LLM + règles ton/persona | **Actif** |
+| SCR-08 | Contacts | Gérer carnet de contacts actionnable | Cartes filtrables + prochaine action | Table filtrable | Référentiel contacts + tags | **MVP** |
+| SCR-09 | Pipeline | Piloter avancement opportunités | Colonnes scroll horizontal + quick move | Kanban complet + métriques | Étapes pipeline + événements | **MVP** |
+| SCR-10 | Paramètres | Configuration système | Écran secondaire | Écran secondaire | Settings | **Placeholder** |
+| SCR-11 | Modules annexes | Future capabilities | Hub “Bientôt disponible” | Idem | N/A | **Placeholder** |
 
 ---
 
-## C) Composants UI recommandés
+## 2) Bibliothèque de composants UI à créer
 
-## 1) Navigation
-- Bottom nav (mobile), sidebar (desktop), onglets secondaires, fil d’Ariane desktop.
+## 2.1 Foundation (Design System)
+1. **TokenColor** (palette primaire, neutres, succès, warning, danger).
+2. **TokenSpacing** (4/8/12/16/24/32).
+3. **TokenTypography** (mobile-first: body lisible, titres courts).
+4. **TokenRadius** (cards, inputs, bottom sheets).
+5. **TokenElevation** (ombres légères, focus ring).
 
-## 2) Contenus
-- **Card Prospect** (avatar, score, statut, prochaine action, CTA).
-- **Card KPI** (titre court, valeur, variation).
-- **Timeline interactions** (messages, notes, actions IA).
-- **Section accordéon** pour détails longs.
+## 2.2 Composants de navigation
+1. **BottomNav** (5 entrées max).
+2. **DesktopSidebar** (navigation complète + badges statut).
+3. **TopBarCompact** (titre, recherche, actions globales).
+4. **TabSwitcher** (onglets fiche prospect).
+5. **BreadcrumbDesktop** (contexte sur desktop).
 
-## 3) Actions
-- Boutons taille min **44x44 px** (idéal 48x48).
-- CTA principal unique par écran.
-- Menus d’actions rapides persistants sur mobile.
+## 2.3 Composants métier prospect-first
+1. **ProspectCard**
+   - Champs: nom, score, statut, prochaine action, dernier contact.
+   - Actions: ouvrir, relancer, tagger.
+2. **ProspectHeader** (identité + score + urgence + CTA).
+3. **StrategyBlock** (objectif, angle, actions IA).
+4. **NextBestActionCard** (recommandation unique prioritaire).
+5. **InteractionTimeline** (messages, notes, actions, dates).
+6. **PipelineStageChip** (étape + couleur + SLA).
 
-## 4) Formulaires
-- Inputs larges, labels visibles, aides contextuelles courtes.
-- Multi-steps pour formulaires complexes.
-- Validation inline accessible + message d’erreur actionnable.
+## 2.4 Composants d’action
+1. **PrimaryCTAButton** (48x48 touch target min).
+2. **SecondaryActionRow** (actions contextuelles).
+3. **FABContextual** (+ Prospect, + Message, + Note).
+4. **QuickActionSheet** (mobile bottom sheet).
+5. **InlineActionMenu** (desktop table/list).
 
-## 5) Feedback UX
-- États : loading skeleton, vide guidé, succès, erreur claire.
-- Toast non bloquant + confirmation persistante pour actions critiques.
+## 2.5 Composants de formulaires
+1. **TextInputLarge**, **SelectLarge**, **TagInput**.
+2. **StepperForm** (collecte en 3 étapes).
+3. **InlineValidationMessage** (erreur actionnable).
+4. **AIAssistInput** (prompt guidé + suggestions).
 
-## 6) Accessibilité
-- Contraste renforcé, typo lisible, tailles dynamiques.
-- Focus visible clavier.
-- Labels ARIA / descriptions pour actions icônes.
-- Navigation compatible lecteurs d’écran.
+## 2.6 Composants d’état UX
+1. **LoadingSkeletonCard**.
+2. **EmptyStateGuided** (CTA + texte orienté action).
+3. **ToastFeedback**.
+4. **PersistentConfirmationBar** (actions critiques).
+5. **NetworkDegradedBanner**.
 
----
-
-## D) Règles de responsive design
-
-## Breakpoints recommandés
-- `0–599`: mobile compact
-- `600–899`: mobile large / petite tablette
-- `900–1199`: tablette / desktop réduit
-- `1200+`: desktop complet
-
-## Règles clés
-- Mobile-first CSS (progressive enhancement).
-- Tableaux remplacés par cartes sous `900px`.
-- Grille fluide 4/8/12 colonnes selon breakpoint.
-- Zone “safe thumb” : actions principales dans le tiers bas mobile.
-- Éviter modales complexes sur petit écran (préférer pages dédiées ou bottom sheets).
-
----
-
-## E) Règles backend pour supporter l’usage mobile
-
-## 1) Payload & performance
-- Endpoints “mobile summary” dédiés : données essentielles seulement.
-- Pagination systématique + curseur pour listes longues.
-- Champs calculés côté serveur (next_action, priorité, score).
-- Compression et cache HTTP agressif pour données stables.
-
-## 2) Priorisation des données
-- Retourner d’abord :
-  - statut,
-  - prochaine action,
-  - dernière interaction,
-  - score/urgence,
-  - CTA recommandé.
-- Différer données secondaires via endpoints détail.
-
-## 3) Contrôleurs/pages
-- Contrôleurs orientés **task-first** plutôt que data-first.
-- DTO séparés “mobile card”, “desktop detail”.
-- Réponses homogènes pour simplifier composants front.
-
-## 4) Robustesse mobile
-- Tolérance réseau faible : retries, timeouts courts, états dégradés.
-- Idempotence des actions rapides (relance, changement d’étape).
-- Journal d’événements léger pour reprise contextuelle.
+## 2.7 Priorité de build composants
+- **P0 (obligatoire sprint 1–2)**: BottomNav, ProspectCard, PrimaryCTAButton, LoadingSkeletonCard, EmptyStateGuided.
+- **P1 (sprint 2–3)**: StrategyBlock, InteractionTimeline, StepperForm, QuickActionSheet.
+- **P2 (sprint 3+)**: BreadcrumbDesktop, InlineActionMenu, variantes avancées.
 
 ---
 
-## F) Priorisation visuelle des modules
+## 3) Architecture responsive mobile/desktop (implémentation)
 
-## Priorité P1 (toujours visibles)
-1. Dashboard
-2. Collecte profils
-3. Stratégie par prospect
-4. Messages IA
-5. Pipeline
+## 3.1 Breakpoints
+- `0–599` : mobile compact.
+- `600–899` : mobile large / petite tablette.
+- `900–1199` : tablette / desktop réduit.
+- `1200+` : desktop complet.
 
-## Priorité P2
-6. Contacts
-7. Génération contenu
+## 3.2 Règles de layout
+1. **Mobile-first CSS**: base pour `<900`, enrichissement progressif ensuite.
+2. **Navigation**:
+   - `<900`: BottomNav + FAB.
+   - `>=900`: Sidebar + TopBar.
+3. **Densité d’information**:
+   - `<900`: 1 colonne, cartes empilées.
+   - `>=900`: 2 zones (liste + détail) sur pages métier.
+4. **Tableaux**:
+   - `<900`: interdits, convertis en cartes actionnables.
+   - `>=900`: autorisés pour productivité (contacts, pipeline, historique).
+5. **Actions critiques**:
+   - Mobile: zone basse (safe thumb).
+   - Desktop: header local + actions inline.
 
-## Priorité P3
-8. Modules annexes / en cours
-
-## Règle visuelle
-- P1 : accessible depuis navigation principale.
-- P2 : accessibles en second niveau et contextuellement depuis prospect.
-- P3 : regroupés dans un hub “Bientôt disponible”.
-
----
-
-## G) Plan de refonte page par page
-
-## Phase 0 — Cadrage (1 semaine)
-- Audit UX actuel (mobile/desktop).
-- Cartographie des parcours critiques (collecte → stratégie → message → pipeline).
-- Définition des KPI UX : temps pour action, taps nécessaires, taux d’achèvement.
-
-## Phase 1 — Fondations design system (1–2 semaines)
-- Tokens (couleurs, spacing, typo, radius, ombres).
-- Bibliothèque composants (cards, buttons, inputs, bottom nav, sidebar, accordéons).
-- Règles accessibilité (contraste, focus, aria).
-
-## Phase 2 — Structure applicative (1 semaine)
-- Layout responsive différencié mobile/desktop.
-- Navigation globale (bottom nav + sidebar).
-- États globaux (loading, erreurs, empty states).
-
-## Phase 3 — Pages cœur P1 (3–4 semaines)
-1. Dashboard mobile-first.
-2. Prospects en cartes + filtres rapides.
-3. Fiche prospect en sections (résumé, stratégie, interactions, pipeline).
-4. Module stratégie central avec CTA IA.
-5. Messages IA simplifiés (générer/éditer/envoyer).
-6. Pipeline tactile mobile + kanban desktop.
-
-## Phase 4 — Pages P2 (1–2 semaines)
-- Contacts optimisés mobile.
-- Génération contenu branchée au contexte prospect.
-
-## Phase 5 — Modules non finalisés (0.5 semaine)
-- Placeholders premium “En cours de développement”.
-- CTA de feedback/utilisateurs pilotes.
-
-## Phase 6 — Optimisation backend mobile (continue)
-- Endpoints summary + détail.
-- Performance/perf budget mobile.
-- Monitoring temps de réponse et erreurs.
-
-## Phase 7 — QA & accessibilité (1 semaine)
-- Tests responsive multi-device.
-- Audit a11y (clavier, lecteurs d’écran, contraste).
-- Tests de parcours terrain (faible réseau).
+## 3.3 Pattern par type de page
+- **Pages hub (Dashboard, Prospects liste)**: cartes + filtres sticky.
+- **Pages détail (Fiche prospect, Stratégie)**: sections accordéon mobile, panneaux desktop.
+- **Pages édition (Messages, Contenu)**: éditeur compact mobile, vue large desktop.
 
 ---
 
-## Décisions UX structurantes (recommandées)
-- Toute page doit répondre à : **“Quelle est la prochaine meilleure action ?”**
-- Une action primaire maximum par écran mobile.
-- Les données secondaires ne doivent jamais bloquer l’action principale.
-- Le module **Stratégie par prospect** devient le pivot entre collecte, contenu, messages et pipeline.
+## 4) Données backend nécessaires par écran
+
+## 4.1 Contrat API global (principes)
+- DTO séparés:
+  - `MobileCardDTO` (léger, actionnable),
+  - `DesktopDetailDTO` (complet).
+- Pagination curseur systématique sur listes.
+- Champs calculés côté serveur:
+  - `next_action`, `priority_score`, `urgency_level`, `last_interaction_at`.
+- Endpoints dédiés `summary` pour chargement initial mobile.
+
+## 4.2 Matrice écran → endpoints/data
+
+| Écran | Endpoint minimum | Données obligatoires | Données différées |
+|---|---|---|---|
+| Dashboard | `GET /api/mobile/dashboard-summary` | KPI jour, relances, prospects chauds, messages en attente | Historique complet activité |
+| Prospects liste | `GET /api/prospects?cursor=` | id, nom, score, statut, next_action, last_interaction | notes longues, pièces jointes |
+| Fiche prospect | `GET /api/prospects/{id}/summary` | profil, stratégie active, pipeline stage, interactions récentes | historique exhaustif |
+| Collecte profils | `POST /api/imports`, `POST /api/imports/{id}/mapping` | source, mapping, validation, erreurs de ligne | logs techniques |
+| Stratégie prospect | `GET/POST /api/prospects/{id}/strategy` | objectif, angle recommandé, actions suivantes, version courante | archive complète des versions |
+| Génération contenu | `POST /api/content/generate` | type template, variables prospect, contenu généré | variantes secondaires |
+| Messages IA | `POST /api/messages/generate`, `POST /api/messages/send` | prompt, proposition, canal, statut envoi | analytics détaillés |
+| Contacts | `GET /api/contacts?cursor=` | identité, statut, tags, prochaine action | interactions historiques longues |
+| Pipeline | `GET /api/pipeline/board` + `POST /api/pipeline/move` | colonnes, cartes, métriques clés, permissions move | analytics avancés conversion |
+
+## 4.3 Exigences robustesse mobile
+1. Timeout court + retry borné (2 tentatives max).
+2. Idempotence pour actions rapides (`send`, `move`, `reminder`).
+3. Journal d’événements minimal côté backend pour reprise contexte.
+4. Gestion dégradée explicite (`partial_data=true`).
+
+---
+
+## 5) Ordre exact d’implémentation (phases courtes)
+
+## Phase 0 (2–3 jours) — Cadrage exécutable
+- Finaliser parcours critiques: collecte → stratégie → message → pipeline.
+- Valider contrats API `summary/detail`.
+- Écrire checklist QA mobile-first.
+
+## Phase 1 (4–5 jours) — Fondations UI + Navigation
+- Livrer tokens + composants P0.
+- Implémenter shell responsive: BottomNav/FAB + Sidebar.
+- Activer états globaux (loading, empty, erreur).
+
+## Phase 2 (4–5 jours) — Prospects hub + Fiche
+- Construire SCR-02 Prospects liste (mobile puis desktop).
+- Construire SCR-03 Fiche prospect (onglets + sections).
+- Brancher champs calculés backend (`next_action`, score, urgence).
+
+## Phase 3 (4–5 jours) — Module pivot Stratégie
+- Construire SCR-05 Stratégie par prospect.
+- Ajouter CTA principal “Générer prochaine action IA”.
+- Persister versions stratégie + historique minimal.
+
+## Phase 4 (4–5 jours) — Messages IA + Génération contenu
+- Construire SCR-07 Messages IA (flow guidé complet).
+- Construire SCR-06 Génération contenu (templates MVP).
+- Connecter variables prospect et actions copier/envoyer.
+
+## Phase 5 (3–4 jours) — Collecte profils + Contacts
+- Construire SCR-04 Collecte profils (stepper 3 étapes).
+- Construire SCR-08 Contacts (liste filtrable + prochaine action).
+- Stabiliser import, mapping léger, validation.
+
+## Phase 6 (3–4 jours) — Dashboard + Pipeline MVP
+- Construire SCR-01 Dashboard orienté action.
+- Construire SCR-09 Pipeline mobile tactile + desktop kanban simple.
+- Brancher métriques clés et actions move/relance.
+
+## Phase 7 (2–3 jours) — Placeholders + durcissement
+- Construire SCR-10/SCR-11 placeholders premium.
+- Audit responsive + accessibilité (focus, contraste, lecteurs).
+- Optimisation perf mobile (payload, cache, monitoring).
+
+---
+
+## 6) Statut des modules (actif / MVP / placeholder)
+
+| Module | Statut cible | Justification | Critère de “Done” |
+|---|---|---|---|
+| Prospects (liste + fiche) | **Actif** | Cœur prospect-first, point d’entrée principal | Filtrer, ouvrir, agir en ≤2 taps |
+| Stratégie par prospect | **Actif** | Pivot central du produit | Next best action générée + historisée |
+| Messages IA | **Actif** | Action commerciale directe | Générer, éditer, envoyer sans friction |
+| Collecte profils | **MVP** | Nécessaire au flux, complexité import progressive | Import + mapping léger + validation exploitable |
+| Génération contenu | **MVP** | Complète Messages IA, mais périmètre réduit initial | Templates prioritaires + variables prospect |
+| Contacts | **MVP** | Support opérationnel, non pivot initial | Liste filtrable + prochaine action visible |
+| Dashboard | **MVP** | Pilotage quotidien synthétique | KPI + relances + quick actions stables |
+| Pipeline | **MVP** | Suivi avancement essentiel mais simplifiable | Déplacer étape + annoter + relancer |
+| Paramètres | **Placeholder** | Non critique MVP commercial | Carte informative + “être notifié” |
+| Modules annexes | **Placeholder** | Hors périmètre MVP | Hub “bientôt disponible” propre |
+
+---
+
+## Backlog immédiat (10 tickets à ouvrir)
+1. Créer `BottomNav` + routing mobile.
+2. Créer `ProspectCard` + quick actions.
+3. API `GET /api/prospects` avec `next_action` et score.
+4. Écran Prospects liste mobile-first.
+5. Écran Fiche prospect avec onglet Stratégie.
+6. API `GET/POST /api/prospects/{id}/strategy`.
+7. CTA IA “Générer prochaine action” (frontend + backend).
+8. Flow Messages IA (generate/edit/send).
+9. Stepper Collecte profils (source/mapping/validation).
+10. Écran Dashboard summary + quick actions.
+
+Ce backlog est l’ordre recommandé pour lancer le MVP **sans casser la logique prospect-first**.
