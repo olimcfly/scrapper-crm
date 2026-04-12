@@ -7,6 +7,7 @@ namespace App\Controllers;
 use App\Core\Database;
 use App\Core\Request;
 use App\Core\Response;
+use App\Core\Database;
 use App\Models\ProspectModel;
 use App\Models\ProspectNoteModel;
 use App\Models\TagModel;
@@ -48,6 +49,10 @@ final class ProspectController
         }
 
         unset($request);
+        if (!$this->requireApiAuth()) {
+            return;
+        }
+
         $prospect = $this->prospects->find($id);
 
         if ($prospect === null) {
@@ -132,6 +137,10 @@ final class ProspectController
         }
 
         unset($request);
+        if (!$this->requireApiAuth()) {
+            return;
+        }
+
         if ($this->prospects->find($id) === null) {
             Response::json(['error' => 'Prospect introuvable.'], 404);
             return;
@@ -179,6 +188,10 @@ final class ProspectController
         }
 
         unset($request);
+        if (!$this->requireApiAuth()) {
+            return;
+        }
+
         if ($this->prospects->find($id) === null) {
             Response::json(['error' => 'Prospect introuvable.'], 404);
             return;
@@ -214,6 +227,16 @@ final class ProspectController
     }
 
     private function requireAuth(): bool
+    {
+        if ($this->auth->check()) {
+            return true;
+        }
+
+        Response::json(['error' => 'Authentification requise.'], 401);
+        return false;
+    }
+
+    private function requireApiAuth(): bool
     {
         if ($this->auth->check()) {
             return true;

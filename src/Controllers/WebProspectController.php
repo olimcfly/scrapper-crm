@@ -80,6 +80,10 @@ final class WebProspectController
         }
 
         $input = $request->input();
+        if (!$this->validateCsrf($input)) {
+            Response::redirect('/prospects/create');
+        }
+
         $errors = $this->validator->validate($input);
 
         if ($errors !== []) {
@@ -173,6 +177,10 @@ final class WebProspectController
         }
 
         $input = $request->input();
+        if (!$this->validateCsrf($input)) {
+            Response::redirect('/prospects/' . $id . '/edit');
+        }
+
         $errors = $this->validator->validate($input);
         if ($errors !== []) {
             View::render('prospects/form', [
@@ -225,6 +233,10 @@ final class WebProspectController
             return;
         }
 
+        if (!$this->validateCsrf($request->input())) {
+            Response::redirect('/prospects/' . $id);
+        }
+
         $content = trim((string) ($request->input()['content'] ?? ''));
         if ($content !== '') {
             try {
@@ -241,6 +253,10 @@ final class WebProspectController
     {
         if (!$this->requireAuth()) {
             return;
+        }
+
+        if (!$this->validateCsrf($request->input())) {
+            Response::redirect('/prospects/' . $id);
         }
 
         $statusId = (int) ($request->input()['status_id'] ?? 0);
@@ -263,6 +279,11 @@ final class WebProspectController
 
         Response::redirect('/login');
         return false;
+    }
+
+    private function validateCsrf(array $input): bool
+    {
+        return Csrf::isValid((string) ($input['_csrf_token'] ?? ''));
     }
 
 }

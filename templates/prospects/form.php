@@ -8,6 +8,7 @@
   <?php endif; ?>
 
   <form method="post" action="<?= htmlspecialchars($action ?? '/prospects/create') ?>">
+    <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars(\App\Services\Csrf::token()) ?>">
     <div class="row">
       <div><label>Prénom</label><input name="first_name" value="<?= htmlspecialchars($prospect['first_name'] ?? '') ?>"></div>
       <div><label>Nom</label><input name="last_name" value="<?= htmlspecialchars($prospect['last_name'] ?? '') ?>"></div>
