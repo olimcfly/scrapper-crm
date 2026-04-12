@@ -18,6 +18,9 @@ final class SourceModel
 
     public function all(): array
     {
-        return $this->db->query('SELECT * FROM sources ORDER BY name ASC')->fetchAll();
+        $stmt = $this->db->prepare('SELECT * FROM sources ORDER BY name ASC');
+        $stmt->execute();
+
+        return $stmt->fetchAll();
     }
 }

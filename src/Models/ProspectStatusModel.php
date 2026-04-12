@@ -18,6 +18,9 @@ final class ProspectStatusModel
 
     public function all(): array
     {
-        return $this->db->query('SELECT * FROM prospect_statuses ORDER BY sort_order ASC, id ASC')->fetchAll();
+        $stmt = $this->db->prepare('SELECT * FROM prospect_statuses ORDER BY sort_order ASC, id ASC');
+        $stmt->execute();
+
+        return $stmt->fetchAll();
     }
 }

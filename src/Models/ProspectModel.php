@@ -24,7 +24,10 @@ final class ProspectModel
                 LEFT JOIN sources so ON so.id = p.source_id
                 ORDER BY p.updated_at DESC';
 
-        return $this->db->query($sql)->fetchAll();
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
     }
 
     public function find(int $id): ?array
