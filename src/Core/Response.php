@@ -10,7 +10,8 @@ final class Response
     {
         http_response_code($status);
         header('Content-Type: application/json; charset=utf-8');
-        echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $json = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        echo $json !== false ? $json : '{"error":"Erreur de sérialisation JSON."}';
     }
 
     public static function redirect(string $url): void

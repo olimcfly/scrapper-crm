@@ -44,11 +44,15 @@
 <?php if (!$isLoginPage): ?>
 <div class="container">
   <h1>CRM PHP / MySQL</h1>
-  <?php $isAuthenticated = isset($_SESSION['auth_user']['id']); ?>
+  <?php $isAuthenticated = is_array($authUser ?? null) && isset($authUser['id']); ?>
   <p>
     <?php if ($isAuthenticated): ?>
-      <a href="/prospects">Prospects</a> · <a href="/prospects/create">Nouveau prospect</a>
+      <a href="/prospects">Prospects</a> · <a href="/prospects/create">Nouveau prospect</a> · <a href="/settings">Paramètres</a>
+      <span style="display:inline-block;margin-left:12px;padding:4px 10px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:999px;color:#3730a3;font-size:13px;">
+        <?= htmlspecialchars((string) ($authUser['name'] ?? 'Utilisateur')) ?> · <?= htmlspecialchars((string) ($authUser['email'] ?? '')) ?>
+      </span>
       <form method="post" action="/logout" style="display:inline;margin-left:10px;">
+        <input type="hidden" name="_csrf" value="<?= htmlspecialchars((string) ($csrfToken ?? "")) ?>">
         <button type="submit" class="btn secondary" style="padding:4px 8px;">Déconnexion</button>
       </form>
     <?php else: ?>
