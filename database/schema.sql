@@ -66,6 +66,17 @@ CREATE TABLE IF NOT EXISTS prospect_notes (
   CONSTRAINT fk_notes_prospect FOREIGN KEY (prospect_id) REFERENCES prospects(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS prospect_events (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  prospect_id INT NOT NULL,
+  event_type VARCHAR(50) NOT NULL,
+  details TEXT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_events_prospect_id (prospect_id),
+  INDEX idx_events_created_at (created_at),
+  CONSTRAINT fk_events_prospect FOREIGN KEY (prospect_id) REFERENCES prospects(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS prospect_tag (
   prospect_id INT NOT NULL,
   tag_id INT NOT NULL,

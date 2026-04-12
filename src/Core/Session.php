@@ -65,4 +65,29 @@ final class Session
 
         session_destroy();
     }
+
+    public static function flash(string $key, string $message): void
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            return;
+        }
+
+        $_SESSION['_flash'][$key] = $message;
+    }
+
+    public static function consumeFlash(string $key): ?string
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            return null;
+        }
+
+        if (!isset($_SESSION['_flash'][$key])) {
+            return null;
+        }
+
+        $message = (string) $_SESSION['_flash'][$key];
+        unset($_SESSION['_flash'][$key]);
+
+        return $message;
+    }
 }

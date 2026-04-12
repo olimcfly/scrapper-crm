@@ -7,10 +7,12 @@ namespace App\Controllers;
 use App\Core\Database;
 use App\Core\Request;
 use App\Core\Response;
+use App\Core\Session;
 use App\Core\View;
 use App\Models\ProspectModel;
 use App\Models\ProspectNoteModel;
 use App\Models\ProspectStatusModel;
+use App\Models\ProspectTimelineModel;
 use App\Models\SourceModel;
 use App\Models\TagModel;
 use App\Services\Auth;
@@ -25,6 +27,7 @@ final class WebProspectController
     private ProspectStatusModel $statuses;
     private SourceModel $sources;
     private TagModel $tags;
+    private ProspectTimelineModel $timeline;
     private ProspectValidator $validator;
     private CsvProspectImportService $csvImport;
     private Auth $auth;
@@ -36,6 +39,7 @@ final class WebProspectController
         $this->statuses = new ProspectStatusModel();
         $this->sources = new SourceModel();
         $this->tags = new TagModel();
+        $this->timeline = new ProspectTimelineModel();
         $this->validator = new ProspectValidator();
         $this->csvImport = new CsvProspectImportService();
         $this->auth = new Auth(Database::connection());
@@ -72,23 +76,24 @@ final class WebProspectController
             $result = $this->prospects->listPaginated($search, $sort, $limit, $offset);
         }
 
+        $input = $request->input();
+        $filters = [
+            'q' => trim((string) ($input['q'] ?? '')),
+            'status_id' => (int) ($input['status_id'] ?? 0),
+            'source_id' => (int) ($input['source_id'] ?? 0),
+        ];
+        $page = max(1, (int) ($input['page'] ?? 1));
+        $result = $this->prospects->search($filters, $page, 15);
+
         View::render('prospects/list', [
             'title' => 'Prospects',
             'prospects' => $result['items'],
-            'filters' => [
-                'q' => $search,
-                'sort' => $sort,
-                'page' => $page,
-                'limit' => $limit,
-            ],
-            'pagination' => [
-                'total' => (int) $result['total'],
-                'page' => $page,
-                'limit' => $limit,
-                'total_pages' => $totalPages,
-                'has_prev' => $page > 1,
-                'has_next' => $page < $totalPages,
-            ],
+            'filters' => $filters,
+            'statuses' => $this->statuses->all(),
+            'sources' => $this->sources->all(),
+            'pagination' => $result,
+            'successMessage' => Session::consumeFlash('success'),
+            'warningMessage' => Session::consumeFlash('warning'),
         ]);
     }
 
@@ -239,18 +244,9 @@ final class WebProspectController
                 $this->tags->syncProspectTags($id, $tagIds);
             }
 
-            Response::redirect('/prospects/' . $id);
-        } catch (\Throwable $e) {
-            Logger::error($e->getMessage());
-            View::render('prospects/form', [
-                'title' => 'Nouveau prospect',
-                'action' => '/prospects/create',
-                'prospect' => $input,
-                'statuses' => $this->statuses->all(),
-                'sources' => $this->sources->all(),
-                'errors' => ['Une erreur serveur est survenue.'],
-            ]);
-        }
+        $this->timeline->create($id, 'creation', 'Prospect créé');
+        Session::flash('success', 'Prospect créé avec succès.');
+        Response::redirect('/prospects/' . $id);
     }
 
     public function show(Request $request, int $id): void
@@ -270,7 +266,10 @@ final class WebProspectController
             'title' => 'Fiche prospect',
             'prospect' => $prospect,
             'notes' => $this->notes->byProspect($id),
+            'timeline' => $this->timeline->byProspect($id),
             'statuses' => $this->statuses->all(),
+            'successMessage' => Session::consumeFlash('success'),
+            'warningMessage' => Session::consumeFlash('warning'),
         ]);
     }
 
@@ -326,21 +325,11 @@ final class WebProspectController
             return;
         }
 
-        try {
-            $payload = $this->validator->normalize($input);
-            $this->prospects->update($id, $payload);
-            Response::redirect('/prospects/' . $id);
-        } catch (\Throwable $e) {
-            Logger::error($e->getMessage());
-            View::render('prospects/form', [
-                'title' => 'Modifier prospect',
-                'action' => '/prospects/' . $id . '/edit',
-                'prospect' => $input,
-                'statuses' => $this->statuses->all(),
-                'sources' => $this->sources->all(),
-                'errors' => ['Une erreur serveur est survenue.'],
-            ]);
-        }
+        $payload = $this->validator->normalize($input);
+        $this->prospects->update($id, $payload);
+        $this->timeline->create($id, 'update', 'Fiche prospect mise à jour');
+        Session::flash('success', 'Prospect mis à jour.');
+        Response::redirect('/prospects/' . $id);
     }
 
     public function destroy(Request $request, int $id): void
@@ -349,14 +338,14 @@ final class WebProspectController
             return;
         }
 
-        try {
-            unset($request);
-            $this->prospects->delete($id);
-            Response::redirect('/prospects');
-        } catch (\Throwable $e) {
-            Logger::error($e->getMessage());
-            View::render('errors/not-found', ['title' => 'Erreur serveur']);
+        unset($request);
+        $prospect = $this->prospects->find($id);
+        if ($prospect !== null) {
+            $this->timeline->create($id, 'deletion', 'Prospect supprimé');
         }
+        $this->prospects->delete($id);
+        Session::flash('success', 'Prospect supprimé.');
+        Response::redirect('/prospects');
     }
 
     public function addNote(Request $request, int $id): void
@@ -371,11 +360,10 @@ final class WebProspectController
 
         $content = trim((string) ($request->input()['content'] ?? ''));
         if ($content !== '') {
-            try {
-                $this->notes->create($id, $content);
-            } catch (\Throwable $e) {
-                Logger::error($e->getMessage());
-            }
+            $this->notes->create($id, $content);
+            Session::flash('success', 'Note ajoutée.');
+        } else {
+            Session::flash('warning', 'La note est vide, aucune modification appliquée.');
         }
 
         Response::redirect('/prospects/' . $id);
@@ -393,11 +381,19 @@ final class WebProspectController
 
         $statusId = (int) ($request->input()['status_id'] ?? 0);
         if ($statusId > 0) {
-            try {
-                $this->prospects->updateStatus($id, $statusId);
-            } catch (\Throwable $e) {
-                Logger::error($e->getMessage());
+            $this->prospects->updateStatus($id, $statusId);
+            $statusName = '';
+            foreach ($this->statuses->all() as $status) {
+                if ((int) $status['id'] === $statusId) {
+                    $statusName = (string) $status['name'];
+                    break;
+                }
             }
+            $detail = $statusName === '' ? 'Statut mis à jour' : 'Statut changé: ' . $statusName;
+            $this->timeline->create($id, 'status_change', $detail);
+            Session::flash('success', 'Statut mis à jour.');
+        } else {
+            Session::flash('warning', 'Veuillez sélectionner un statut valide.');
         }
 
         Response::redirect('/prospects/' . $id);
