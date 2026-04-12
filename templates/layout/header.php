@@ -16,7 +16,6 @@
       --color-sidebar: #0b1220;
       --font-sans: "Inter", "Segoe UI", Arial, sans-serif;
     }
-
     * { box-sizing: border-box; }
     body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-sans); }
     .app-shell { display: flex; min-height: 100vh; }
@@ -48,9 +47,9 @@
     input, select, textarea { width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 8px; }
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 10px; border-bottom: 1px solid #eef2f7; text-align: left; }
-    .btn { display: inline-block; padding: 8px 12px; background: var(--color-primary); color: #fff; border: none; border-radius: 8px; text-decoration: none; cursor: pointer; }
-    .btn.secondary { background: var(--color-secondary); }
-    .btn.danger { background: var(--color-danger); }
+    .btn { display: inline-block; padding: 8px 12px; background: var(--primary); color: #fff; border: none; border-radius: 8px; text-decoration: none; cursor: pointer; }
+    .btn.secondary { background: #475569; }
+    .btn.danger { background: var(--danger); }
     .errors { background: #fef2f2; color: #991b1b; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
     .muted { color:#64748b; }
     .status-badge { display:inline-block; padding: 2px 9px; border-radius:999px; font-size:11px; font-weight:700; white-space: nowrap; }

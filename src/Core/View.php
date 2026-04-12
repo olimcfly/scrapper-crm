@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Services\Auth;
+use App\Support\AdminModules;
 
 final class View
 {
@@ -23,6 +24,8 @@ final class View
 
         $data['authUser'] = $data['authUser'] ?? self::auth()->user();
         $data['csrfToken'] = $data['csrfToken'] ?? Csrf::token();
+        $data['adminModules'] = $data['adminModules'] ?? AdminModules::all();
+        $data['currentPath'] = $data['currentPath'] ?? parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH);
 
         extract($data, EXTR_SKIP);
         require $basePath . 'layout/header.php';

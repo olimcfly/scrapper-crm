@@ -46,12 +46,13 @@ $apiProspects = new ProspectController();
 $apiLookup = new LookupController();
 $webProspects = new WebProspectController();
 $settingsController = new SettingsController();
+$adminController = new AdminController();
 $authController = new AuthController();
 $adminController = new AdminController();
 $guard = new AuthGuard(new Auth(Database::connection()));
 
 $router->add('GET', '/', static function (): void {
-    Response::redirect('/prospects');
+    Response::redirect('/admin');
 });
 
 $router->add('GET', '/login', static fn (Request $req): mixed => $authController->showLogin($req));
