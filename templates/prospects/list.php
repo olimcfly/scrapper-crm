@@ -47,40 +47,6 @@ $detectCategory = static function (array $prospect) use ($normalize): string {
     return 'Autres';
 };
 
-$awarenessFromScore = static function (int $score): string {
-    if ($score >= 75) {
-        return 'Prêt à décider';
-    }
-    if ($score >= 45) {
-        return 'Conscient du besoin';
-    }
-    return 'À éduquer';
-};
-
-$awarenessTone = static function (string $awareness): string {
-    return match ($awareness) {
-        'Prêt à décider' => 'awareness-hot',
-        'Conscient du besoin' => 'awareness-warm',
-        default => 'awareness-cold',
-    };
-};
-
-$priorityLabel = static function (string $priority): string {
-    return match ($priority) {
-        'eleve' => 'Haute priorité',
-        'faible' => 'Priorité basse',
-        default => 'Priorité moyenne',
-    };
-};
-
-$priorityTone = static function (string $priority): string {
-    return match ($priority) {
-        'eleve' => 'priority-high',
-        'faible' => 'priority-low',
-        default => 'priority-medium',
-    };
-};
-
 $statusLabel = '';
 $statusFilterId = (int) ($filters['status_id'] ?? 0);
 if ($statusFilterId > 0) {
@@ -289,6 +255,16 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
     box-shadow: 0 14px 28px rgba(15, 23, 42, 0.1);
   }
 
+  .prospect-card:focus-within {
+    border-color: #93a7ff;
+    box-shadow: 0 0 0 3px rgba(71, 85, 255, 0.16);
+  }
+
+  .prospect-card[data-state='selected'] {
+    border-color: #7c8cff;
+    box-shadow: 0 10px 28px rgba(71, 85, 255, 0.2);
+  }
+
   .prospect-top {
     display: flex;
     align-items: flex-start;
@@ -357,6 +333,7 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
 
   .presence-ok { color: #16a34a; font-weight: 700; }
   .presence-off { color: #94a3b8; font-weight: 700; }
+  .presence-neutral { color: #334155; font-weight: 700; }
 
   .quick-actions {
     display: grid;
@@ -614,67 +591,10 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
     <div class="prospect-list" data-prospect-list style="display:none;">
       <?php foreach ($prospects as $prospect): ?>
         <?php
-          $fullName = trim((string) ($prospect['full_name'] ?? (($prospect['first_name'] ?? '') . ' ' . ($prospect['last_name'] ?? ''))));
-          $score = (int) ($prospect['score'] ?? 0);
-          $awareness = $awarenessFromScore($score);
-          $awarenessClass = $awarenessTone($awareness);
-          $priorityRaw = (string) ($prospect['niveau_priorite'] ?? 'moyen');
-          $priorityClass = $priorityTone($priorityRaw);
-          $priorityText = $priorityLabel($priorityRaw);
-          $category = $detectCategory($prospect);
-          $status = trim((string) ($prospect['status_name'] ?? 'À qualifier')) ?: 'À qualifier';
-          $hasWebsite = trim((string) ($prospect['website'] ?? '')) !== '';
-          $hasSocial = trim((string) ($prospect['instagram_url'] ?? '')) !== ''
-            || trim((string) ($prospect['facebook_url'] ?? '')) !== ''
-            || trim((string) ($prospect['linkedin_url'] ?? '')) !== ''
-            || trim((string) ($prospect['tiktok_url'] ?? '')) !== '';
-          $zoneScope = (trim((string) ($prospect['country'] ?? '')) === '' || mb_strtolower((string) ($prospect['country'] ?? '')) === 'france')
-            ? 'Locale'
-            : 'Multi-zone';
+          $prospectCard = $prospect;
+          $cardState = 'default';
+          require __DIR__ . '/../components/prospect_card.php';
         ?>
-        <article
-          class="prospect-card"
-          data-card
-          data-category="<?= htmlspecialchars($category) ?>"
-          data-city="<?= htmlspecialchars((string) ($prospect['city'] ?? '')) ?>"
-          data-awareness="<?= htmlspecialchars($awareness) ?>"
-          data-social="<?= $hasSocial ? 'oui' : 'non' ?>"
-          data-website="<?= $hasWebsite ? 'oui' : 'non' ?>"
-          data-priority="<?= htmlspecialchars($priorityRaw) ?>"
-          data-status="<?= (int) ($prospect['status_id'] ?? 0) ?>"
-          data-zone="<?= htmlspecialchars($zoneScope) ?>"
-        >
-          <div class="prospect-top">
-            <div>
-              <h3 class="prospect-name"><?= htmlspecialchars($fullName !== '' ? $fullName : 'Prospect sans nom') ?></h3>
-              <p class="prospect-meta">
-                <?= htmlspecialchars((string) ($prospect['activity'] ?? 'Activité non renseignée')) ?>
-                · <?= htmlspecialchars((string) ($prospect['city'] ?? 'Ville inconnue')) ?>
-              </p>
-            </div>
-            <span class="status-pill" style="background:#eef2ff;color:#3730a3;border-color:#c7d2fe;"><?= htmlspecialchars($status) ?></span>
-          </div>
-
-          <div class="prospect-badges">
-            <span class="score-pill">Score <?= $score ?></span>
-            <span class="awareness-pill <?= htmlspecialchars($awarenessClass) ?>"><?= htmlspecialchars($awareness) ?></span>
-            <span class="priority-pill <?= htmlspecialchars($priorityClass) ?>"><?= htmlspecialchars($priorityText) ?></span>
-          </div>
-
-          <div class="presence-grid">
-            <div class="presence-item"><span>Site web</span><span class="<?= $hasWebsite ? 'presence-ok' : 'presence-off' ?>"><?= $hasWebsite ? 'Oui' : 'Non' ?></span></div>
-            <div class="presence-item"><span>Réseaux</span><span class="<?= $hasSocial ? 'presence-ok' : 'presence-off' ?>"><?= $hasSocial ? 'Oui' : 'Non' ?></span></div>
-            <div class="presence-item"><span>Catégorie</span><strong><?= htmlspecialchars($category) ?></strong></div>
-            <div class="presence-item"><span>Zone</span><strong><?= htmlspecialchars($zoneScope) ?></strong></div>
-          </div>
-
-          <div class="quick-actions">
-            <a class="quick-action" href="/prospects/<?= (int) $prospect['id'] ?>">Voir</a>
-            <a class="quick-action ia" href="/prospects/<?= (int) $prospect['id'] ?>">Analyser avec IA</a>
-            <a class="quick-action" href="/prospects/<?= (int) $prospect['id'] ?>/generated-contents">Générer message</a>
-            <a class="quick-action" href="/pipeline#prospect-<?= (int) $prospect['id'] ?>">Ajouter au pipeline</a>
-          </div>
-        </article>
       <?php endforeach; ?>
     </div>
 
