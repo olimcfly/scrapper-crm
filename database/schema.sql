@@ -39,6 +39,12 @@ CREATE TABLE IF NOT EXISTS prospects (
   status_id INT NULL,
   score INT NOT NULL DEFAULT 0,
   notes_summary TEXT,
+  objectif_contact VARCHAR(255) DEFAULT '',
+  prochaine_action VARCHAR(255) DEFAULT '',
+  date_prochaine_action DATE NULL,
+  canal_prioritaire ENUM('appel', 'email', 'sms', 'whatsapp') DEFAULT NULL,
+  niveau_priorite ENUM('faible', 'moyen', 'eleve') NOT NULL DEFAULT 'moyen',
+  blocages TEXT,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_prospects_status_id (status_id),
@@ -102,3 +108,11 @@ SELECT * FROM (
   SELECT 'Referral'
 ) AS defaults
 WHERE NOT EXISTS (SELECT 1 FROM sources LIMIT 1);
+
+-- Sprint 2 (Stratégie par prospect) - migration incrémentale pour base existante
+ALTER TABLE prospects ADD COLUMN IF NOT EXISTS objectif_contact VARCHAR(255) DEFAULT '' AFTER notes_summary;
+ALTER TABLE prospects ADD COLUMN IF NOT EXISTS prochaine_action VARCHAR(255) DEFAULT '' AFTER objectif_contact;
+ALTER TABLE prospects ADD COLUMN IF NOT EXISTS date_prochaine_action DATE NULL AFTER prochaine_action;
+ALTER TABLE prospects ADD COLUMN IF NOT EXISTS canal_prioritaire ENUM('appel', 'email', 'sms', 'whatsapp') DEFAULT NULL AFTER date_prochaine_action;
+ALTER TABLE prospects ADD COLUMN IF NOT EXISTS niveau_priorite ENUM('faible', 'moyen', 'eleve') NOT NULL DEFAULT 'moyen' AFTER canal_prioritaire;
+ALTER TABLE prospects ADD COLUMN IF NOT EXISTS blocages TEXT AFTER niveau_priorite;
