@@ -1,6 +1,6 @@
 <?php
 $citations = [
-    '"Le toucher apaise le corps et laisse l'esprit respirer."',
+    '"Le toucher apaise le corps et laisse l\'esprit respirer."',
     '"Prenez soin de votre énergie, elle façonne votre quotidien."',
     '"Chaque pause bien-être est une promesse de douceur envers soi."',
     '"Le calme intérieur commence par un instant accordé à votre corps."',
