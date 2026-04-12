@@ -23,7 +23,7 @@ $showError = (bool) ($showError ?? false);
     <span class="state-dot" aria-hidden="true"></span>
     <div>
       <strong>Erreur de chargement</strong>
-      <div class="muted">Vérifiez la connexion puis réessayez l’action principale.</div>
+      <div class="muted">Vérifiez la connexion puis relancez l’action principale.</div>
     </div>
   </section>
 <?php endif; ?>

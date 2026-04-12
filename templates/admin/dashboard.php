@@ -4,12 +4,7 @@
   <p style="margin:0;max-width:780px;">Shell responsive actif, navigation stable mobile + desktop, et point d’entrée prospect-first sans écran cassé.</p>
 </div>
 
-<?php
-  $showLoading = false;
-  $showEmpty = false;
-  $showError = false;
-  require __DIR__ . '/../components/global_states.php';
-?>
+<?php require __DIR__ . '/../components/global_states.php'; ?>
 
 <div class="card">
   <p class="muted" style="margin:0 0 6px;">Aujourd’hui</p>

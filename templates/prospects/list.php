@@ -1,14 +1,15 @@
 <div class="card">
-  <h2>Liste prospects</h2>
+  <h2>Prospects</h2>
+  <p class="muted">Hub prospect-first : liste consultable en mobile (cartes) et desktop (table).</p>
   <a class="btn" href="/prospects/create">Créer un prospect</a>
   <a class="btn secondary" href="/prospects/import" style="margin-left:8px;">Importer CSV</a>
 </div>
 
 <?php if (!empty($successMessage)): ?>
-  <div class="alert success"><?= htmlspecialchars((string) $successMessage) ?></div>
+  <div class="global-state loading"><span class="state-dot" aria-hidden="true"></span><div><?= htmlspecialchars((string) $successMessage) ?></div></div>
 <?php endif; ?>
 <?php if (!empty($warningMessage)): ?>
-  <div class="alert warning"><?= htmlspecialchars((string) $warningMessage) ?></div>
+  <div class="global-state error"><span class="state-dot" aria-hidden="true"></span><div><?= htmlspecialchars((string) $warningMessage) ?></div></div>
 <?php endif; ?>
 
 <div class="card">
@@ -53,14 +54,30 @@
     <?= (int) ($pagination['total'] ?? 0) ?> prospect(s) · page <?= (int) ($pagination['page'] ?? 1) ?> / <?= (int) ($pagination['total_pages'] ?? 1) ?>
   </p>
 
-  <table>
-    <thead>
-    <tr><th>Nom</th><th>Statut</th><th>Source</th><th>Activité</th><th>Ville</th><th>Email</th><th>Score</th><th>Actions</th></tr>
-    </thead>
-    <tbody>
-    <?php if (empty($prospects)): ?>
-      <tr><td colspan="8" class="muted">Aucun prospect trouvé avec ces filtres.</td></tr>
-    <?php else: ?>
+  <?php if (empty($prospects)): ?>
+    <?php
+      $title = 'Aucun prospect trouvé';
+      $message = 'Ajustez les filtres ou ajoutez un nouveau prospect pour alimenter la stratégie.';
+      $ctaHref = '/prospects/create';
+      $ctaLabel = 'Créer un prospect';
+      require __DIR__ . '/../components/empty_state_guided.php';
+    ?>
+  <?php else: ?>
+    <div class="prospect-mobile-list" style="display:grid;gap:12px;">
+      <?php foreach ($prospects as $p): ?>
+        <article class="kpi-card">
+          <strong><?= htmlspecialchars((string) ($p['full_name'] ?? (($p['first_name'] ?? '').' '.($p['last_name'] ?? '')))) ?></strong>
+          <p class="muted" style="margin:6px 0;">Statut: <?= htmlspecialchars((string) ($p['status_name'] ?? '—')) ?> · Score: <?= (int) ($p['score'] ?? 0) ?></p>
+          <a class="btn secondary compact" href="/prospects/<?= (int) $p['id'] ?>">Ouvrir</a>
+        </article>
+      <?php endforeach; ?>
+    </div>
+
+    <table class="prospect-table" style="display:none;">
+      <thead>
+      <tr><th>Nom</th><th>Statut</th><th>Source</th><th>Activité</th><th>Ville</th><th>Email</th><th>Score</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
       <?php foreach ($prospects as $p): ?>
         <tr>
           <td><?= htmlspecialchars((string) ($p['full_name'] ?? (($p['first_name'] ?? '').' '.($p['last_name'] ?? '')))) ?></td>
@@ -70,12 +87,13 @@
           <td><?= htmlspecialchars((string) ($p['city'] ?? '')) ?></td>
           <td><?= htmlspecialchars((string) ($p['professional_email'] ?? '')) ?></td>
           <td><?= (int) ($p['score'] ?? 0) ?></td>
-          <td><a class="btn secondary" href="/prospects/<?= (int) $p['id'] ?>">Voir</a></td>
+          <td><a class="btn secondary compact" href="/prospects/<?= (int) $p['id'] ?>">Voir</a></td>
         </tr>
       <?php endforeach; ?>
-    <?php endif; ?>
-    </tbody>
-  </table>
+      </tbody>
+    </table>
+    <style>@media (min-width:900px){.prospect-mobile-list{display:none!important}.prospect-table{display:table!important}}</style>
+  <?php endif; ?>
 
   <?php
     $currentPage = (int) ($pagination['page'] ?? 1);

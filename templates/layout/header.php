@@ -15,17 +15,15 @@
       --ds-color-primary: #2563eb;
       --ds-color-primary-strong: #1d4ed8;
       --ds-color-success: #16a34a;
-      --ds-color-warning: #ca8a04;
+      --ds-color-warning: #d97706;
       --ds-color-danger: #dc2626;
       --ds-color-sidebar: #0b1220;
-
       --ds-space-1: 4px;
       --ds-space-2: 8px;
       --ds-space-3: 12px;
       --ds-space-4: 16px;
       --ds-space-5: 24px;
       --ds-space-6: 32px;
-
       --ds-radius-sm: 8px;
       --ds-radius-md: 12px;
       --ds-radius-lg: 16px;
@@ -34,7 +32,6 @@
       --ds-font-sans: "Inter", "Segoe UI", Arial, sans-serif;
       --bottom-nav-height: 74px;
     }
-
     * { box-sizing: border-box; }
     body {
       margin: 0;
@@ -43,13 +40,7 @@
       font-family: var(--ds-font-sans);
       line-height: 1.4;
     }
-
-    .app-shell {
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: 1fr;
-    }
-
+    .app-shell { min-height: 100vh; display: grid; grid-template-columns: 1fr; }
     .sidebar {
       display: none;
       width: 280px;
@@ -98,7 +89,6 @@
       z-index: 30;
       margin-bottom: var(--ds-space-4);
       background: rgba(248, 250, 252, 0.96);
-      backdrop-filter: blur(8px);
       border: 1px solid var(--ds-color-border);
       border-radius: var(--ds-radius-md);
       padding: var(--ds-space-3) var(--ds-space-4);
@@ -107,8 +97,8 @@
       justify-content: space-between;
       gap: var(--ds-space-3);
       box-shadow: var(--ds-shadow-sm);
+      backdrop-filter: blur(8px);
     }
-
     .topbar-main h1 { margin: 0; font-size: 18px; }
     .topbar-main .muted { margin-top: 2px; }
 
@@ -154,28 +144,12 @@
 
     .btn:hover, .btn:focus-visible { background: var(--ds-color-primary-strong); outline: none; }
     .btn.secondary { background: #475569; }
-    .btn.danger { background: var(--ds-color-danger); }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #d1d5db;
-      border-radius: var(--ds-radius-sm);
-      background: #fff;
-    }
-
+    .btn.compact { min-height: 36px; padding: 6px 10px; }
+    .primary-cta-button { min-height: 48px; border-radius: 12px; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: var(--ds-radius-sm); background: #fff; }
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 10px; border-bottom: 1px solid #eef2f7; text-align: left; }
-
-    .status-badge {
-      display: inline-block;
-      padding: 2px 9px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
+    .status-badge { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; }
     .status-active { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
     .status-mvp { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
     .status-placeholder { background: #e0e7ff; color: #3730a3; border: 1px solid #a5b4fc; }
@@ -227,17 +201,9 @@
     .empty-state-guided h3 { margin: 0 0 var(--ds-space-2); }
 
     .bottom-nav {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: var(--bottom-nav-height);
-      background: #fff;
-      border-top: 1px solid var(--ds-color-border);
-      box-shadow: 0 -8px 20px rgba(15, 23, 42, 0.08);
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      z-index: 40;
+      position: fixed; left: 0; right: 0; bottom: 0; height: var(--bottom-nav-height); background: #fff;
+      border-top: 1px solid var(--ds-color-border); box-shadow: 0 -8px 20px rgba(15, 23, 42, 0.08);
+      display: grid; grid-template-columns: repeat(5, 1fr); z-index: 40;
     }
 
     .bottom-nav-link {
@@ -254,13 +220,15 @@
 
     .bottom-nav-link.active { color: var(--ds-color-primary-strong); font-weight: 700; }
     .bottom-nav-link span[aria-hidden='true'] { font-size: 18px; }
-
+    @keyframes pulse { 0% { background-position: 0 0; } 100% { background-position: 200% 0; } }
+    @media (min-width: 600px) { .quick-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (min-width: 900px) {
       .app-shell { grid-template-columns: 280px 1fr; }
       .sidebar { display: block; }
       .workspace { padding: var(--ds-space-5); }
       .bottom-nav { display: none; }
       .topbar-main h1 { font-size: 20px; }
+      .dashboard-kpi { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     }
   </style>
 </head>
@@ -280,6 +248,7 @@
     <?php if ($isAuthenticated): ?>
       <?php require __DIR__ . '/../components/navigation/desktop_sidebar.php'; ?>
     <?php endif; ?>
+
     <main class="workspace">
       <div class="container">
         <?php require __DIR__ . '/../components/navigation/topbar_compact.php'; ?>
