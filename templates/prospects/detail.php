@@ -12,14 +12,19 @@ $pipelineHeat = (string) ($iaSuggestion['heat'] ?? '❄️ froid');
 <?php endif; ?>
 
 <div class="card">
-  <h2 style="margin:0 0 6px;"><?= htmlspecialchars((string) ($prospect['full_name'] ?? '')) ?></h2>
-  <p class="muted" style="margin:0 0 8px;"><?= htmlspecialchars((string) ($prospect['activity'] ?? 'Plateforme inconnue')) ?> · <?= htmlspecialchars((string) ($prospect['city'] ?? '')) ?></p>
-  <p style="margin:0 0 8px;">Pipeline: <strong><?= htmlspecialchars((string) ($pipeline['stage_name'] ?? 'Nouveau')) ?></strong> · Température: <strong><?= htmlspecialchars($pipelineHeat) ?></strong></p>
-  <p style="margin:0;">Dernière action: <?= htmlspecialchars((string) ($pipeline['last_action'] ?? '—')) ?> | Prochaine action: <strong><?= htmlspecialchars((string) ($pipeline['next_action'] ?? '—')) ?></strong></p>
+  <h2><?= htmlspecialchars((string) ($prospect['full_name'] ?? '')) ?></h2>
+  <div class="prospect-meta-list">
+    <p class="muted"><strong>Activité :</strong> <?= htmlspecialchars((string) ($prospect['activity'] ?? 'Plateforme inconnue')) ?></p>
+    <p class="muted"><strong>Ville :</strong> <?= htmlspecialchars((string) ($prospect['city'] ?? '')) ?></p>
+    <p><strong>Pipeline :</strong> <?= htmlspecialchars((string) ($pipeline['stage_name'] ?? 'Nouveau')) ?></p>
+    <p><strong>Température :</strong> <?= htmlspecialchars($pipelineHeat) ?></p>
+    <p><strong>Dernière action :</strong> <?= htmlspecialchars((string) ($pipeline['last_action'] ?? '—')) ?></p>
+    <p><strong>Prochaine action :</strong> <?= htmlspecialchars((string) ($pipeline['next_action'] ?? '—')) ?></p>
+  </div>
 </div>
 
-<div class="card">
-  <h3 style="margin-top:0;">Actions guidées</h3>
+<div class="card stack-sm">
+  <h3>Actions guidées</h3>
   <div class="row">
     <div>
       <form method="post" action="/prospects/<?= (int) $prospect['id'] ?>/messages">
@@ -35,29 +40,29 @@ $pipelineHeat = (string) ($iaSuggestion['heat'] ?? '❄️ froid');
   </div>
 </div>
 
-<div class="card">
-  <h3 style="margin-top:0;">Suggestion IA de conversion</h3>
+<div class="card stack-sm">
+  <h3>Suggestion IA de conversion</h3>
   <?php if ($isActionOverdue): ?>
     <p class="muted">⚠️ Action en retard détectée.</p>
   <?php endif; ?>
-  <p><strong>Next action:</strong> <?= htmlspecialchars((string) ($iaSuggestion['next_action'] ?? '')) ?></p>
-  <p><strong>Message suggestion:</strong><br><?= nl2br(htmlspecialchars((string) ($iaSuggestion['message_suggestion'] ?? ''))) ?></p>
+  <p><strong>Next action :</strong> <?= htmlspecialchars((string) ($iaSuggestion['next_action'] ?? '')) ?></p>
+  <p><strong>Message suggestion :</strong><br><?= nl2br(htmlspecialchars((string) ($iaSuggestion['message_suggestion'] ?? ''))) ?></p>
   <details>
     <summary>Voir le prompt IA</summary>
     <pre style="white-space:pre-wrap;"><?= htmlspecialchars((string) ($iaSuggestion['prompt'] ?? '')) ?></pre>
   </details>
-  <form method="post" action="/prospects/<?= (int) $prospect['id'] ?>/suggest-next-action" style="margin-top:10px;">
+  <form method="post" action="/prospects/<?= (int) $prospect['id'] ?>/suggest-next-action" class="mt-sm">
     <input type="hidden" name="_csrf" value="<?= htmlspecialchars((string) ($csrfToken ?? '')) ?>">
     <button class="btn" type="submit">Suggérer prochaine action</button>
   </form>
 </div>
 
-<div class="card">
-  <h3 style="margin-top:0;">Historique messages</h3>
+<div class="card stack-sm">
+  <h3>Historique messages</h3>
   <?php if (($messagesTableAvailable ?? true) === false): ?>
     <p class="muted">Messagerie non initialisée pour cet environnement. Exécutez la migration pour activer l’historique.</p>
   <?php else: ?>
-    <form method="post" action="/prospects/<?= (int) $prospect['id'] ?>/messages">
+    <form method="post" action="/prospects/<?= (int) $prospect['id'] ?>/messages" class="stack-sm">
       <input type="hidden" name="_csrf" value="<?= htmlspecialchars((string) ($csrfToken ?? '')) ?>">
       <div class="row">
         <div>
@@ -82,17 +87,17 @@ $pipelineHeat = (string) ($iaSuggestion['heat'] ?? '❄️ froid');
       <p class="muted">Aucun message enregistré pour ce prospect.</p>
     <?php endif; ?>
     <?php foreach (($messages ?? []) as $message): ?>
-      <article style="border-top:1px solid #e2e8f0;padding-top:8px;margin-top:8px;">
-        <p class="muted" style="margin:0;"><?= htmlspecialchars((string) ($message['created_at'] ?? '')) ?> · <?= htmlspecialchars((string) ($message['type'] ?? 'note')) ?> · <?= htmlspecialchars((string) ($message['direction'] ?? 'sent')) ?></p>
-        <p style="margin:4px 0 0;"><?= nl2br(htmlspecialchars((string) ($message['content'] ?? ''))) ?></p>
+      <article class="message-item">
+        <p class="muted message-meta"><?= htmlspecialchars((string) ($message['created_at'] ?? '')) ?> · <?= htmlspecialchars((string) ($message['type'] ?? 'note')) ?> · <?= htmlspecialchars((string) ($message['direction'] ?? 'sent')) ?></p>
+        <p class="message-content"><?= nl2br(htmlspecialchars((string) ($message['content'] ?? ''))) ?></p>
       </article>
     <?php endforeach; ?>
   <?php endif; ?>
 </div>
 
-<div class="card" id="add-note">
-  <h3 style="margin-top:0;">Ajouter note</h3>
-  <form method="post" action="/prospects/<?= (int)$prospect['id'] ?>/notes">
+<div class="card stack-sm" id="add-note">
+  <h3>Ajouter note</h3>
+  <form method="post" action="/prospects/<?= (int)$prospect['id'] ?>/notes" class="stack-sm">
     <input type="hidden" name="_csrf" value="<?= htmlspecialchars((string) ($csrfToken ?? '')) ?>">
     <textarea name="content" required></textarea>
     <p><button class="btn" type="submit">Ajouter note</button></p>
