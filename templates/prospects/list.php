@@ -1,6 +1,7 @@
 <div class="card">
   <h2>Liste prospects</h2>
   <a class="btn" href="/prospects/create">Créer un prospect</a>
+  <a class="btn secondary" href="/prospects/import" style="margin-left:8px;">Importer CSV</a>
 </div>
 
 <div class="card">

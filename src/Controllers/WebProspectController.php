@@ -14,7 +14,9 @@ use App\Models\ProspectStatusModel;
 use App\Models\SourceModel;
 use App\Models\TagModel;
 use App\Services\Auth;
+use App\Services\CsvProspectImportService;
 use App\Services\ProspectValidator;
+use RuntimeException;
 
 final class WebProspectController
 {
@@ -24,6 +26,7 @@ final class WebProspectController
     private SourceModel $sources;
     private TagModel $tags;
     private ProspectValidator $validator;
+    private CsvProspectImportService $csvImport;
     private Auth $auth;
 
     public function __construct()
@@ -34,6 +37,7 @@ final class WebProspectController
         $this->sources = new SourceModel();
         $this->tags = new TagModel();
         $this->validator = new ProspectValidator();
+        $this->csvImport = new CsvProspectImportService();
         $this->auth = new Auth(Database::connection());
     }
 
@@ -65,6 +69,102 @@ final class WebProspectController
             'sources' => $this->sources->all(),
             'errors' => [],
         ]);
+    }
+
+    public function importForm(Request $request): void
+    {
+        if (!$this->requireAuth()) {
+            return;
+        }
+
+        unset($request);
+        View::render('prospects/import_upload', [
+            'title' => 'Import CSV prospects',
+            'errors' => [],
+        ]);
+    }
+
+    public function importUpload(Request $request): void
+    {
+        if (!$this->requireAuth()) {
+            return;
+        }
+
+        unset($request);
+        $file = $_FILES['csv_file'] ?? null;
+
+        if (!is_array($file)) {
+            View::render('prospects/import_upload', [
+                'title' => 'Import CSV prospects',
+                'errors' => ['Aucun fichier CSV reçu.'],
+            ]);
+            return;
+        }
+
+        try {
+            $preview = $this->csvImport->parseUploadedFile($file);
+            $_SESSION['csv_import_preview'] = $preview;
+
+            View::render('prospects/import_mapping', [
+                'title' => 'Mapping des colonnes CSV',
+                'headers' => $preview['headers'],
+                'fileName' => $preview['file_name'],
+                'sampleRows' => array_slice($preview['rows'], 0, 5),
+                'errors' => [],
+                'fieldLabels' => $this->importFieldLabels(),
+            ]);
+        } catch (RuntimeException $e) {
+            View::render('prospects/import_upload', [
+                'title' => 'Import CSV prospects',
+                'errors' => [$e->getMessage()],
+            ]);
+        }
+    }
+
+    public function importProcess(Request $request): void
+    {
+        if (!$this->requireAuth()) {
+            return;
+        }
+
+        $preview = $_SESSION['csv_import_preview'] ?? null;
+
+        if (!is_array($preview) || !isset($preview['headers'], $preview['rows'])) {
+            View::render('prospects/import_upload', [
+                'title' => 'Import CSV prospects',
+                'errors' => ['Session expirée. Rechargez un fichier CSV pour recommencer.'],
+            ]);
+            return;
+        }
+
+        $mapping = [];
+        $input = $request->input();
+
+        foreach (array_keys($this->importFieldLabels()) as $field) {
+            $mapping[$field] = trim((string) ($input['map_' . $field] ?? ''));
+        }
+
+        try {
+            $report = $this->csvImport->import($preview['headers'], $preview['rows'], $mapping);
+            unset($_SESSION['csv_import_preview']);
+
+            View::render('prospects/import_report', [
+                'title' => 'Rapport import CSV',
+                'fileName' => $preview['file_name'] ?? 'import.csv',
+                'totalRows' => count($preview['rows']),
+                'report' => $report,
+            ]);
+        } catch (RuntimeException $e) {
+            View::render('prospects/import_mapping', [
+                'title' => 'Mapping des colonnes CSV',
+                'headers' => $preview['headers'],
+                'fileName' => $preview['file_name'] ?? 'import.csv',
+                'sampleRows' => array_slice($preview['rows'], 0, 5),
+                'errors' => [$e->getMessage()],
+                'fieldLabels' => $this->importFieldLabels(),
+                'selectedMapping' => $mapping,
+            ]);
+        }
     }
 
     public function store(Request $request): void
@@ -222,4 +322,20 @@ final class WebProspectController
         return false;
     }
 
+    /** @return array<string, string> */
+    private function importFieldLabels(): array
+    {
+        return [
+            'first_name' => 'Prénom *',
+            'last_name' => 'Nom *',
+            'professional_email' => 'Email professionnel',
+            'professional_phone' => 'Téléphone professionnel',
+            'business_name' => 'Entreprise',
+            'activity' => 'Activité',
+            'city' => 'Ville',
+            'country' => 'Pays',
+            'website' => 'Site web',
+            'notes_summary' => 'Notes',
+        ];
+    }
 }
