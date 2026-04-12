@@ -54,6 +54,8 @@ $router->add('GET', '/', static function (): void {
 
 $router->add('GET', '/login', static fn (Request $req): mixed => $authController->showLogin($req));
 $router->add('POST', '/login', static fn (Request $req): mixed => $authController->login($req));
+$router->add('GET', '/login/verify', static fn (Request $req): mixed => $authController->showVerify($req));
+$router->add('POST', '/login/verify', static fn (Request $req): mixed => $authController->verify($req));
 $router->add('POST', '/logout', static fn (Request $req): mixed => $authController->logout($req));
 
 // Web routes (PHP views)

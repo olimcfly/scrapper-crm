@@ -14,6 +14,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ------------------------------------------------------------
 -- DROP (ordre inverse des clés étrangères)
 -- ------------------------------------------------------------
+DROP TABLE IF EXISTS login_tokens;
 DROP TABLE IF EXISTS prospect_tag;
 DROP TABLE IF EXISTS prospect_events;
 DROP TABLE IF EXISTS prospect_notes;
@@ -46,6 +47,24 @@ CREATE TABLE users (
   UNIQUE KEY uq_users_email    (email),
   KEY          idx_users_role      (role),
   KEY          idx_users_is_active (is_active)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- TABLE : login_tokens
+-- Codes OTP à usage unique pour la connexion sans mot de passe.
+-- TTL : 15 minutes. Max 5 tentatives par token.
+-- ============================================================
+CREATE TABLE login_tokens (
+  id         INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  email      VARCHAR(190)  NOT NULL,
+  token_hash VARCHAR(64)   NOT NULL,           -- SHA-256 du code à 6 chiffres
+  expires_at DATETIME      NOT NULL,
+  attempts   TINYINT       NOT NULL DEFAULT 0, -- invalidé après 5 tentatives
+  used_at    DATETIME               DEFAULT NULL,
+  created_at DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_login_tokens_email   (email),
+  KEY idx_login_tokens_expires (expires_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
@@ -213,10 +232,8 @@ INSERT INTO sources (name) VALUES
   ('Instagram'),
   ('Referral');
 
--- Utilisateur admin de test
--- Mot de passe en clair : ChangeMe123!  (bcrypt cost 12)
--- !! Changer le mot de passe immédiatement après la première connexion !!
+-- Utilisateurs — connexion par code OTP envoyé par email (pas de mot de passe)
+-- Le champ password est volontairement invalide ('!DISABLED') pour ces comptes.
 INSERT INTO users (first_name, last_name, email, password, role, is_active) VALUES
-  ('Admin', '', 'admin@example.com',
-   '$2y$12$TZobtnLFqihMU0SY8CUJquKlAxfD0wIMpTlAffyixUpbjh9iyM6xe',
-   'admin', 1);
+  ('Coralie', 'Montreuil', 'contact@coraliemontreuil.fr', '!DISABLED', 'user',  1),
+  ('Admin',   'CRM',       'admin@coraliemontreuil.fr',   '!DISABLED', 'admin', 1);

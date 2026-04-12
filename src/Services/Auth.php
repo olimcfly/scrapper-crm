@@ -111,6 +111,46 @@ final class Auth
         return (int) $_SESSION[self::SESSION_KEY]['id'];
     }
 
+    /**
+     * Creates a session for a user identified by email (used after OTP verification).
+     */
+    public function loginByEmail(string $email): bool
+    {
+        $user = $this->users->findByEmail($email);
+        if ($user === null || (int) ($user['is_active'] ?? 0) !== 1) {
+            return false;
+        }
+
+        Session::start();
+        Session::regenerate();
+
+        $userId = (int) $user['id'];
+        $_SESSION[self::SESSION_KEY] = [
+            'id'    => $userId,
+            'name'  => $this->buildDisplayName($user),
+            'email' => (string) $user['email'],
+        ];
+        $_SESSION[self::LAST_ACTIVITY_KEY] = time();
+
+        $this->users->updateLastLogin($userId);
+
+        return true;
+    }
+
+    /**
+     * Returns the user array if the email exists and is active, null otherwise.
+     * Used to check authorised users before generating an OTP (without revealing existence).
+     */
+    public function findUserByEmail(string $email): ?array
+    {
+        $user = $this->users->findByEmail($email);
+        if ($user === null || (int) ($user['is_active'] ?? 0) !== 1) {
+            return null;
+        }
+
+        return $user;
+    }
+
     public function logout(): void
     {
         Session::start();

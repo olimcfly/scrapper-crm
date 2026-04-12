@@ -1,6 +1,6 @@
 <?php
 $citations = [
-    '"Le toucher apaise le corps et laisse l’esprit respirer."',
+    '"Le toucher apaise le corps et laisse l'esprit respirer."',
     '"Prenez soin de votre énergie, elle façonne votre quotidien."',
     '"Chaque pause bien-être est une promesse de douceur envers soi."',
     '"Le calme intérieur commence par un instant accordé à votre corps."',
@@ -97,6 +97,15 @@ $randomCitation = $citations[array_rand($citations)];
     line-height: 1.5;
   }
 
+  .login-email-hint {
+    margin: 0 0 24px;
+    padding: 10px 14px;
+    background: #f0ece3;
+    border-radius: 10px;
+    color: #33483d;
+    font-size: .9rem;
+  }
+
   .login-field {
     margin-bottom: 16px;
   }
@@ -114,8 +123,11 @@ $randomCitation = $citations[array_rand($citations)];
     border-radius: 12px;
     background: #fcfdf9;
     padding: 12px 14px;
-    font-size: 0.98rem;
+    font-size: 1.4rem;
+    letter-spacing: 6px;
     color: #1f2937;
+    text-align: center;
+    font-family: monospace;
     transition: border-color 0.18s ease, box-shadow 0.18s ease;
   }
 
@@ -140,6 +152,19 @@ $randomCitation = $citations[array_rand($citations)];
 
   .login-submit:hover {
     filter: brightness(1.04);
+  }
+
+  .login-back {
+    display: block;
+    margin-top: 14px;
+    text-align: center;
+    font-size: .88rem;
+    color: #758f73;
+    text-decoration: none;
+  }
+
+  .login-back:hover {
+    text-decoration: underline;
   }
 
   .login-footnote {
@@ -197,12 +222,16 @@ $randomCitation = $citations[array_rand($citations)];
 
   <section class="login-form-area">
     <div class="login-card">
-      <h2 class="login-title">Espace professionnel</h2>
-      <p class="login-subtitle">Entrez votre email pour recevoir un code de connexion à usage unique.</p>
+      <h2 class="login-title">Code de vérification</h2>
+      <p class="login-subtitle">Un code à 6 chiffres a été envoyé à votre adresse email.</p>
+
+      <p class="login-email-hint">
+        Code envoyé à <strong><?= htmlspecialchars($email ?? '') ?></strong>
+      </p>
 
       <?php if (!empty($errors)): ?>
         <div class="login-errors">
-          <strong>Impossible de vous connecter :</strong>
+          <strong>Erreur :</strong>
           <ul>
             <?php foreach ($errors as $error): ?>
               <li><?= htmlspecialchars($error) ?></li>
@@ -211,23 +240,29 @@ $randomCitation = $citations[array_rand($citations)];
         </div>
       <?php endif; ?>
 
-      <form method="post" action="/login" novalidate>
+      <form method="post" action="/login/verify" novalidate>
         <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken ?? '') ?>">
         <div class="login-field">
-          <label class="login-label" for="email">Email professionnel</label>
+          <label class="login-label" for="code">Code à 6 chiffres</label>
           <input
             class="login-input"
-            id="email"
-            type="email"
-            name="email"
-            autocomplete="email"
+            id="code"
+            type="text"
+            name="code"
+            inputmode="numeric"
+            pattern="\d{6}"
+            maxlength="6"
+            autocomplete="one-time-code"
+            autofocus
+            placeholder="000000"
             required
-            value="<?= htmlspecialchars((string) ($old['email'] ?? '')) ?>"
           >
         </div>
 
-        <button type="submit" class="login-submit">Recevoir mon code de connexion</button>
+        <button type="submit" class="login-submit">Valider et accéder</button>
       </form>
+
+      <a class="login-back" href="/login">← Renvoyer un nouveau code</a>
 
       <p class="login-footnote">Espace réservé – Bien-être &amp; Sérénité</p>
     </div>
