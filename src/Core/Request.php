@@ -30,4 +30,17 @@ final class Request
 
         return is_array($data) ? $data : [];
     }
+
+    public function input(): array
+    {
+        if ($this->method() === 'GET') {
+            return $_GET;
+        }
+
+        if (stripos((string) ($_SERVER['CONTENT_TYPE'] ?? ''), 'application/json') !== false) {
+            return $this->json();
+        }
+
+        return $_POST;
+    }
 }

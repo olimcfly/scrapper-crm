@@ -132,6 +132,17 @@ final class ProspectController
         Response::json(['data' => ['id' => $noteId, 'prospect_id' => $id, 'content' => $content]], 201);
     }
 
+    public function notes(Request $request, int $id): void
+    {
+        unset($request);
+        if ($this->prospects->find($id) === null) {
+            Response::json(['error' => 'Prospect introuvable.'], 404);
+            return;
+        }
+
+        Response::json(['data' => $this->notes->byProspect($id)]);
+    }
+
     public function changeStatus(Request $request, int $id): void
     {
         if ($this->prospects->find($id) === null) {
