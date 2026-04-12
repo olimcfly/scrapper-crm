@@ -11,8 +11,9 @@ $prioriteLabels = ['faible' => 'Faible', 'moyen' => 'Moyen', 'eleve' => 'Élevé
   <p>Statut: <strong><?= htmlspecialchars((string) ($prospect['status_name'] ?? '—')) ?></strong> · Source: <strong><?= htmlspecialchars((string) ($prospect['source_name'] ?? '—')) ?></strong></p>
   <p>Email: <?= htmlspecialchars((string) ($prospect['professional_email'] ?? '')) ?> | Tél: <?= htmlspecialchars((string) ($prospect['professional_phone'] ?? '')) ?></p>
   <p>
-    <a class="btn" href="/prospects/<?= (int) $prospect['id'] ?>/edit">Modifier</a>
-    <form style="display:inline" method="post" action="/prospects/<?= (int) $prospect['id'] ?>/delete" onsubmit="return confirm('Supprimer ce prospect ?')">
+    <a class="btn" href="/prospects/<?= (int)$prospect['id'] ?>/edit">Modifier</a>
+    <form style="display:inline" method="post" action="/prospects/<?= (int)$prospect['id'] ?>/delete" onsubmit="return confirm('Supprimer ce prospect ?')">
+      <input type="hidden" name="_csrf" value="<?= htmlspecialchars((string) ($csrfToken ?? "")) ?>">
       <button class="btn danger" type="submit">Supprimer</button>
     </form>
   </p>
@@ -40,7 +41,8 @@ $prioriteLabels = ['faible' => 'Faible', 'moyen' => 'Moyen', 'eleve' => 'Élevé
 
 <div class="card">
   <h3>Changer le statut</h3>
-  <form method="post" action="/prospects/<?= (int) $prospect['id'] ?>/status">
+  <form method="post" action="/prospects/<?= (int)$prospect['id'] ?>/status">
+    <input type="hidden" name="_csrf" value="<?= htmlspecialchars((string) ($csrfToken ?? "")) ?>">
     <div class="row">
       <div>
         <select name="status_id">
@@ -56,8 +58,9 @@ $prioriteLabels = ['faible' => 'Faible', 'moyen' => 'Moyen', 'eleve' => 'Élevé
 
 <div class="card">
   <h3>Ajouter une note</h3>
-  <form method="post" action="/prospects/<?= (int) $prospect['id'] ?>/notes">
-    <textarea name="content" required placeholder="Ex: Appelé le 12/04, relance prévue mardi."></textarea>
+  <form method="post" action="/prospects/<?= (int)$prospect['id'] ?>/notes">
+    <input type="hidden" name="_csrf" value="<?= htmlspecialchars((string) ($csrfToken ?? "")) ?>">
+    <textarea name="content" required></textarea>
     <p><button class="btn" type="submit">Ajouter note</button></p>
   </form>
 </div>

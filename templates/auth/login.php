@@ -14,7 +14,7 @@
   <?php endif; ?>
 
   <form method="post" action="/login" novalidate>
-    <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars(\App\Services\Csrf::token()) ?>">
+    <input type="hidden" name="_csrf" value="<?= htmlspecialchars((string) ($csrfToken ?? "")) ?>">
     <div style="margin-bottom:12px;">
       <label for="email" style="display:block;font-weight:600;margin-bottom:6px;">Email professionnel</label>
       <input

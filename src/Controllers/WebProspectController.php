@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\Database;
+use App\Core\Csrf;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Session;
@@ -212,7 +212,7 @@ final class WebProspectController
 
     public function store(Request $request): void
     {
-        if (!$this->requireAuth()) {
+        if (!$this->ensureValidCsrf($request)) {
             return;
         }
 
@@ -298,7 +298,7 @@ final class WebProspectController
 
     public function update(Request $request, int $id): void
     {
-        if (!$this->requireAuth()) {
+        if (!$this->ensureValidCsrf($request)) {
             return;
         }
 
@@ -334,7 +334,7 @@ final class WebProspectController
 
     public function destroy(Request $request, int $id): void
     {
-        if (!$this->requireAuth()) {
+        if (!$this->ensureValidCsrf($request)) {
             return;
         }
 
@@ -350,12 +350,8 @@ final class WebProspectController
 
     public function addNote(Request $request, int $id): void
     {
-        if (!$this->requireAuth()) {
+        if (!$this->ensureValidCsrf($request)) {
             return;
-        }
-
-        if (!$this->validateCsrf($request->input())) {
-            Response::redirect('/prospects/' . $id);
         }
 
         $content = trim((string) ($request->input()['content'] ?? ''));
@@ -371,12 +367,8 @@ final class WebProspectController
 
     public function changeStatus(Request $request, int $id): void
     {
-        if (!$this->requireAuth()) {
+        if (!$this->ensureValidCsrf($request)) {
             return;
-        }
-
-        if (!$this->validateCsrf($request->input())) {
-            Response::redirect('/prospects/' . $id);
         }
 
         $statusId = (int) ($request->input()['status_id'] ?? 0);
@@ -399,30 +391,16 @@ final class WebProspectController
         Response::redirect('/prospects/' . $id);
     }
 
-    private function requireAuth(): bool
+    private function ensureValidCsrf(Request $request): bool
     {
-        if ($this->auth->check()) {
-            return true;
+        $input = $request->input();
+        if (!Csrf::verify((string) ($input['_csrf'] ?? ''))) {
+            http_response_code(419);
+            echo 'Requête expirée. Veuillez recharger la page.';
+            return false;
         }
 
-        Response::redirect('/login');
-        return false;
+        return true;
     }
 
-    /** @return array<string, string> */
-    private function importFieldLabels(): array
-    {
-        return [
-            'first_name' => 'Prénom *',
-            'last_name' => 'Nom *',
-            'professional_email' => 'Email professionnel',
-            'professional_phone' => 'Téléphone professionnel',
-            'business_name' => 'Entreprise',
-            'activity' => 'Activité',
-            'city' => 'Ville',
-            'country' => 'Pays',
-            'website' => 'Site web',
-            'notes_summary' => 'Notes',
-        ];
-    }
 }
