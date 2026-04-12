@@ -7,27 +7,17 @@
   </div>
 
   <?php if (is_array($authUser ?? null) && isset($authUser['id'])): ?>
-    <?php $currentPath = parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH) ?: ''; ?>
-    <nav class="bottom-nav" aria-label="Navigation mobile principale">
-      <?php
-        $bottomNav = [
-          ['label' => 'Dashboard', 'icon' => '🏠', 'path' => '/admin/dashboard'],
-          ['label' => 'Prospects', 'icon' => '👥', 'path' => '/prospects'],
-          ['label' => 'Stratégie', 'icon' => '🎯', 'path' => '/admin/modules/strategie-prospect'],
-          ['label' => 'Messages', 'icon' => '💬', 'path' => '/admin/modules/messages-ia'],
-          ['label' => 'Pipeline', 'icon' => '📈', 'path' => '/admin/modules/pipeline'],
-        ];
-      ?>
-      <?php foreach ($bottomNav as $item): ?>
-        <a
-          class="bottom-nav-link <?= ($currentPath === $item['path']) ? 'active' : '' ?>"
-          href="<?= htmlspecialchars((string) $item['path']) ?>"
-        >
-          <span aria-hidden="true"><?= htmlspecialchars((string) $item['icon']) ?></span>
-          <span><?= htmlspecialchars((string) $item['label']) ?></span>
-        </a>
-      <?php endforeach; ?>
-    </nav>
+    <?php
+      $currentPath = parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH) ?: '';
+      $bottomNavItems = [
+        ['label' => 'Dashboard', 'icon' => '🏠', 'path' => '/admin/dashboard'],
+        ['label' => 'Prospects', 'icon' => '👥', 'path' => '/prospects'],
+        ['label' => 'Stratégie', 'icon' => '🎯', 'path' => '/strategie'],
+        ['label' => 'Messages IA', 'icon' => '💬', 'path' => '/messages-ia'],
+        ['label' => 'Pipeline', 'icon' => '📈', 'path' => '/pipeline'],
+      ];
+      include __DIR__ . '/../components/BottomNav.php';
+    ?>
   <?php endif; ?>
 <?php endif; ?>
 </body>
