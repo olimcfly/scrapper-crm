@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Services\Auth;
+
 final class View
 {
+    private static ?Auth $auth = null;
+
     public static function render(string $template, array $data = []): void
     {
         $basePath = dirname(__DIR__, 2) . '/templates/';
@@ -17,9 +21,23 @@ final class View
             return;
         }
 
+        $data['authUser'] = $data['authUser'] ?? self::auth()->user();
+        $data['csrfToken'] = $data['csrfToken'] ?? Csrf::token();
+
         extract($data, EXTR_SKIP);
         require $basePath . 'layout/header.php';
         require $templatePath;
         require $basePath . 'layout/footer.php';
+    }
+
+    private static function auth(): Auth
+    {
+        if (self::$auth instanceof Auth) {
+            return self::$auth;
+        }
+
+        self::$auth = new Auth(Database::connection());
+
+        return self::$auth;
     }
 }

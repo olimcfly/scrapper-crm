@@ -2,12 +2,17 @@
 
 declare(strict_types=1);
 
+use App\Controllers\AuthController;
 use App\Controllers\LookupController;
 use App\Controllers\ProspectController;
+use App\Controllers\SettingsController;
 use App\Controllers\WebProspectController;
+use App\Core\AuthGuard;
+use App\Core\Database;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Router;
+use App\Services\Auth;
 
 require dirname(__DIR__) . '/src/Core/bootstrap.php';
 
@@ -26,21 +31,29 @@ $router = new Router();
 $apiProspects = new ProspectController();
 $apiLookup = new LookupController();
 $webProspects = new WebProspectController();
+$settingsController = new SettingsController();
+$authController = new AuthController();
+$guard = new AuthGuard(new Auth(Database::connection()));
 
 $router->add('GET', '/', static function (): void {
     Response::redirect('/prospects');
 });
 
+$router->add('GET', '/login', static fn (Request $req): mixed => $authController->showLogin($req));
+$router->add('POST', '/login', static fn (Request $req): mixed => $authController->login($req));
+$router->add('POST', '/logout', static fn (Request $req): mixed => $authController->logout($req));
+
 // Web routes (PHP views)
-$router->add('GET', '/prospects', static fn (Request $req): mixed => $webProspects->index($req));
-$router->add('GET', '/prospects/create', static fn (Request $req): mixed => $webProspects->create($req));
-$router->add('POST', '/prospects/create', static fn (Request $req): mixed => $webProspects->store($req));
-$router->add('GET', '/prospects/{id}', static fn (Request $req, array $params): mixed => $webProspects->show($req, (int) $params['id']));
-$router->add('GET', '/prospects/{id}/edit', static fn (Request $req, array $params): mixed => $webProspects->edit($req, (int) $params['id']));
-$router->add('POST', '/prospects/{id}/edit', static fn (Request $req, array $params): mixed => $webProspects->update($req, (int) $params['id']));
-$router->add('POST', '/prospects/{id}/delete', static fn (Request $req, array $params): mixed => $webProspects->destroy($req, (int) $params['id']));
-$router->add('POST', '/prospects/{id}/notes', static fn (Request $req, array $params): mixed => $webProspects->addNote($req, (int) $params['id']));
-$router->add('POST', '/prospects/{id}/status', static fn (Request $req, array $params): mixed => $webProspects->changeStatus($req, (int) $params['id']));
+$router->add('GET', '/prospects', $guard->protect(static fn (Request $req): mixed => $webProspects->index($req)));
+$router->add('GET', '/prospects/create', $guard->protect(static fn (Request $req): mixed => $webProspects->create($req)));
+$router->add('POST', '/prospects/create', $guard->protect(static fn (Request $req): mixed => $webProspects->store($req)));
+$router->add('GET', '/prospects/{id}', $guard->protect(static fn (Request $req, array $params): mixed => $webProspects->show($req, (int) $params['id'])));
+$router->add('GET', '/prospects/{id}/edit', $guard->protect(static fn (Request $req, array $params): mixed => $webProspects->edit($req, (int) $params['id'])));
+$router->add('POST', '/prospects/{id}/edit', $guard->protect(static fn (Request $req, array $params): mixed => $webProspects->update($req, (int) $params['id'])));
+$router->add('POST', '/prospects/{id}/delete', $guard->protect(static fn (Request $req, array $params): mixed => $webProspects->destroy($req, (int) $params['id'])));
+$router->add('POST', '/prospects/{id}/notes', $guard->protect(static fn (Request $req, array $params): mixed => $webProspects->addNote($req, (int) $params['id'])));
+$router->add('POST', '/prospects/{id}/status', $guard->protect(static fn (Request $req, array $params): mixed => $webProspects->changeStatus($req, (int) $params['id'])));
+$router->add('GET', '/settings', $guard->protect(static fn (Request $req): mixed => $settingsController->index($req)));
 
 // API routes (JSON)
 $router->add('GET', '/api/health', static function (): void {

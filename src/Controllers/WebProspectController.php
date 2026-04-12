@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\Csrf;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\View;
@@ -57,6 +58,10 @@ final class WebProspectController
 
     public function store(Request $request): void
     {
+        if (!$this->ensureValidCsrf($request)) {
+            return;
+        }
+
         $input = $request->input();
         $errors = $this->validator->validate($input);
 
@@ -121,6 +126,10 @@ final class WebProspectController
 
     public function update(Request $request, int $id): void
     {
+        if (!$this->ensureValidCsrf($request)) {
+            return;
+        }
+
         if ($this->prospects->find($id) === null) {
             View::render('errors/not-found', ['title' => 'Introuvable']);
             return;
@@ -147,6 +156,10 @@ final class WebProspectController
 
     public function destroy(Request $request, int $id): void
     {
+        if (!$this->ensureValidCsrf($request)) {
+            return;
+        }
+
         unset($request);
         $this->prospects->delete($id);
         Response::redirect('/prospects');
@@ -154,6 +167,10 @@ final class WebProspectController
 
     public function addNote(Request $request, int $id): void
     {
+        if (!$this->ensureValidCsrf($request)) {
+            return;
+        }
+
         $content = trim((string) ($request->input()['content'] ?? ''));
         if ($content !== '') {
             $this->notes->create($id, $content);
@@ -164,6 +181,10 @@ final class WebProspectController
 
     public function changeStatus(Request $request, int $id): void
     {
+        if (!$this->ensureValidCsrf($request)) {
+            return;
+        }
+
         $statusId = (int) ($request->input()['status_id'] ?? 0);
         if ($statusId > 0) {
             $this->prospects->updateStatus($id, $statusId);
@@ -171,4 +192,17 @@ final class WebProspectController
 
         Response::redirect('/prospects/' . $id);
     }
+
+    private function ensureValidCsrf(Request $request): bool
+    {
+        $input = $request->input();
+        if (!Csrf::verify((string) ($input['_csrf'] ?? ''))) {
+            http_response_code(419);
+            echo 'Requête expirée. Veuillez recharger la page.';
+            return false;
+        }
+
+        return true;
+    }
+
 }
