@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Controllers\AdminController;
+use App\Controllers\ApifyController;
 use App\Controllers\AuthController;
 use App\Controllers\GeneratedContentController;
 use App\Controllers\LookupController;
@@ -114,6 +115,17 @@ $router->add('PATCH', '/api/prospects/{id}/status', static fn (Request $req, arr
 $router->add('GET', '/api/prospect-statuses', static fn (Request $req): mixed => (new LookupController())->statuses($req));
 $router->add('GET', '/api/sources', static fn (Request $req): mixed => (new LookupController())->sources($req));
 $router->add('GET', '/api/tags', static fn (Request $req): mixed => (new LookupController())->tags($req));
+$router->add('POST', '/api/apify/run/google-maps', static fn (Request $req): mixed => (new ApifyController())->runSource($req, 'google_maps'));
+$router->add('POST', '/api/apify/run/instagram-profile', static fn (Request $req): mixed => (new ApifyController())->runSource($req, 'instagram_profile'));
+$router->add('POST', '/api/apify/run/instagram-hashtag', static fn (Request $req): mixed => (new ApifyController())->runSource($req, 'instagram_hashtag'));
+$router->add('POST', '/api/apify/run/linkedin-profile', static fn (Request $req): mixed => (new ApifyController())->runSource($req, 'linkedin_profile'));
+$router->add('POST', '/api/apify/run/tiktok', static fn (Request $req): mixed => (new ApifyController())->runSource($req, 'tiktok'));
+$router->add('GET', '/api/apify/runs/{runId}', static fn (Request $req, array $params): mixed => (new ApifyController())->getRun($req, (string) $params['runId']));
+$router->add('GET', '/api/apify/datasets/{datasetId}', static fn (Request $req, array $params): mixed => (new ApifyController())->getDataset($req, (string) $params['datasetId']));
+$router->add('POST', '/api/import/google-maps', static fn (Request $req): mixed => (new ApifyController())->importFromSource($req, 'google_maps'));
+$router->add('POST', '/api/import/instagram-profile', static fn (Request $req): mixed => (new ApifyController())->importFromSource($req, 'instagram_profile'));
+$router->add('POST', '/api/import/linkedin-profile', static fn (Request $req): mixed => (new ApifyController())->importFromSource($req, 'linkedin_profile'));
+$router->add('POST', '/api/import/tiktok', static fn (Request $req): mixed => (new ApifyController())->importFromSource($req, 'tiktok'));
 
 try {
     $router->dispatch($request);
