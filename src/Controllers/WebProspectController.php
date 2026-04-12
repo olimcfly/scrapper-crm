@@ -12,11 +12,14 @@ use App\Core\Session;
 use App\Core\View;
 use App\Models\ProspectModel;
 use App\Models\ProspectNoteModel;
+use App\Models\ProspectPipelineModel;
 use App\Models\ProspectStatusModel;
 use App\Models\ProspectTimelineModel;
 use App\Models\SourceModel;
 use App\Models\TagModel;
+use App\Models\MessageModel;
 use App\Services\Auth;
+use App\Services\ConversionSuggestionService;
 use App\Services\CsvProspectImportService;
 use App\Services\ProspectValidator;
 use RuntimeException;
@@ -29,9 +32,12 @@ final class WebProspectController
     private SourceModel $sources;
     private TagModel $tags;
     private ProspectTimelineModel $timeline;
+    private ProspectPipelineModel $pipeline;
+    private MessageModel $messages;
     private ProspectValidator $validator;
     private CsvProspectImportService $csvImport;
     private Auth $auth;
+    private ConversionSuggestionService $suggestion;
 
     public function __construct()
     {
@@ -41,9 +47,12 @@ final class WebProspectController
         $this->sources = new SourceModel();
         $this->tags = new TagModel();
         $this->timeline = new ProspectTimelineModel();
+        $this->pipeline = new ProspectPipelineModel();
+        $this->messages = new MessageModel();
         $this->validator = new ProspectValidator();
         $this->csvImport = new CsvProspectImportService();
         $this->auth = new Auth(Database::connection());
+        $this->suggestion = new ConversionSuggestionService();
     }
 
     public function index(Request $request): void
@@ -210,6 +219,7 @@ final class WebProspectController
         try {
             $payload = $this->validator->normalize($input);
             $id = $this->prospects->create($payload);
+            $this->pipeline->ensureForProspect($id);
 
             $tagIds = array_values(array_filter(array_map('intval', explode(',', (string) ($input['tag_ids'] ?? ''))), static fn (int $tagId): bool => $tagId > 0));
             if ($tagIds !== []) {
@@ -249,7 +259,13 @@ final class WebProspectController
             'title' => 'Fiche prospect',
             'prospect' => $prospect,
             'notes' => $this->notes->byProspect($id),
+            'messages' => $this->messages->byProspect($id),
             'timeline' => $this->timeline->byProspect($id),
+            'pipeline' => $this->pipeline->byProspect($id),
+            'iaSuggestion' => $this->suggestion->suggest(
+                $this->messages->byProspect($id),
+                $this->pipeline->byProspect($id)
+            ),
             'statuses' => $this->statuses->all(),
             'successMessage' => Session::consumeFlash('success'),
             'warningMessage' => Session::consumeFlash('warning'),
