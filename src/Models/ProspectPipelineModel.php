@@ -6,10 +6,12 @@ namespace App\Models;
 
 use App\Core\Database;
 use PDO;
+use PDOException;
 
 final class ProspectPipelineModel
 {
     private PDO $db;
+    private ?bool $areStagesAvailable = null;
 
     public function __construct()
     {
@@ -18,6 +20,10 @@ final class ProspectPipelineModel
 
     public function ensureForProspect(int $prospectId): void
     {
+        if (!$this->areStagesAvailable()) {
+            return;
+        }
+
         $stmt = $this->db->prepare('SELECT id FROM prospect_pipeline WHERE prospect_id = :prospect_id LIMIT 1');
         $stmt->execute(['prospect_id' => $prospectId]);
         if ($stmt->fetch()) {
@@ -43,6 +49,10 @@ final class ProspectPipelineModel
 
     public function byProspect(int $prospectId): ?array
     {
+        if (!$this->areStagesAvailable()) {
+            return null;
+        }
+
         $this->ensureForProspect($prospectId);
 
         $stmt = $this->db->prepare('SELECT pp.*, ps.name AS stage_name, ps.position AS stage_position
@@ -58,6 +68,10 @@ final class ProspectPipelineModel
 
     public function board(): array
     {
+        if (!$this->areStagesAvailable()) {
+            return [];
+        }
+
         $this->db->exec(
             "INSERT INTO prospect_pipeline (prospect_id, stage_id, last_action, next_action, status, updated_at)
              SELECT p.id, 1, 'Prospect ajouté', 'Initier une interaction', 'active', NOW()
@@ -80,6 +94,10 @@ final class ProspectPipelineModel
 
     public function updateStage(int $prospectId, int $stageId): bool
     {
+        if (!$this->areStagesAvailable()) {
+            return false;
+        }
+
         $this->ensureForProspect($prospectId);
 
         $stmt = $this->db->prepare('UPDATE prospect_pipeline SET stage_id = :stage_id, updated_at = NOW() WHERE prospect_id = :prospect_id');
@@ -88,6 +106,10 @@ final class ProspectPipelineModel
 
     public function updateNextAction(int $prospectId, string $lastAction, string $nextAction): bool
     {
+        if (!$this->areStagesAvailable()) {
+            return false;
+        }
+
         $this->ensureForProspect($prospectId);
 
         $stmt = $this->db->prepare('UPDATE prospect_pipeline SET last_action = :last_action, next_action = :next_action, updated_at = NOW() WHERE prospect_id = :prospect_id');
@@ -97,5 +119,21 @@ final class ProspectPipelineModel
             'last_action' => $lastAction,
             'next_action' => $nextAction,
         ]);
+    }
+
+    public function areStagesAvailable(): bool
+    {
+        if ($this->areStagesAvailable !== null) {
+            return $this->areStagesAvailable;
+        }
+
+        try {
+            $stmt = $this->db->query('SHOW TABLES LIKE \'pipeline_stages\'');
+            $this->areStagesAvailable = (bool) $stmt->fetchColumn();
+        } catch (PDOException) {
+            $this->areStagesAvailable = false;
+        }
+
+        return $this->areStagesAvailable;
     }
 }

@@ -255,16 +255,21 @@ final class WebProspectController
             return;
         }
 
+        $messagesTableAvailable = $this->messages->isTableAvailable();
+        $messages = $this->messages->byProspect($id);
+        $pipeline = $this->pipeline->byProspect($id);
+
         View::render('prospects/detail', [
             'title' => 'Fiche prospect',
             'prospect' => $prospect,
             'notes' => $this->notes->byProspect($id),
-            'messages' => $this->messages->byProspect($id),
+            'messages' => $messages,
+            'messagesTableAvailable' => $messagesTableAvailable,
             'timeline' => $this->timeline->byProspect($id),
-            'pipeline' => $this->pipeline->byProspect($id),
+            'pipeline' => $pipeline,
             'iaSuggestion' => $this->suggestion->suggest(
-                $this->messages->byProspect($id),
-                $this->pipeline->byProspect($id)
+                $messages,
+                $pipeline
             ),
             'statuses' => $this->statuses->all(),
             'successMessage' => Session::consumeFlash('success'),

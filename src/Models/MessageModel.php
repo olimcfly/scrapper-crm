@@ -6,10 +6,12 @@ namespace App\Models;
 
 use App\Core\Database;
 use PDO;
+use PDOException;
 
 final class MessageModel
 {
     private PDO $db;
+    private ?bool $isTableAvailable = null;
 
     public function __construct()
     {
@@ -18,6 +20,10 @@ final class MessageModel
 
     public function byProspect(int $prospectId): array
     {
+        if (!$this->isTableAvailable()) {
+            return [];
+        }
+
         $stmt = $this->db->prepare('SELECT id, prospect_id, content, type, direction, created_at
                                     FROM messages
                                     WHERE prospect_id = :prospect_id
@@ -29,6 +35,10 @@ final class MessageModel
 
     public function create(int $prospectId, string $content, string $type, string $direction): int
     {
+        if (!$this->isTableAvailable()) {
+            return 0;
+        }
+
         $stmt = $this->db->prepare('INSERT INTO messages (prospect_id, content, type, direction, created_at)
                                     VALUES (:prospect_id, :content, :type, :direction, NOW())');
         $stmt->execute([
@@ -39,5 +49,21 @@ final class MessageModel
         ]);
 
         return (int) $this->db->lastInsertId();
+    }
+
+    public function isTableAvailable(): bool
+    {
+        if ($this->isTableAvailable !== null) {
+            return $this->isTableAvailable;
+        }
+
+        try {
+            $stmt = $this->db->query('SHOW TABLES LIKE \'messages\'');
+            $this->isTableAvailable = (bool) $stmt->fetchColumn();
+        } catch (PDOException) {
+            $this->isTableAvailable = false;
+        }
+
+        return $this->isTableAvailable;
     }
 }
