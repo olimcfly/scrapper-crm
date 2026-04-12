@@ -465,6 +465,29 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
     margin: 0 auto 10px;
   }
 
+  .sheet-header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .sheet-close-btn {
+    border: 1px solid #d8e0f4;
+    background: #fff;
+    color: #334155;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .sheet-close-btn:active {
+    transform: scale(0.96);
+  }
+
   .sheet-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -687,112 +710,15 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
   <?php endif; ?>
 </section>
 
-<div class="bottom-sheet-backdrop" data-sheet-backdrop></div>
-<form method="get" action="/prospects" class="bottom-sheet" data-filter-sheet>
-  <div class="sheet-handle" aria-hidden="true"></div>
-  <h3 style="margin:0 0 4px;">Filtres avancés</h3>
-  <p class="muted" style="margin:0 0 12px;">Affinez rapidement les prospects les plus actionnables.</p>
+<?php
+  $sheetFilters = $filters ?? [];
+  $sheetStatuses = $statuses ?? [];
+  $sheetSources = $sources ?? [];
+  $sheetCategoryOrder = $categoryOrder;
+  $sheetActiveCategory = $activeCategory;
+  require __DIR__ . '/../components/prospect_filters_bottom_sheet.php';
+?>
 
-  <input type="hidden" name="q" value="<?= htmlspecialchars((string) ($filters['q'] ?? '')) ?>">
-  <input type="hidden" name="category" value="<?= htmlspecialchars($activeCategory) ?>" data-sheet-category>
-
-  <div class="sheet-grid">
-    <label>
-      Ville
-      <input type="text" name="city" placeholder="Ex: Lyon" value="<?= htmlspecialchars((string) ($filters['city'] ?? '')) ?>">
-    </label>
-
-    <label>
-      Catégorie
-      <select name="category_select" data-sheet-category-select>
-        <?php foreach ($categoryOrder as $category): ?>
-          <option value="<?= htmlspecialchars($category) ?>" <?= $category === $activeCategory ? 'selected' : '' ?>><?= htmlspecialchars($category) ?></option>
-        <?php endforeach; ?>
-      </select>
-    </label>
-
-    <label>
-      Niveau de conscience
-      <select name="awareness_level">
-        <?php $awarenessValue = (string) ($filters['awareness_level'] ?? ''); ?>
-        <option value="">Tous</option>
-        <option value="À éduquer" <?= $awarenessValue === 'À éduquer' ? 'selected' : '' ?>>À éduquer</option>
-        <option value="Conscient du besoin" <?= $awarenessValue === 'Conscient du besoin' ? 'selected' : '' ?>>Conscient du besoin</option>
-        <option value="Prêt à décider" <?= $awarenessValue === 'Prêt à décider' ? 'selected' : '' ?>>Prêt à décider</option>
-      </select>
-    </label>
-
-    <label>
-      Réseaux sociaux
-      <?php $socialValue = (string) ($filters['social_presence'] ?? ''); ?>
-      <select name="social_presence">
-        <option value="">Tous</option>
-        <option value="oui" <?= $socialValue === 'oui' ? 'selected' : '' ?>>Présent</option>
-        <option value="non" <?= $socialValue === 'non' ? 'selected' : '' ?>>Absent</option>
-      </select>
-    </label>
-
-    <label>
-      Site web
-      <?php $websiteValue = (string) ($filters['website_presence'] ?? ''); ?>
-      <select name="website_presence">
-        <option value="">Tous</option>
-        <option value="oui" <?= $websiteValue === 'oui' ? 'selected' : '' ?>>Oui</option>
-        <option value="non" <?= $websiteValue === 'non' ? 'selected' : '' ?>>Non</option>
-      </select>
-    </label>
-
-    <label>
-      Note / priorité
-      <?php $priorityValue = (string) ($filters['priority'] ?? ''); ?>
-      <select name="priority">
-        <option value="">Toutes</option>
-        <option value="eleve" <?= $priorityValue === 'eleve' ? 'selected' : '' ?>>Haute</option>
-        <option value="moyen" <?= $priorityValue === 'moyen' ? 'selected' : '' ?>>Moyenne</option>
-        <option value="faible" <?= $priorityValue === 'faible' ? 'selected' : '' ?>>Basse</option>
-      </select>
-    </label>
-
-    <label>
-      Statut CRM
-      <select name="status_id">
-        <option value="0">Tous</option>
-        <?php foreach (($statuses ?? []) as $status): ?>
-          <option value="<?= (int) $status['id'] ?>" <?= ((int) ($filters['status_id'] ?? 0) === (int) $status['id']) ? 'selected' : '' ?>>
-            <?= htmlspecialchars((string) $status['name']) ?>
-          </option>
-        <?php endforeach; ?>
-      </select>
-    </label>
-
-    <label>
-      Activité locale / multi-zone
-      <?php $zoneValue = (string) ($filters['zone_scope'] ?? ''); ?>
-      <select name="zone_scope">
-        <option value="">Toutes</option>
-        <option value="Locale" <?= $zoneValue === 'Locale' ? 'selected' : '' ?>>Locale</option>
-        <option value="Multi-zone" <?= $zoneValue === 'Multi-zone' ? 'selected' : '' ?>>Multi-zone</option>
-      </select>
-    </label>
-
-    <label class="full">
-      Source
-      <select name="source_id">
-        <option value="0">Toutes les sources</option>
-        <?php foreach (($sources ?? []) as $source): ?>
-          <option value="<?= (int) $source['id'] ?>" <?= ((int) ($filters['source_id'] ?? 0) === (int) $source['id']) ? 'selected' : '' ?>>
-            <?= htmlspecialchars((string) $source['name']) ?>
-          </option>
-        <?php endforeach; ?>
-      </select>
-    </label>
-  </div>
-
-  <div class="sheet-actions">
-    <a class="btn secondary" href="/prospects" style="flex:1;">Réinitialiser</a>
-    <button class="finder-btn secondary" type="submit" style="flex:1;">Appliquer</button>
-  </div>
-</form>
 
 <script>
   (function () {
@@ -811,6 +737,7 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
     const sheet = document.querySelector('[data-filter-sheet]');
     const sheetCategory = document.querySelector('[data-sheet-category]');
     const sheetCategorySelect = document.querySelector('[data-sheet-category-select]');
+    const closeSheetBtn = document.querySelector('[data-close-sheet]');
 
     const urlParams = new URLSearchParams(window.location.search);
     const selectedCategory = urlParams.get('category') || 'Tous';
@@ -881,11 +808,16 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
 
     const toggleSheet = (open) => {
       document.body.classList.toggle('bottom-sheet-open', open);
+      if (sheet) sheet.setAttribute('aria-hidden', open ? 'false' : 'true');
+      if (sheetBackdrop) sheetBackdrop.setAttribute('aria-hidden', open ? 'false' : 'true');
     };
 
     if (openSheetBtn && sheet && sheetBackdrop) {
       openSheetBtn.addEventListener('click', () => toggleSheet(true));
       sheetBackdrop.addEventListener('click', () => toggleSheet(false));
+      if (closeSheetBtn) {
+        closeSheetBtn.addEventListener('click', () => toggleSheet(false));
+      }
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') toggleSheet(false);
       });
