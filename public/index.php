@@ -9,14 +9,27 @@ use App\Controllers\WebProspectController;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Router;
+use App\Services\Logger;
 
 require dirname(__DIR__) . '/src/Core/bootstrap.php';
 
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
+$appConfig = require dirname(__DIR__) . '/config/app.php';
+$allowedOrigins = $appConfig['cors']['allowed_origins'] ?? [];
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+if (is_string($origin) && $origin !== '' && in_array($origin, $allowedOrigins, true)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Vary: Origin');
+    header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+}
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
+    if ($origin !== '' && !in_array($origin, $allowedOrigins, true)) {
+        http_response_code(403);
+        exit;
+    }
+
     http_response_code(204);
     exit;
 }
@@ -41,6 +54,9 @@ $router->add('POST', '/logout', static fn (Request $req): mixed => $authControll
 $router->add('GET', '/prospects', static fn (Request $req): mixed => $webProspects->index($req));
 $router->add('GET', '/prospects/create', static fn (Request $req): mixed => $webProspects->create($req));
 $router->add('POST', '/prospects/create', static fn (Request $req): mixed => $webProspects->store($req));
+$router->add('GET', '/prospects/import', static fn (Request $req): mixed => $webProspects->importForm($req));
+$router->add('POST', '/prospects/import/upload', static fn (Request $req): mixed => $webProspects->importUpload($req));
+$router->add('POST', '/prospects/import/process', static fn (Request $req): mixed => $webProspects->importProcess($req));
 $router->add('GET', '/prospects/{id}', static fn (Request $req, array $params): mixed => $webProspects->show($req, (int) $params['id']));
 $router->add('GET', '/prospects/{id}/edit', static fn (Request $req, array $params): mixed => $webProspects->edit($req, (int) $params['id']));
 $router->add('POST', '/prospects/{id}/edit', static fn (Request $req, array $params): mixed => $webProspects->update($req, (int) $params['id']));
@@ -67,5 +83,6 @@ $router->add('GET', '/api/tags', static fn (Request $req): mixed => $apiLookup->
 try {
     $router->dispatch($request);
 } catch (Throwable $e) {
+    Logger::error('Unhandled exception: ' . $e->getMessage());
     Response::json(['error' => 'Erreur serveur interne.'], 500);
 }

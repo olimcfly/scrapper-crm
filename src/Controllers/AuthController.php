@@ -9,6 +9,7 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Core\View;
 use App\Services\Auth;
+use App\Services\Csrf;
 
 final class AuthController
 {
@@ -37,6 +38,15 @@ final class AuthController
     public function login(Request $request): void
     {
         $input = $request->input();
+        if (!Csrf::isValid((string) ($input['_csrf_token'] ?? ''))) {
+            View::render('auth/login', [
+                'title' => 'Connexion',
+                'errors' => ['Session expirée, veuillez réessayer.'],
+                'old' => ['email' => ''],
+            ]);
+            return;
+        }
+
         $email = trim((string) ($input['email'] ?? ''));
         $password = (string) ($input['password'] ?? '');
 
@@ -70,7 +80,10 @@ final class AuthController
 
     public function logout(Request $request): void
     {
-        unset($request);
+        $input = $request->input();
+        if (!Csrf::isValid((string) ($input['_csrf_token'] ?? ''))) {
+            Response::redirect('/prospects');
+        }
 
         $this->auth->logout();
         Response::redirect('/login');
