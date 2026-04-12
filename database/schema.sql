@@ -18,6 +18,7 @@ DROP TABLE IF EXISTS login_tokens;
 DROP TABLE IF EXISTS prospect_tag;
 DROP TABLE IF EXISTS prospect_events;
 DROP TABLE IF EXISTS prospect_notes;
+DROP TABLE IF EXISTS generated_contents;
 DROP TABLE IF EXISTS prospects;
 DROP TABLE IF EXISTS tags;
 DROP TABLE IF EXISTS sources;
@@ -167,6 +168,26 @@ CREATE TABLE prospects (
 -- Utilisé dans ProspectNoteModel et ProspectTimelineModel (UNION).
 -- Colonnes lues : prospect_id, content, created_at
 -- ============================================================
+-- ============================================================
+-- TABLE : generated_contents
+-- Contenus générés par IA depuis l'analyse d'un prospect.
+-- type: post | video | story | dm
+-- ============================================================
+CREATE TABLE generated_contents (
+  id              INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  prospect_id      INT UNSIGNED  NOT NULL,
+  type             ENUM('post','video','story','dm') NOT NULL,
+  content          TEXT          NOT NULL,
+  hook             VARCHAR(255)  NOT NULL DEFAULT '',
+  angle            VARCHAR(255)  NOT NULL DEFAULT '',
+  awareness_level  VARCHAR(120)  NOT NULL DEFAULT '',
+  created_at       DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_generated_contents_prospect_id (prospect_id),
+  KEY idx_generated_contents_type (type),
+  CONSTRAINT fk_generated_contents_prospect FOREIGN KEY (prospect_id) REFERENCES prospects(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE prospect_notes (
   id          INT UNSIGNED  NOT NULL AUTO_INCREMENT,
   prospect_id INT UNSIGNED  NOT NULL,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Controllers\AdminController;
 use App\Controllers\AuthController;
+use App\Controllers\GeneratedContentController;
 use App\Controllers\LookupController;
 use App\Controllers\ProspectController;
 use App\Controllers\SettingsController;
@@ -68,6 +69,8 @@ $router->add('POST', '/prospects/{id}/edit', $guard->protect(static fn (Request 
 $router->add('POST', '/prospects/{id}/delete', $guard->protect(static fn (Request $req, array $params): mixed => (new WebProspectController())->destroy($req, (int) $params['id'])));
 $router->add('POST', '/prospects/{id}/notes', $guard->protect(static fn (Request $req, array $params): mixed => (new WebProspectController())->addNote($req, (int) $params['id'])));
 $router->add('POST', '/prospects/{id}/status', $guard->protect(static fn (Request $req, array $params): mixed => (new WebProspectController())->changeStatus($req, (int) $params['id'])));
+$router->add('GET', '/prospects/{id}/generated-contents', $guard->protect(static fn (Request $req, array $params): mixed => (new GeneratedContentController())->create($req, (int) $params['id'])));
+$router->add('POST', '/prospects/{id}/generated-contents/generate', $guard->protect(static fn (Request $req, array $params): mixed => (new GeneratedContentController())->generate($req, (int) $params['id'])));
 $router->add('GET', '/settings', $guard->protect(static fn (Request $req): mixed => (new SettingsController())->index($req)));
 
 $router->add('GET', '/dashboard', $guard->protect(static fn (Request $req): mixed => (new AdminController())->dashboard($req)));

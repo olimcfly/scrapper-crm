@@ -12,6 +12,7 @@ $prioriteLabels = ['faible' => 'Faible', 'moyen' => 'Moyen', 'eleve' => 'Élevé
   <p>Email: <?= htmlspecialchars((string) ($prospect['professional_email'] ?? '')) ?> | Tél: <?= htmlspecialchars((string) ($prospect['professional_phone'] ?? '')) ?></p>
   <p>
     <a class="btn" href="/prospects/<?= (int)$prospect['id'] ?>/edit">Modifier</a>
+    <a class="btn secondary" href="/prospects/<?= (int)$prospect['id'] ?>/generated-contents" style="margin-left:8px;">Générer du contenu</a>
     <form style="display:inline" method="post" action="/prospects/<?= (int)$prospect['id'] ?>/delete" onsubmit="return confirm('Supprimer ce prospect ?')">
       <input type="hidden" name="_csrf" value="<?= htmlspecialchars((string) ($csrfToken ?? "")) ?>">
       <button class="btn danger" type="submit">Supprimer</button>
