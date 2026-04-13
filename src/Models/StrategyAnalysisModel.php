@@ -36,4 +36,23 @@ final class StrategyAnalysisModel
 
         return (int) $this->db->lastInsertId();
     }
+
+    public function latestByUser(int $userId, int $limit = 20): array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM strategy_profile_analyses WHERE user_id = :user_id ORDER BY created_at DESC, id DESC LIMIT :limit');
+        $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+    public function findByIdForUser(int $id, int $userId): ?array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM strategy_profile_analyses WHERE id = :id AND user_id = :user_id LIMIT 1');
+        $stmt->execute(['id' => $id, 'user_id' => $userId]);
+        $row = $stmt->fetch();
+
+        return $row ?: null;
+    }
 }

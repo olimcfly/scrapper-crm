@@ -116,6 +116,10 @@ $lengthLabels = [
         </select>
       </label>
 
+      <label>Variante
+        <input type="text" name="variant" value="Variante 1" maxlength="120">
+      </label>
+
       <button class="btn" type="submit" style="width:100%;">Générer</button>
     </form>
   </section>
@@ -129,4 +133,25 @@ $lengthLabels = [
       <pre style="white-space:pre-wrap;margin:0;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;"><?= htmlspecialchars((string) ($generatedData['content'] ?? '')) ?></pre>
     </section>
   <?php endif; ?>
+
+  <section class="card">
+    <h3 style="margin-top:0;">Historique des brouillons contenus</h3>
+    <?php if (($history ?? []) === []): ?>
+      <p class="muted">Aucun brouillon enregistré.</p>
+    <?php endif; ?>
+    <?php foreach (($history ?? []) as $item): ?>
+      <article style="border-top:1px solid #e2e8f0;padding-top:10px;margin-top:10px;">
+        <p class="muted" style="margin:0 0 8px;"><?= htmlspecialchars((string) $item['created_at']) ?> · <?= htmlspecialchars((string) $item['content_type']) ?> · <?= htmlspecialchars((string) $item['channel']) ?> · <?= htmlspecialchars((string) $item['tone']) ?> · analyse #<?= (int) $item['analysis_id'] ?></p>
+        <p style="white-space:pre-wrap;margin:0 0 10px;"><?= htmlspecialchars((string) $item['generated_content']) ?></p>
+        <div class="row">
+          <a class="btn secondary" href="/contenu?draft_id=<?= (int) $item['id'] ?>">Rouvrir</a>
+          <form method="post" action="/contenu/dupliquer">
+            <input type="hidden" name="_csrf" value="<?= htmlspecialchars((string) ($csrfToken ?? '')) ?>">
+            <input type="hidden" name="draft_id" value="<?= (int) $item['id'] ?>">
+            <button class="btn" type="submit">Dupliquer</button>
+          </form>
+        </div>
+      </article>
+    <?php endforeach; ?>
+  </section>
 <?php endif; ?>
