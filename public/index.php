@@ -6,12 +6,9 @@ use App\Controllers\AdminController;
 use App\Controllers\ApifyController;
 use App\Controllers\AuthController;
 use App\Controllers\ContentController;
-use App\Controllers\GeneratedContentController;
-use App\Controllers\LookupController;
-use App\Controllers\MessagesIaController;
+use App\Controllers\MessagesController;
 use App\Controllers\PipelineController;
 use App\Controllers\ProspectingController;
-use App\Controllers\ProspectController;
 use App\Controllers\SettingsController;
 use App\Controllers\StrategyController;
 use App\Controllers\WebProspectController;
@@ -111,15 +108,27 @@ $router->add('POST', '/contenu/dupliquer', $guard->protect(fn (Request $req) => 
 |--------------------------------------------------------------------------
 */
 $router->add('GET', '/dashboard', $guard->protect(fn (Request $req) => $adminController->dashboard($req)));
+$router->add('GET', '/admin', $guard->protect(static function (): void {
+    Response::redirect('/dashboard');
+}));
 
 $router->add('GET', '/strategie', $guard->protect(fn (Request $req) => (new StrategyController())->index($req)));
 $router->add('POST', '/strategie/analyse', $guard->protect(fn (Request $req) => (new StrategyController())->analyze($req)));
 
-$router->add('GET', '/messages-ia', $guard->protect(fn (Request $req) => (new MessagesIaController())->index($req)));
-$router->add('POST', '/messages-ia/generate', $guard->protect(fn (Request $req) => (new MessagesIaController())->generate($req)));
+$router->add('GET', '/messages-ia', $guard->protect(fn (Request $req) => (new MessagesController())->index($req)));
+$router->add('POST', '/messages-ia/generer', $guard->protect(fn (Request $req) => (new MessagesController())->generate($req)));
+$router->add('POST', '/messages-ia/dupliquer', $guard->protect(fn (Request $req) => (new MessagesController())->duplicateDraft($req)));
+$router->add('POST', '/messages-ia/generate', $guard->protect(fn (Request $req) => (new MessagesController())->generate($req)));
 
 $router->add('GET', '/pipeline', $guard->protect(fn (Request $req) => $pipelineController->index($req)));
 $router->add('POST', '/pipeline/{id}/move', $guard->protect(fn (Request $req, array $params) => $pipelineController->moveStage($req, (int) $params['id'])));
+$router->add('POST', '/prospects/{id}/messages', $guard->protect(fn (Request $req, array $params) => $pipelineController->addMessage($req, (int) $params['id'])));
+$router->add('POST', '/prospects/{id}/suggest-next-action', $guard->protect(fn (Request $req, array $params) => $pipelineController->suggest($req, (int) $params['id'])));
+$router->add('POST', '/prospects/{id}/notes', $guard->protect(fn (Request $req, array $params) => (new WebProspectController())->addNote($req, (int) $params['id'])));
+$router->add('POST', '/prospects/{id}/status', $guard->protect(fn (Request $req, array $params) => (new WebProspectController())->changeStatus($req, (int) $params['id'])));
+
+$router->add('GET', '/settings', $guard->protect(fn (Request $req) => $settingsController->index($req)));
+$router->add('GET', '/admin/modules/{moduleKey}', $guard->protect(fn (Request $req, array $params) => $adminController->moduleAlias($req, (string) $params['moduleKey'])));
 
 /*
 |--------------------------------------------------------------------------
