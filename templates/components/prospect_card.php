@@ -90,7 +90,7 @@ $cardState = (string) ($cardState ?? 'default');
 
   <div class="quick-actions">
     <a class="quick-action" data-quick-action="view" href="/prospects/<?= (int) $prospectCard['id'] ?>">Voir</a>
-    <a class="quick-action ia" data-quick-action="ai-analysis" href="/prospects/<?= (int) $prospectCard['id'] ?>">Analyse IA</a>
+    <a class="quick-action ia" data-quick-action="ai-analysis" href="/strategie">Analyse IA</a>
     <a class="quick-action" data-quick-action="generate-message" href="/prospects/<?= (int) $prospectCard['id'] ?>/generated-contents">Générer message</a>
     <a class="quick-action" data-quick-action="add-pipeline" href="/pipeline#prospect-<?= (int) $prospectCard['id'] ?>">Ajouter au pipeline</a>
   </div>
