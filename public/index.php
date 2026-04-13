@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Controllers\AdminController;
 use App\Controllers\ApifyController;
 use App\Controllers\AuthController;
+use App\Controllers\ContentController;
 use App\Controllers\GeneratedContentController;
 use App\Controllers\LookupController;
 use App\Controllers\PipelineController;
@@ -84,6 +85,9 @@ $router->add('GET', '/settings', $guard->protect(static fn (Request $req): mixed
 $router->add('GET', '/dashboard', $guard->protect(static fn (Request $req): mixed => $adminController->dashboard($req)));
 $router->add('GET', '/strategie', $guard->protect(static fn (Request $req): mixed => (new StrategyController())->index($req)));
 $router->add('POST', '/strategie/analyse', $guard->protect(static fn (Request $req): mixed => (new StrategyController())->analyze($req)));
+$router->add('POST', '/strategie/vers-contenu', $guard->protect(static fn (Request $req): mixed => (new StrategyController())->bridgeToContent($req)));
+$router->add('GET', '/contenu', $guard->protect(static fn (Request $req): mixed => (new ContentController())->index($req)));
+$router->add('POST', '/contenu/generer', $guard->protect(static fn (Request $req): mixed => (new ContentController())->generate($req)));
 $router->add('GET', '/messages-ia', $guard->protect(static function (): void {
     Response::redirect('/admin/modules/messages-ia');
 }));
@@ -95,6 +99,9 @@ $router->add('GET', '/admin', $guard->protect(static function (): void {
     Response::redirect('/dashboard');
 }));
 $router->add('GET', '/admin/dashboard', $guard->protect(static fn (Request $req): mixed => $adminController->dashboard($req)));
+$router->add('GET', '/admin/modules/generation-contenu', $guard->protect(static function (): void {
+    Response::redirect('/contenu');
+}));
 $router->add('GET', '/admin/modules/{module}', $guard->protect(static fn (Request $req, array $params): mixed => $adminController->module($req, (string) $params['module'])));
 
 $router->add('GET', '/strategie', $guard->protect(static fn (Request $req): mixed => $adminController->moduleAlias($req, 'strategie-prospect')));

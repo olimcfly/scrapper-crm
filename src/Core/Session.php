@@ -56,6 +56,24 @@ final class Session
         return is_string($value) ? $value : null;
     }
 
+    public static function put(string $key, mixed $value): void
+    {
+        self::start();
+        $_SESSION[$key] = $value;
+    }
+
+    public static function get(string $key, mixed $default = null): mixed
+    {
+        self::start();
+        return $_SESSION[$key] ?? $default;
+    }
+
+    public static function forget(string $key): void
+    {
+        self::start();
+        unset($_SESSION[$key]);
+    }
+
     public static function destroy(): void
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
