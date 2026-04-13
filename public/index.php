@@ -80,9 +80,8 @@ $router->add('POST', '/prospects/{id}/generated-contents/generate', $guard->prot
 $router->add('GET', '/settings', $guard->protect(static fn (Request $req): mixed => (new SettingsController())->index($req)));
 
 $router->add('GET', '/dashboard', $guard->protect(static fn (Request $req): mixed => $adminController->dashboard($req)));
-$router->add('GET', '/strategie', $guard->protect(static function (): void {
-    Response::redirect('/admin/modules/strategie-prospect');
-}));
+$router->add('GET', '/strategie', $guard->protect(static fn (Request $req): mixed => (new StrategyController())->index($req)));
+$router->add('POST', '/strategie/analyse', $guard->protect(static fn (Request $req): mixed => (new StrategyController())->analyze($req)));
 $router->add('GET', '/messages-ia', $guard->protect(static function (): void {
     Response::redirect('/admin/modules/messages-ia');
 }));
