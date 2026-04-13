@@ -8,6 +8,7 @@ use App\Core\Csrf;
 use App\Core\Database;
 use App\Core\Request;
 use App\Core\Response;
+use App\Core\Session;
 use App\Core\View;
 use App\Models\StrategyAnalysisModel;
 use App\Services\Auth;
@@ -95,6 +96,38 @@ final class StrategyController
                 'code' => 'STRATEGY_ANALYSIS_FAILED',
             ], 500);
         }
+    }
+
+    public function bridgeToContent(Request $request): void
+    {
+        $input = $request->input();
+        $csrfToken = (string) ($input['_csrf'] ?? '');
+        if (!Csrf::verify($csrfToken)) {
+            Response::json(['error' => 'Session expirée. Rechargez la page.'], 419);
+            return;
+        }
+
+        $analysis = $input['analysis'] ?? null;
+        if (!is_array($analysis)) {
+            Response::json(['error' => 'Analyse manquante pour ouvrir le module Contenu.'], 422);
+            return;
+        }
+
+        $normalized = [
+            'awareness_level' => trim((string) ($analysis['awareness_level'] ?? 'N/A')),
+            'summary' => trim((string) ($analysis['summary'] ?? '')),
+            'pain_points' => $this->normalizeStringList($analysis['pain_points'] ?? []),
+            'desires' => $this->normalizeStringList($analysis['desires'] ?? []),
+            'content_angles' => $this->normalizeStringList($analysis['content_angles'] ?? []),
+            'recommended_hooks' => $this->normalizeStringList($analysis['recommended_hooks'] ?? []),
+        ];
+
+        Session::put('strategy_to_content_analysis', $normalized);
+        Session::forget('strategy_to_content_generated');
+        Response::json([
+            'success' => true,
+            'redirect_url' => '/contenu',
+        ]);
     }
 
     /**

@@ -51,7 +51,7 @@
   </div>
 
   <div style="display:grid;grid-template-columns:1fr;gap:10px;margin-top:16px;">
-    <a class="btn" href="/admin/modules/generation-contenu" style="width:100%;">Générer du contenu</a>
+    <button id="go-to-content" class="btn" type="button" style="width:100%;">Générer du contenu</button>
     <a class="btn secondary" href="/messages-ia" style="width:100%;">Créer message</a>
   </div>
 </section>
@@ -65,6 +65,8 @@
     var warningBox = document.getElementById('analysis-warning');
     var resultBox = document.getElementById('analysis-result');
     var badge = document.getElementById('awareness-badge');
+    var contentButton = document.getElementById('go-to-content');
+    var latestAnalysis = null;
 
     function fillList(id, items) {
       var list = document.getElementById(id);
@@ -122,6 +124,7 @@
       })
       .then(function (payload) {
         var data = payload.data || {};
+        latestAnalysis = data;
         badge.textContent = data.awareness_level || 'N/A';
         document.getElementById('summary').textContent = data.summary || 'Aucun résumé';
 
@@ -149,5 +152,49 @@
         }
       });
     });
+
+    if (contentButton) {
+      contentButton.addEventListener('click', function () {
+        if (!latestAnalysis) {
+          errorBox.textContent = 'Veuillez d’abord analyser un prospect.';
+          errorBox.style.display = 'block';
+          return;
+        }
+
+        contentButton.disabled = true;
+        contentButton.textContent = 'Préparation...';
+
+        fetch('/strategie/vers-contenu', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: JSON.stringify({
+            _csrf: form.querySelector('input[name="_csrf"]').value,
+            analysis: latestAnalysis
+          })
+        })
+        .then(function (response) {
+          return response.json().then(function (body) {
+            if (!response.ok) {
+              throw new Error((body && body.error) ? body.error : 'Impossible d’ouvrir le module Contenu.');
+            }
+            return body;
+          });
+        })
+        .then(function (payload) {
+          window.location.href = payload.redirect_url || '/contenu';
+        })
+        .catch(function (error) {
+          errorBox.textContent = error.message;
+          errorBox.style.display = 'block';
+        })
+        .finally(function () {
+          contentButton.disabled = false;
+          contentButton.textContent = 'Générer du contenu';
+        });
+      });
+    }
   })();
 </script>
