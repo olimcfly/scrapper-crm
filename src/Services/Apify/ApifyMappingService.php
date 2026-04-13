@@ -25,12 +25,52 @@ final class ApifyMappingService
     {
         return match ($source) {
             'google_maps' => $this->mapGoogleMaps($item),
+            'instagram' => $this->mapInstagramScraper($item),
             'instagram_profile' => $this->mapInstagramProfile($item),
             'instagram_hashtag' => $this->mapInstagramHashtag($item),
             'linkedin_profile' => $this->mapLinkedInProfile($item),
             'tiktok' => $this->mapTikTok($item),
             default => $this->mapGeneric($source, $item),
         };
+    }
+
+    /** @param array<string, mixed> $item */
+    private function mapInstagramScraper(array $item): array
+    {
+        return [
+            'prospect' => [
+                'full_name' => $this->string($item['ownerFullName'] ?? $item['ownerUsername'] ?? ''),
+                'business_name' => '',
+                'activity' => 'instagram_posts',
+                'city' => '',
+                'country' => '',
+                'website' => '',
+                'instagram_url' => $this->string($item['url'] ?? ''),
+            ],
+            'social_profile' => [
+                'platform' => 'instagram',
+                'profile_url' => $this->string($item['ownerProfilePicUrl'] ?? ''),
+                'username' => $this->string($item['ownerUsername'] ?? ''),
+                'followers_count' => null,
+                'engagement_rate' => null,
+            ],
+            'enrichment_data' => [
+                'post_type' => $this->string($item['type'] ?? ''),
+                'caption' => $this->string($item['caption'] ?? ''),
+                'likes_count' => $item['likesCount'] ?? null,
+                'comments_count' => $item['commentsCount'] ?? null,
+            ],
+            'analysis' => [
+                'mvp_score' => $this->computeMvpScore($item),
+                'next_action' => 'Analyser les contenus performants puis qualifier le prospect Instagram.',
+                'summary' => 'Posts Instagram collectés via Apify et prêts pour enrichissement CRM.',
+            ],
+            'activity_log' => [
+                'source' => 'apify/instagram',
+                'event' => 'signal_collected',
+                'details' => 'Posts Instagram normalisés depuis l’acteur apify/instagram-scraper.',
+            ],
+        ];
     }
 
     /** @param array<string, mixed> $item */

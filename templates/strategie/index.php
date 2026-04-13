@@ -77,7 +77,7 @@
       </div>
 
       <div class="stack" style="margin-top:16px;">
-        <a class="btn btn-primary" href="/admin/modules/generation-contenu">
+        <a class="btn btn-primary" href="/contenu">
           Générer du contenu
         </a>
 
