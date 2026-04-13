@@ -14,6 +14,9 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ------------------------------------------------------------
 -- DROP (ordre inverse des clés étrangères)
 -- ------------------------------------------------------------
+DROP TABLE IF EXISTS source_results;
+DROP TABLE IF EXISTS search_runs;
+DROP TABLE IF EXISTS connected_accounts;
 DROP TABLE IF EXISTS strategy_profile_analyses;
 DROP TABLE IF EXISTS login_tokens;
 DROP TABLE IF EXISTS messages;
@@ -238,6 +241,68 @@ CREATE TABLE prospect_tag (
   CONSTRAINT fk_pt_tag      FOREIGN KEY (tag_id)      REFERENCES tags(id)      ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+
+-- ============================================================
+-- TABLE : connected_accounts
+-- Connexions API par source et par utilisateur.
+-- ============================================================
+CREATE TABLE connected_accounts (
+  id                   INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id              INT UNSIGNED NOT NULL,
+  source               VARCHAR(80)  NOT NULL,
+  external_account_id  VARCHAR(190) DEFAULT NULL,
+  status               ENUM('connected','error','pending') NOT NULL DEFAULT 'pending',
+  error_message        VARCHAR(255) DEFAULT NULL,
+  connected_at         DATETIME DEFAULT NULL,
+  created_at           DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at           DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_connected_accounts_user_source (user_id, source),
+  KEY idx_connected_accounts_user (user_id),
+  KEY idx_connected_accounts_status (status),
+  CONSTRAINT fk_connected_accounts_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- TABLE : search_runs
+-- Historique des runs de recherche multi-sources.
+-- ============================================================
+CREATE TABLE search_runs (
+  id             INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id        INT UNSIGNED NOT NULL,
+  source         VARCHAR(80)  NOT NULL,
+  search_type    VARCHAR(80)  NOT NULL,
+  status         ENUM('running','success','failed') NOT NULL DEFAULT 'running',
+  filters_json   JSON DEFAULT NULL,
+  results_count  INT NOT NULL DEFAULT 0,
+  error_message  VARCHAR(255) DEFAULT NULL,
+  started_at     DATETIME DEFAULT NULL,
+  ended_at       DATETIME DEFAULT NULL,
+  created_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_search_runs_user (user_id),
+  KEY idx_search_runs_source_status (source, status),
+  KEY idx_search_runs_created_at (created_at),
+  CONSTRAINT fk_search_runs_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- TABLE : source_results
+-- Résultats normalisés liés à un run de recherche.
+-- ============================================================
+CREATE TABLE source_results (
+  id                       BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  search_run_id            INT UNSIGNED NOT NULL,
+  source                   VARCHAR(80) NOT NULL,
+  normalized_payload_json  JSON NOT NULL,
+  created_at               DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_source_results_run (search_run_id),
+  KEY idx_source_results_source (source),
+  CONSTRAINT fk_source_results_run FOREIGN KEY (search_run_id) REFERENCES search_runs(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- ============================================================

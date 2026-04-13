@@ -83,6 +83,11 @@ $router->add('GET', '/prospects/{id}/generated-contents', $guard->protect(static
 $router->add('POST', '/prospects/{id}/generated-contents/generate', $guard->protect(static fn (Request $req, array $params): mixed => (new GeneratedContentController())->generate($req, (int) $params['id'])));
 $router->add('GET', '/settings', $guard->protect(static fn (Request $req): mixed => (new SettingsController())->index($req)));
 
+$router->add('GET', '/contenu', $guard->protect(static fn (Request $req): mixed => (new ContentController())->index($req)));
+$router->add('POST', '/contenu/generer', $guard->protect(static fn (Request $req): mixed => (new ContentController())->generate($req)));
+$router->add('POST', '/contenu/dupliquer', $guard->protect(static fn (Request $req): mixed => (new ContentController())->duplicateDraft($req)));
+
+
 $router->add('GET', '/dashboard', $guard->protect(static fn (Request $req): mixed => $adminController->dashboard($req)));
 $router->add('GET', '/strategie', $guard->protect(static fn (Request $req): mixed => (new StrategyController())->index($req)));
 $router->add('POST', '/strategie/analyse', $guard->protect(static fn (Request $req): mixed => (new StrategyController())->analyze($req)));
