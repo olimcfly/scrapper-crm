@@ -15,6 +15,19 @@ return [
                 ['name' => 'max_results', 'label' => 'Résultats max', 'type' => 'number', 'required' => false],
             ],
         ],
+        'google_search_scraper' => [
+            'label' => 'Google Search Scraper (Apify)',
+            'kind' => 'prospecting_connector',
+            'connector' => App\Services\Prospecting\Connectors\GoogleSearchApifyConnector::class,
+            'search_types' => ['keyword', 'activity', 'city', 'name', 'job_title'],
+            'fields' => [
+                ['name' => 'query', 'label' => 'Requête Google', 'type' => 'text', 'required' => true],
+                ['name' => 'country_code', 'label' => 'Code pays (ex: US, FR)', 'type' => 'text', 'required' => false],
+                ['name' => 'language_code', 'label' => 'Code langue (ex: en, fr)', 'type' => 'text', 'required' => false],
+                ['name' => 'max_pages', 'label' => 'Pages max par requête', 'type' => 'number', 'required' => false],
+                ['name' => 'max_results', 'label' => 'Résultats max', 'type' => 'number', 'required' => false],
+            ],
+        ],
         'google_business_profile' => [
             'label' => 'Google Business Profile',
             'kind' => 'official_api',
