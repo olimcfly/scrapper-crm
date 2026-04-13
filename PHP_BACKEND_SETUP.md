@@ -23,3 +23,12 @@
 - `GET /prospect-statuses`
 - `GET /sources`
 - `GET /tags`
+
+## 5) Instagram Scraper Apify (apify/instagram-scraper)
+- Définir `APIFY_API_TOKEN` dans l’environnement.
+- Optionnel: surcharger l’acteur avec `APIFY_ACTOR_INSTAGRAM` (défaut: `apify/instagram-scraper`).
+- La source `instagram` (prospecting) attend les filtres:
+  - `direct_url` (obligatoire), ex: `https://www.instagram.com/humansofny/`
+  - `results_limit` (optionnel, défaut 50)
+  - `search_type` (optionnel, défaut `hashtag`)
+  - `search_limit` (optionnel, défaut 1)
