@@ -56,6 +56,25 @@
   </div>
 </section>
 
+
+<section class="card" style="margin-top:12px;">
+  <h3 style="margin-top:0;">Historique des analyses</h3>
+  <?php if (($history ?? []) === []): ?>
+    <p class="muted">Aucune analyse sauvegardée pour le moment.</p>
+  <?php else: ?>
+    <?php foreach (($history ?? []) as $item): ?>
+      <article style="border-top:1px solid #e2e8f0;padding-top:10px;margin-top:10px;">
+        <p class="muted" style="margin:0 0 8px;"><?= htmlspecialchars((string) $item['created_at']) ?> · <?= htmlspecialchars((string) ($item['awareness_level'] ?? 'N/A')) ?></p>
+        <p style="margin:0 0 8px;white-space:pre-wrap;"><?= htmlspecialchars((string) ($item['summary'] ?? '')) ?></p>
+        <details>
+          <summary>Source</summary>
+          <pre style="white-space:pre-wrap;"><?= htmlspecialchars((string) ($item['profile_text'] ?? '')) ?></pre>
+        </details>
+      </article>
+    <?php endforeach; ?>
+  <?php endif; ?>
+</section>
+
 <script>
   (function () {
     var form = document.getElementById('strategy-analysis-form');
@@ -65,6 +84,9 @@
     var warningBox = document.getElementById('analysis-warning');
     var resultBox = document.getElementById('analysis-result');
     var badge = document.getElementById('awareness-badge');
+    var contentButton = document.getElementById('go-to-content');
+    var latestAnalysis = null;
+    var latestAnalysisId = 0;
 
     var createMessageCta = document.getElementById('create-message-cta');
 
@@ -146,6 +168,8 @@
       })
       .then(function (payload) {
         var data = payload.data || {};
+        latestAnalysis = data;
+        latestAnalysisId = Number(payload.analysis_id || 0);
         badge.textContent = data.awareness_level || 'N/A';
         document.getElementById('summary').textContent = data.summary || 'Aucun résumé';
 
@@ -174,5 +198,50 @@
         }
       });
     });
+
+    if (contentButton) {
+      contentButton.addEventListener('click', function () {
+        if (!latestAnalysis) {
+          errorBox.textContent = 'Veuillez d’abord analyser un prospect.';
+          errorBox.style.display = 'block';
+          return;
+        }
+
+        contentButton.disabled = true;
+        contentButton.textContent = 'Préparation...';
+
+        fetch('/strategie/vers-contenu', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: JSON.stringify({
+            _csrf: form.querySelector('input[name="_csrf"]').value,
+            analysis: latestAnalysis,
+            analysis_id: latestAnalysisId
+          })
+        })
+        .then(function (response) {
+          return response.json().then(function (body) {
+            if (!response.ok) {
+              throw new Error((body && body.error) ? body.error : 'Impossible d’ouvrir le module Contenu.');
+            }
+            return body;
+          });
+        })
+        .then(function (payload) {
+          window.location.href = payload.redirect_url || '/contenu';
+        })
+        .catch(function (error) {
+          errorBox.textContent = error.message;
+          errorBox.style.display = 'block';
+        })
+        .finally(function () {
+          contentButton.disabled = false;
+          contentButton.textContent = 'Générer du contenu';
+        });
+      });
+    }
   })();
 </script>

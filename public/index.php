@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Controllers\AdminController;
 use App\Controllers\ApifyController;
 use App\Controllers\AuthController;
+use App\Controllers\ContentController;
 use App\Controllers\GeneratedContentController;
 use App\Controllers\LookupController;
 use App\Controllers\MessagesIaController;
@@ -95,6 +96,9 @@ $router->add('GET', '/admin', $guard->protect(static function (): void {
     Response::redirect('/dashboard');
 }));
 $router->add('GET', '/admin/dashboard', $guard->protect(static fn (Request $req): mixed => $adminController->dashboard($req)));
+$router->add('GET', '/admin/modules/generation-contenu', $guard->protect(static function (): void {
+    Response::redirect('/contenu');
+}));
 $router->add('GET', '/admin/modules/{module}', $guard->protect(static fn (Request $req, array $params): mixed => $adminController->module($req, (string) $params['module'])));
 
 $router->add('GET', '/parametres', $guard->protect(static fn (Request $req): mixed => $settingsController->index($req)));

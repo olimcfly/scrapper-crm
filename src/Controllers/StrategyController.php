@@ -8,6 +8,7 @@ use App\Core\Csrf;
 use App\Core\Database;
 use App\Core\Request;
 use App\Core\Response;
+use App\Core\Session;
 use App\Core\View;
 use App\Models\StrategyAnalysisModel;
 use App\Services\Auth;
@@ -30,8 +31,25 @@ final class StrategyController
     {
         unset($request);
 
+        $history = [];
+        try {
+            if (!$this->auth instanceof Auth) {
+                $this->auth = new Auth(Database::connection());
+            }
+            if (!$this->analyses instanceof StrategyAnalysisModel) {
+                $this->analyses = new StrategyAnalysisModel();
+            }
+            $user = $this->auth->user();
+            if (is_array($user) && isset($user['id'])) {
+                $history = $this->analyses->latestByUser((int) $user['id'], 15);
+            }
+        } catch (Throwable) {
+            $history = [];
+        }
+
         View::render('strategie/index', [
             'title' => 'Stratégie prospect',
+            'history' => $history,
         ]);
     }
 
@@ -59,11 +77,12 @@ final class StrategyController
             $raw = $this->openAiClient->generateStructuredAnalysis($profile);
             $analysis = $this->normalizeAnalysis($raw['output_text']);
 
-            $this->storeAnalysisSafely($profile, $analysis);
+            $analysisId = $this->storeAnalysisSafely($profile, $analysis);
 
             Response::json([
                 'success' => true,
                 'data' => $analysis,
+                'analysis_id' => $analysisId,
                 'meta' => ['source' => 'openai'],
             ]);
         } catch (Throwable $e) {
@@ -95,6 +114,39 @@ final class StrategyController
                 'code' => 'STRATEGY_ANALYSIS_FAILED',
             ], 500);
         }
+    }
+
+    public function bridgeToContent(Request $request): void
+    {
+        $input = $request->input();
+        $csrfToken = (string) ($input['_csrf'] ?? '');
+        if (!Csrf::verify($csrfToken)) {
+            Response::json(['error' => 'Session expirée. Rechargez la page.'], 419);
+            return;
+        }
+
+        $analysis = $input['analysis'] ?? null;
+        if (!is_array($analysis)) {
+            Response::json(['error' => 'Analyse manquante pour ouvrir le module Contenu.'], 422);
+            return;
+        }
+
+        $normalized = [
+            'awareness_level' => trim((string) ($analysis['awareness_level'] ?? 'N/A')),
+            'summary' => trim((string) ($analysis['summary'] ?? '')),
+            'pain_points' => $this->normalizeStringList($analysis['pain_points'] ?? []),
+            'desires' => $this->normalizeStringList($analysis['desires'] ?? []),
+            'content_angles' => $this->normalizeStringList($analysis['content_angles'] ?? []),
+            'recommended_hooks' => $this->normalizeStringList($analysis['recommended_hooks'] ?? []),
+        ];
+
+        Session::put('strategy_to_content_analysis', $normalized);
+        Session::put('strategy_to_content_analysis_id', (int) ($input['analysis_id'] ?? 0));
+        Session::forget('strategy_to_content_generated');
+        Response::json([
+            'success' => true,
+            'redirect_url' => '/contenu',
+        ]);
     }
 
     /**
@@ -135,7 +187,7 @@ final class StrategyController
         return $items;
     }
 
-    private function storeAnalysisSafely(string $profile, array $analysis): void
+    private function storeAnalysisSafely(string $profile, array $analysis): ?int
     {
         try {
             if (!$this->auth instanceof Auth) {
@@ -148,11 +200,13 @@ final class StrategyController
 
             $user = $this->auth->user();
             if (is_array($user) && isset($user['id'])) {
-                $this->analyses->create((int) $user['id'], $profile, $analysis);
+                return $this->analyses->create((int) $user['id'], $profile, $analysis);
             }
         } catch (Throwable $e) {
             Logger::error('Strategy analysis persistence skipped: ' . $e->getMessage());
         }
+
+        return null;
     }
 
     private function isMissingApiKeyError(Throwable $e): bool
