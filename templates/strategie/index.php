@@ -14,6 +14,7 @@
     <button type="submit" class="btn" style="width:100%;min-height:52px;font-size:16px;">Analyser le prospect</button>
   </form>
   <p id="analysis-error" style="display:none;color:#b91c1c;margin:12px 0 0;"></p>
+  <p id="analysis-warning" style="display:none;color:#92400e;margin:8px 0 0;"></p>
 </section>
 
 <section id="analysis-result" class="card" style="display:none;">
@@ -61,6 +62,7 @@
     if (!form) return;
 
     var errorBox = document.getElementById('analysis-error');
+    var warningBox = document.getElementById('analysis-warning');
     var resultBox = document.getElementById('analysis-result');
     var badge = document.getElementById('awareness-badge');
 
@@ -86,6 +88,7 @@
     form.addEventListener('submit', function (event) {
       event.preventDefault();
       errorBox.style.display = 'none';
+      warningBox.style.display = 'none';
       resultBox.style.display = 'none';
 
       var formData = new FormData(form);
@@ -103,7 +106,14 @@
         }
       })
       .then(function (response) {
-        return response.json().then(function (body) {
+        return response.text().then(function (rawBody) {
+          var body = {};
+          try {
+            body = rawBody ? JSON.parse(rawBody) : {};
+          } catch (e) {
+            throw new Error('Réponse serveur invalide (JSON non lisible).');
+          }
+
           if (!response.ok) {
             throw new Error(body.error || 'Erreur inconnue');
           }
@@ -119,6 +129,11 @@
         fillList('desires', data.desires || []);
         fillList('content-angles', data.content_angles || []);
         fillList('recommended-hooks', data.recommended_hooks || []);
+
+        if (payload.meta && payload.meta.warning) {
+          warningBox.textContent = payload.meta.warning;
+          warningBox.style.display = 'block';
+        }
 
         resultBox.style.display = 'block';
         resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
