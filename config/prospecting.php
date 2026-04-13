@@ -34,12 +34,13 @@ return [
             ],
         ],
         'instagram' => [
-            'label' => 'Instagram',
-            'kind' => 'official_api',
+            'label' => 'Instagram Hashtag (Apify)',
+            'kind' => 'prospecting_connector',
             'connector' => App\Services\Prospecting\Connectors\InstagramConnector::class,
-            'search_types' => ['authorized_account_sync'],
+            'search_types' => ['hashtag'],
             'fields' => [
-                ['name' => 'account_id', 'label' => 'ID compte Instagram', 'type' => 'text', 'required' => true],
+                ['name' => 'hashtag', 'label' => 'Hashtag', 'type' => 'text', 'required' => true],
+                ['name' => 'results_limit', 'label' => 'Résultats max', 'type' => 'number', 'required' => false],
             ],
         ],
         'tiktok' => [
