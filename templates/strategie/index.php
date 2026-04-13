@@ -56,6 +56,25 @@
   </div>
 </section>
 
+
+<section class="card" style="margin-top:12px;">
+  <h3 style="margin-top:0;">Historique des analyses</h3>
+  <?php if (($history ?? []) === []): ?>
+    <p class="muted">Aucune analyse sauvegardée pour le moment.</p>
+  <?php else: ?>
+    <?php foreach (($history ?? []) as $item): ?>
+      <article style="border-top:1px solid #e2e8f0;padding-top:10px;margin-top:10px;">
+        <p class="muted" style="margin:0 0 8px;"><?= htmlspecialchars((string) $item['created_at']) ?> · <?= htmlspecialchars((string) ($item['awareness_level'] ?? 'N/A')) ?></p>
+        <p style="margin:0 0 8px;white-space:pre-wrap;"><?= htmlspecialchars((string) ($item['summary'] ?? '')) ?></p>
+        <details>
+          <summary>Source</summary>
+          <pre style="white-space:pre-wrap;"><?= htmlspecialchars((string) ($item['profile_text'] ?? '')) ?></pre>
+        </details>
+      </article>
+    <?php endforeach; ?>
+  <?php endif; ?>
+</section>
+
 <script>
   (function () {
     var form = document.getElementById('strategy-analysis-form');
@@ -67,6 +86,7 @@
     var badge = document.getElementById('awareness-badge');
     var contentButton = document.getElementById('go-to-content');
     var latestAnalysis = null;
+    var latestAnalysisId = 0;
 
     function fillList(id, items) {
       var list = document.getElementById(id);
@@ -125,6 +145,7 @@
       .then(function (payload) {
         var data = payload.data || {};
         latestAnalysis = data;
+        latestAnalysisId = Number(payload.analysis_id || 0);
         badge.textContent = data.awareness_level || 'N/A';
         document.getElementById('summary').textContent = data.summary || 'Aucun résumé';
 
@@ -172,7 +193,8 @@
           },
           body: JSON.stringify({
             _csrf: form.querySelector('input[name="_csrf"]').value,
-            analysis: latestAnalysis
+            analysis: latestAnalysis,
+            analysis_id: latestAnalysisId
           })
         })
         .then(function (response) {
