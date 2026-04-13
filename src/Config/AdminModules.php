@@ -13,7 +13,7 @@ final class AdminModules
     {
         return [
             ['key' => 'dashboard', 'label' => 'Dashboard', 'description' => 'Vue de démarrage avec prochaines actions prioritaires.', 'path' => '/dashboard', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'dashboard'],
-            ['key' => 'collecte-profils', 'label' => 'Prospects', 'description' => 'Collecte profils, liste des prospects et accès fiches.', 'path' => '/prospects', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'prospects'],
+            ['key' => 'collecte-profils', 'label' => 'Prospects', 'description' => 'Collecte multi-sources, connexions et recherche par connecteur.', 'path' => '/prospects/sources', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'prospects'],
             ['key' => 'strategie-prospect', 'label' => 'Stratégie', 'description' => 'Analyse psychologique du prospect et recommandations marketing actionnables.', 'path' => '/strategie', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'strategy'],
             ['key' => 'generation-contenu', 'label' => 'Contenu', 'description' => 'Génération de contenu orientée objectif commercial.', 'path' => '/admin/modules/generation-contenu', 'status' => 'mvp', 'core' => true, 'ready' => false, 'nav' => 'secondary'],
             ['key' => 'messages-ia', 'label' => 'Messages IA', 'description' => 'Flow guidé générer → éditer → envoyer.', 'path' => '/messages-ia', 'status' => 'mvp', 'core' => true, 'ready' => false, 'nav' => 'messages'],
