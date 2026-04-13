@@ -8,7 +8,7 @@ use App\Controllers\AuthController;
 use App\Controllers\ContentController;
 use App\Controllers\GeneratedContentController;
 use App\Controllers\LookupController;
-use App\Controllers\MessagesController;
+use App\Controllers\MessagesIaController;
 use App\Controllers\PipelineController;
 use App\Controllers\ProspectingController;
 use App\Controllers\ProspectController;
@@ -86,13 +86,8 @@ $router->add('GET', '/settings', $guard->protect(static fn (Request $req): mixed
 $router->add('GET', '/dashboard', $guard->protect(static fn (Request $req): mixed => $adminController->dashboard($req)));
 $router->add('GET', '/strategie', $guard->protect(static fn (Request $req): mixed => (new StrategyController())->index($req)));
 $router->add('POST', '/strategie/analyse', $guard->protect(static fn (Request $req): mixed => (new StrategyController())->analyze($req)));
-$router->add('POST', '/strategie/vers-contenu', $guard->protect(static fn (Request $req): mixed => (new StrategyController())->bridgeToContent($req)));
-$router->add('GET', '/contenu', $guard->protect(static fn (Request $req): mixed => (new ContentController())->index($req)));
-$router->add('POST', '/contenu/generer', $guard->protect(static fn (Request $req): mixed => (new ContentController())->generate($req)));
-$router->add('POST', '/contenu/dupliquer', $guard->protect(static fn (Request $req): mixed => (new ContentController())->duplicateDraft($req)));
-$router->add('GET', '/messages-ia', $guard->protect(static fn (Request $req): mixed => (new MessagesController())->index($req)));
-$router->add('POST', '/messages-ia/generer', $guard->protect(static fn (Request $req): mixed => (new MessagesController())->generate($req)));
-$router->add('POST', '/messages-ia/dupliquer', $guard->protect(static fn (Request $req): mixed => (new MessagesController())->duplicateDraft($req)));
+$router->add('GET', '/messages-ia', $guard->protect(static fn (Request $req): mixed => (new MessagesIaController())->index($req)));
+$router->add('POST', '/messages-ia/generate', $guard->protect(static fn (Request $req): mixed => (new MessagesIaController())->generate($req)));
 $router->add('GET', '/pipeline', $guard->protect(static fn (Request $req): mixed => $pipelineController->index($req)));
 $router->add('POST', '/pipeline/{id}/move', $guard->protect(static fn (Request $req, array $params): mixed => $pipelineController->moveStage($req, (int) $params['id'])));
 $router->add('POST', '/prospects/{id}/messages', $guard->protect(static fn (Request $req, array $params): mixed => $pipelineController->addMessage($req, (int) $params['id'])));
@@ -106,8 +101,6 @@ $router->add('GET', '/admin/modules/generation-contenu', $guard->protect(static 
 }));
 $router->add('GET', '/admin/modules/{module}', $guard->protect(static fn (Request $req, array $params): mixed => $adminController->module($req, (string) $params['module'])));
 
-$router->add('GET', '/strategie', $guard->protect(static fn (Request $req): mixed => $adminController->moduleAlias($req, 'strategie-prospect')));
-$router->add('GET', '/messages-ia', $guard->protect(static fn (Request $req): mixed => (new MessagesController())->index($req)));
 $router->add('GET', '/parametres', $guard->protect(static fn (Request $req): mixed => $settingsController->index($req)));
 
 // API routes (JSON)

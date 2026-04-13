@@ -66,6 +66,88 @@ TXT;
             ],
         ];
 
+        $json = $this->request($payload);
+        $outputText = trim((string) ($json['output_text'] ?? ''));
+        if ($outputText === '') {
+            throw new RuntimeException('Réponse OpenAI vide.');
+        }
+
+        return ['output_text' => $outputText];
+    }
+
+    /**
+     * @param array{summary:string,awareness_level:string,pain_points:array<int,string>,main_desire:string,recommended_tone:string,hook_angle:string} $context
+     * @return array<int,string>
+     */
+    public function generateMessageVariants(string $messageType, string $channel, array $context): array
+    {
+        if ($this->apiKey === '') {
+            throw new RuntimeException('OPENAI_API_KEY manquant dans .env');
+        }
+
+        $instructions = "Tu es un expert en prospection relationnelle. Génère 3 variantes de message.\n"
+            . "Contraintes: naturel, concret, pas de hard-sell, canal respecté.\n"
+            . "Réponds strictement en JSON: {\"variants\":[\"\",\"\",\"\"]}.";
+
+        $userPayload = sprintf(
+            "Type message: %s\nCanal: %s\nRésumé prospect: %s\nNiveau conscience: %s\nPain points: %s\nDésir principal: %s\nTon recommandé: %s\nHook/angle: %s",
+            $messageType,
+            $channel,
+            $context['summary'],
+            $context['awareness_level'],
+            implode(' | ', $context['pain_points']),
+            $context['main_desire'],
+            $context['recommended_tone'],
+            $context['hook_angle']
+        );
+
+        $payload = [
+            'model' => $this->model,
+            'input' => [
+                [
+                    'role' => 'system',
+                    'content' => [
+                        ['type' => 'input_text', 'text' => $instructions],
+                    ],
+                ],
+                [
+                    'role' => 'user',
+                    'content' => [
+                        ['type' => 'input_text', 'text' => $userPayload],
+                    ],
+                ],
+            ],
+        ];
+
+        $json = $this->request($payload);
+        $outputText = trim((string) ($json['output_text'] ?? ''));
+        if ($outputText === '') {
+            throw new RuntimeException('Réponse OpenAI vide.');
+        }
+
+        $decoded = json_decode($outputText, true);
+        if (!is_array($decoded) || !is_array($decoded['variants'] ?? null)) {
+            throw new RuntimeException('Réponse OpenAI invalide (variants manquantes).');
+        }
+
+        $variants = [];
+        foreach ($decoded['variants'] as $item) {
+            $text = trim((string) $item);
+            if ($text !== '') {
+                $variants[] = $text;
+            }
+        }
+
+        if ($variants === []) {
+            throw new RuntimeException('Aucune variante retournée.');
+        }
+
+        return array_slice($variants, 0, 3);
+    }
+
+    /** @param array<string,mixed> $payload */
+    private function request(array $payload): array
+    {
         $ch = curl_init('https://api.openai.com/v1/responses');
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
@@ -97,11 +179,6 @@ TXT;
             throw new RuntimeException($message);
         }
 
-        $outputText = trim((string) ($json['output_text'] ?? ''));
-        if ($outputText === '') {
-            throw new RuntimeException('Réponse OpenAI vide.');
-        }
-
-        return ['output_text' => $outputText];
+        return $json;
     }
 }
