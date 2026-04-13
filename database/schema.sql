@@ -175,16 +175,18 @@ CREATE TABLE prospects (
 -- ============================================================
 -- TABLE : generated_contents
 -- Contenus générés par IA depuis l'analyse d'un prospect.
--- type: post | video | story | dm
+-- type: post | email | message_court
 -- ============================================================
 CREATE TABLE generated_contents (
   id              INT UNSIGNED  NOT NULL AUTO_INCREMENT,
   prospect_id      INT UNSIGNED  NOT NULL,
-  type             ENUM('post','video','story','dm') NOT NULL,
+  type             ENUM('post','email','message_court') NOT NULL,
   content          TEXT          NOT NULL,
   hook             VARCHAR(255)  NOT NULL DEFAULT '',
   angle            VARCHAR(255)  NOT NULL DEFAULT '',
   awareness_level  VARCHAR(120)  NOT NULL DEFAULT '',
+  payload_json     JSON                   DEFAULT NULL,
+  context_json     JSON                   DEFAULT NULL,
   created_at       DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   KEY idx_generated_contents_prospect_id (prospect_id),

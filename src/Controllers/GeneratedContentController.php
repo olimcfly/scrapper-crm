@@ -35,13 +35,13 @@ final class GeneratedContentController
         }
 
         if (!$this->hasAnalysis($prospect)) {
-            Session::flash('warning', 'Analyse requise: remplissez au moins les champs stratégie avant de générer.');
+            Session::flash('warning', 'Analyse requise: renseignez stratégie (pain points, désirs, angle, hook) avant de générer.');
             Response::redirect('/prospects/' . $prospectId);
             return;
         }
 
         $type = trim((string) ($request->input()['type'] ?? ''));
-        $allowedTypes = ['post', 'video', 'story', 'dm'];
+        $allowedTypes = ['post', 'email', 'message_court'];
         if (!in_array($type, $allowedTypes, true)) {
             $type = '';
         }
@@ -52,14 +52,18 @@ final class GeneratedContentController
             $generated = $this->contents->findById($generatedId, $prospectId);
         }
 
-        $awareness = $this->awarenessLevel($prospect);
+        $payload = $this->contents->decodePayload($generated);
+        $contextUsed = $this->contents->decodeContext($generated);
+
         View::render('prospects/generated_content', [
             'title' => 'Génération contenu IA',
             'prospect' => $prospect,
             'type' => $type,
             'generated' => $generated,
-            'awarenessLevel' => $awareness,
-            'recommendedType' => $this->recommendedType($awareness),
+            'payload' => $payload,
+            'contextUsed' => $contextUsed,
+            'awarenessLevel' => $this->awarenessLevel($prospect),
+            'recommendedType' => $this->recommendedType($this->awarenessLevel($prospect)),
             'successMessage' => Session::consumeFlash('success'),
             'warningMessage' => Session::consumeFlash('warning'),
         ]);
@@ -81,41 +85,86 @@ final class GeneratedContentController
         }
 
         $type = trim((string) ($request->input()['type'] ?? ''));
-        if (!in_array($type, ['post', 'video', 'story', 'dm'], true)) {
+        if (!in_array($type, ['post', 'email', 'message_court'], true)) {
             Session::flash('warning', 'Type de contenu invalide.');
             Response::redirect('/prospects/' . $prospectId . '/generated-contents');
             return;
         }
 
-        try {
-            $awareness = $this->awarenessLevel($prospect);
-            $context = [
-                'full_name' => trim((string) ($prospect['full_name'] ?? '')),
-                'activity' => trim((string) ($prospect['activity'] ?? '')),
-                'objectif_contact' => trim((string) ($prospect['objectif_contact'] ?? '')),
-                'blocages' => trim((string) ($prospect['blocages'] ?? '')),
-                'desirs' => trim((string) ($prospect['notes_summary'] ?? '')),
-                'interaction' => trim((string) ($request->input()['interaction'] ?? 'Like récent sur un post.')),
-                'awareness_level' => $awareness,
-            ];
+        $context = $this->buildGenerationContext($prospect, $request->input(), $type);
+        $generated = $this->ai->generate($type, $context);
 
-            $generated = $this->ai->generate($type, $context);
+        $primary = $generated['primary'] ?? [];
+        $id = $this->contents->create([
+            'prospect_id' => $prospectId,
+            'type' => $type,
+            'content' => trim((string) ($primary['body'] ?? '')),
+            'hook' => trim((string) ($primary['title'] ?? $primary['opening'] ?? '')),
+            'angle' => trim((string) ($context['angle'] ?? '')),
+            'awareness_level' => $context['awareness_level'],
+            'payload_json' => json_encode($generated, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            'context_json' => json_encode($generated['context_used'] ?? $context, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+        ]);
 
-            $id = $this->contents->create([
-                'prospect_id' => $prospectId,
-                'type' => $type,
-                'content' => $generated['content'],
-                'hook' => $generated['hook'],
-                'angle' => $generated['angle'],
-                'awareness_level' => $awareness,
-            ]);
-
-            Session::flash('success', 'Contenu généré. Prêt à être copié.');
-            Response::redirect('/prospects/' . $prospectId . '/generated-contents?type=' . urlencode($type) . '&generated_id=' . $id);
-        } catch (\Throwable $e) {
-            Session::flash('warning', 'Impossible de générer le contenu: ' . $e->getMessage());
-            Response::redirect('/prospects/' . $prospectId . '/generated-contents?type=' . urlencode($type));
+        if (($generated['source'] ?? '') === 'fallback') {
+            Session::flash('warning', (string) ($generated['warning'] ?? 'Mode dégradé activé.'));
+        } else {
+            Session::flash('success', '3 brouillons générés. Prêts à être copiés ou réutilisés.');
         }
+
+        Response::redirect('/prospects/' . $prospectId . '/generated-contents?type=' . urlencode($type) . '&generated_id=' . $id);
+    }
+
+    private function buildGenerationContext(array $prospect, array $input, string $type): array
+    {
+        $painPoints = $this->toStringList($input['pain_points'] ?? $prospect['blocages'] ?? '');
+        $desires = $this->toStringList($input['desires'] ?? $prospect['notes_summary'] ?? '');
+
+        return [
+            'full_name' => trim((string) ($prospect['full_name'] ?? '')),
+            'activity' => trim((string) ($prospect['activity'] ?? '')),
+            'objectif_contact' => trim((string) ($prospect['objectif_contact'] ?? '')),
+            'pain_points' => $painPoints,
+            'pain_points_text' => implode(' | ', $painPoints),
+            'desires' => $desires,
+            'desires_text' => implode(' | ', $desires),
+            'channel' => trim((string) ($input['channel'] ?? $input['interaction'] ?? 'contact précédent')),
+            'awareness_level' => trim((string) ($input['awareness_level'] ?? $this->awarenessLevel($prospect))),
+            'angle' => trim((string) ($input['angle'] ?? '')), 
+            'hook' => trim((string) ($input['hook'] ?? '')),
+            'content_type' => $type,
+        ];
+    }
+
+    private function toStringList(mixed $value): array
+    {
+        if (is_array($value)) {
+            $items = [];
+            foreach ($value as $item) {
+                $text = trim((string) $item);
+                if ($text !== '') {
+                    $items[] = $text;
+                }
+            }
+
+            return $items;
+        }
+
+        $text = trim((string) $value);
+        if ($text === '') {
+            return [];
+        }
+
+        $parts = preg_split('/[\n,;|]+/', $text) ?: [];
+        $clean = [];
+        foreach ($parts as $part) {
+            $item = trim((string) $part);
+            if ($item !== '') {
+                $clean[] = $item;
+            }
+        }
+
+        return $clean;
     }
 
     private function hasAnalysis(array $prospect): bool
@@ -143,13 +192,13 @@ final class GeneratedContentController
     private function recommendedType(string $awareness): string
     {
         if ($awareness === 'inconscient') {
-            return 'Storytelling';
+            return 'Post pédagogique';
         }
 
         if ($awareness === 'conscient problème') {
-            return 'Erreur / miroir';
+            return 'Email utile';
         }
 
-        return 'Comparaison';
+        return 'Message court contextualisé';
     }
 }
