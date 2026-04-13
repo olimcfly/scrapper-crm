@@ -8,6 +8,7 @@ return [
     'user_id' => trim((string) getenv('APIFY_USER_ID')),
     'actors' => [
         'google_maps' => trim((string) (getenv('APIFY_ACTOR_GOOGLE_MAPS') ?: 'compass/crawler-google-places')),
+        'google_search' => trim((string) (getenv('APIFY_ACTOR_GOOGLE_SEARCH') ?: 'apify/google-search-scraper')),
         'instagram_profile' => trim((string) (getenv('APIFY_ACTOR_INSTAGRAM_PROFILE') ?: 'apify/instagram-profile-scraper')),
         'instagram_hashtag' => trim((string) (getenv('APIFY_ACTOR_INSTAGRAM_HASHTAG') ?: 'apify/instagram-hashtag-scraper')),
         'linkedin_profile' => trim((string) (getenv('APIFY_ACTOR_LINKEDIN_PROFILE') ?: 'curious_coder/linkedin-profile-scraper')),
