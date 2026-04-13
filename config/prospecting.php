@@ -34,12 +34,15 @@ return [
             ],
         ],
         'instagram' => [
-            'label' => 'Instagram',
-            'kind' => 'official_api',
-            'connector' => App\Services\Prospecting\Connectors\InstagramConnector::class,
-            'search_types' => ['authorized_account_sync'],
+            'label' => 'Instagram (Apify)',
+            'kind' => 'prospecting_connector',
+            'connector' => App\Services\Prospecting\Connectors\InstagramApifyConnector::class,
+            'search_types' => ['profile', 'hashtag'],
             'fields' => [
-                ['name' => 'account_id', 'label' => 'ID compte Instagram', 'type' => 'text', 'required' => true],
+                ['name' => 'direct_url', 'label' => 'URL Instagram', 'type' => 'text', 'required' => true],
+                ['name' => 'results_limit', 'label' => 'Résultats max', 'type' => 'number', 'required' => false],
+                ['name' => 'search_type', 'label' => 'Type de recherche', 'type' => 'text', 'required' => false],
+                ['name' => 'search_limit', 'label' => 'Search limit', 'type' => 'number', 'required' => false],
             ],
         ],
         'tiktok' => [
