@@ -18,14 +18,12 @@ use Throwable;
 final class StrategyController
 {
     private OpenAiClient $openAiClient;
-    private StrategyAnalysisModel $analyses;
-    private Auth $auth;
+    private ?StrategyAnalysisModel $analyses = null;
+    private ?Auth $auth = null;
 
     public function __construct()
     {
         $this->openAiClient = new OpenAiClient();
-        $this->analyses = new StrategyAnalysisModel();
-        $this->auth = new Auth(Database::connection());
     }
 
     public function index(Request $request): void
@@ -61,15 +59,41 @@ final class StrategyController
             $raw = $this->openAiClient->generateStructuredAnalysis($profile);
             $analysis = $this->normalizeAnalysis($raw['output_text']);
 
-            $user = $this->auth->user();
-            if (is_array($user) && isset($user['id'])) {
-                $this->analyses->create((int) $user['id'], $profile, $analysis);
+            $this->storeAnalysisSafely($profile, $analysis);
+
+            Response::json([
+                'success' => true,
+                'data' => $analysis,
+                'meta' => ['source' => 'openai'],
+            ]);
+        } catch (Throwable $e) {
+            $fallbackEnabled = filter_var(getenv('OPENAI_FALLBACK_ENABLED') ?: true, FILTER_VALIDATE_BOOL);
+            $shouldFallback = $fallbackEnabled || $this->isMissingApiKeyError($e);
+
+            Logger::error(sprintf(
+                'Strategy analysis error: %s | fallback=%s',
+                $e->getMessage(),
+                $shouldFallback ? 'yes' : 'no'
+            ));
+
+            if ($shouldFallback) {
+                $analysis = $this->buildFallbackAnalysis($profile);
+                Response::json([
+                    'success' => true,
+                    'data' => $analysis,
+                    'meta' => [
+                        'source' => 'fallback',
+                        'warning' => 'Analyse générée en mode dégradé (IA indisponible).',
+                    ],
+                ]);
+                return;
             }
 
-            Response::json(['data' => $analysis]);
-        } catch (Throwable $e) {
-            Logger::error('Strategy analysis error: ' . $e->getMessage());
-            Response::json(['error' => 'Impossible de générer l’analyse pour le moment.'], 500);
+            Response::json([
+                'success' => false,
+                'error' => 'Analyse IA indisponible. Vérifiez la configuration OPENAI_API_KEY puis réessayez.',
+                'code' => 'STRATEGY_ANALYSIS_FAILED',
+            ], 500);
         }
     }
 
@@ -109,5 +133,72 @@ final class StrategyController
         }
 
         return $items;
+    }
+
+    private function storeAnalysisSafely(string $profile, array $analysis): void
+    {
+        try {
+            if (!$this->auth instanceof Auth) {
+                $this->auth = new Auth(Database::connection());
+            }
+
+            if (!$this->analyses instanceof StrategyAnalysisModel) {
+                $this->analyses = new StrategyAnalysisModel();
+            }
+
+            $user = $this->auth->user();
+            if (is_array($user) && isset($user['id'])) {
+                $this->analyses->create((int) $user['id'], $profile, $analysis);
+            }
+        } catch (Throwable $e) {
+            Logger::error('Strategy analysis persistence skipped: ' . $e->getMessage());
+        }
+    }
+
+    private function isMissingApiKeyError(Throwable $e): bool
+    {
+        return str_contains(mb_strtolower($e->getMessage()), 'openai_api_key');
+    }
+
+    /**
+     * @return array{awareness_level:string,summary:string,pain_points:array<int,string>,desires:array<int,string>,content_angles:array<int,string>,recommended_hooks:array<int,string>}
+     */
+    private function buildFallbackAnalysis(string $profile): array
+    {
+        $excerpt = mb_substr(trim(preg_replace('/\s+/', ' ', $profile) ?? ''), 0, 220);
+        $awareness = 'Problem Aware';
+
+        if (preg_match('/\b(compare|devis|tarif|prix|solution|outil|agence)\b/i', $profile) === 1) {
+            $awareness = 'Solution Aware';
+        } elseif (preg_match('/\burgent|immediat|rapidement|maintenant\b/i', $profile) === 1) {
+            $awareness = 'Most Aware';
+        }
+
+        return [
+            'awareness_level' => $awareness,
+            'summary' => 'Analyse de secours basée sur le texte fourni: ' . ($excerpt !== '' ? $excerpt : 'profil non détaillé.'),
+            'pain_points' => [
+                'Manque de clarté sur la prochaine action commerciale.',
+                'Frustration liée aux résultats irréguliers.',
+                'Besoin d’un message simple et convaincant.',
+            ],
+            'desires' => [
+                'Obtenir des prospects qualifiés de manière régulière.',
+                'Gagner du temps sur la création de messages.',
+                'Avoir un positionnement clair et différenciant.',
+            ],
+            'content_angles' => [
+                'Étude de cas avant/après avec résultats concrets.',
+                'Checklist actionnable en 3 étapes.',
+                'Démystification des erreurs fréquentes du marché.',
+            ],
+            'recommended_hooks' => [
+                'Vous avez des prospects, mais peu de rendez-vous ?',
+                'Ce levier simple peut améliorer vos réponses en 7 jours.',
+                'Arrêtez ce réflexe qui affaiblit vos messages commerciaux.',
+                'La méthode courte pour clarifier votre offre dès aujourd’hui.',
+                'Comment passer d’un profil flou à un message qui convertit.',
+            ],
+        ];
     }
 }
