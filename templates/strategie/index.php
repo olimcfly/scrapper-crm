@@ -52,7 +52,7 @@
 
   <div style="display:grid;grid-template-columns:1fr;gap:10px;margin-top:16px;">
     <a class="btn" href="/admin/modules/generation-contenu" style="width:100%;">Générer du contenu</a>
-    <a class="btn secondary" href="/messages-ia" style="width:100%;">Créer message</a>
+    <a id="create-message-cta" class="btn secondary" href="/messages-ia" style="width:100%;">Créer message</a>
   </div>
 </section>
 
@@ -65,6 +65,30 @@
     var warningBox = document.getElementById('analysis-warning');
     var resultBox = document.getElementById('analysis-result');
     var badge = document.getElementById('awareness-badge');
+
+    var createMessageCta = document.getElementById('create-message-cta');
+
+    function recommendedTone(awareness) {
+      var value = (awareness || '').toLowerCase();
+      if (value.indexOf('most aware') !== -1) return 'Direct, orienté passage à l'action';
+      if (value.indexOf('solution aware') !== -1) return 'Précis, rassurant, comparatif';
+      return 'Empathique, pédagogique, conversationnel';
+    }
+
+    function updateCreateMessageLink(data) {
+      if (!createMessageCta || !data) return;
+      var params = new URLSearchParams();
+      params.set('summary', data.summary || '');
+      params.set('awareness_level', data.awareness_level || '');
+      params.set('pain_points', (data.pain_points || []).join('||'));
+      params.set('main_desire', (data.desires && data.desires[0]) ? data.desires[0] : '');
+      params.set('recommended_tone', recommendedTone(data.awareness_level || ''));
+      var hook = (data.recommended_hooks && data.recommended_hooks[0])
+        ? data.recommended_hooks[0]
+        : ((data.content_angles && data.content_angles[0]) ? data.content_angles[0] : '');
+      params.set('hook_angle', hook);
+      createMessageCta.href = '/messages-ia?' + params.toString();
+    }
 
     function fillList(id, items) {
       var list = document.getElementById(id);
@@ -129,6 +153,7 @@
         fillList('desires', data.desires || []);
         fillList('content-angles', data.content_angles || []);
         fillList('recommended-hooks', data.recommended_hooks || []);
+        updateCreateMessageLink(data);
 
         if (payload.meta && payload.meta.warning) {
           warningBox.textContent = payload.meta.warning;
