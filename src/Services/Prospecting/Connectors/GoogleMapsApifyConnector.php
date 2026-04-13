@@ -28,10 +28,19 @@ final class GoogleMapsApifyConnector implements ProspectSourceConnectorInterface
         }
 
         $maxResults = max(1, (int) ($filters['max_results'] ?? 30));
+        $language = trim((string) ($filters['language'] ?? 'fr'));
         $runInput = [
             'searchStringsArray' => [$query],
             'maxCrawledPlacesPerSearch' => $maxResults,
-            'language' => 'fr',
+            'language' => $language !== '' ? $language : 'fr',
+            'scrapeSocialMediaProfiles' => [
+                'facebooks' => false,
+                'instagrams' => false,
+                'youtubes' => false,
+                'tiktoks' => false,
+                'twitters' => false,
+            ],
+            'maximumLeadsEnrichmentRecords' => 0,
         ];
 
         $location = trim((string) ($filters['location'] ?? ''));
