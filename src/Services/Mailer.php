@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception as MailerException;
+use PHPMailer\PHPMailer\PHPMailer;
 
 final class Mailer
 {
@@ -17,29 +17,52 @@ final class Mailer
 
         try {
             $mail->isSMTP();
-            $mail->Host       = (string) $config['host'];
-            $mail->SMTPAuth   = true;
-            $mail->Username   = (string) $config['username'];
-            $mail->Password   = (string) $config['password'];
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port       = (int) $config['port'];
-            $mail->CharSet    = 'UTF-8';
+            $mail->Host = (string) ($config['host'] ?? '');
+            $mail->SMTPAuth = true;
+            $mail->Username = (string) ($config['username'] ?? '');
+            $mail->Password = (string) ($config['password'] ?? '');
+            $mail->Port = (int) ($config['port'] ?? 465);
+            $mail->CharSet = 'UTF-8';
 
-            $mail->setFrom(
-                (string) $config['from_address'],
-                (string) $config['from_name']
-            );
+            $encryption = strtolower((string) ($config['encryption'] ?? 'ssl'));
+            if ($encryption === 'tls') {
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            } else {
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            }
+
+            $mail->SMTPDebug = 2;
+            $mail->Debugoutput = static function ($str, $level): void {
+                Logger::error('SMTP debug [' . $level . '] ' . trim((string) $str));
+            };
+
+            $fromAddress = (string) ($config['from_address'] ?? '');
+            $fromName = (string) ($config['from_name'] ?? 'CRM');
+            if ($fromAddress === '') {
+                Logger::error('Mailer config error: from_address vide');
+                return false;
+            }
+
+            $mail->setFrom($fromAddress, $fromName);
             $mail->addAddress($toEmail);
 
             $mail->isHTML(true);
             $mail->Subject = 'Votre code de connexion — CRM Coralie Montreuil';
-            $mail->Body    = self::htmlBody($code);
+            $mail->Body = self::htmlBody($code);
             $mail->AltBody = "Votre code de connexion : {$code}\n\nCe code expire dans 15 minutes.\nNe le communiquez à personne.";
 
-            $mail->send();
+            $ok = $mail->send();
+
+            if ($ok !== true) {
+                Logger::error('Mailer send failed without exception. ErrorInfo: ' . $mail->ErrorInfo);
+                return false;
+            }
+
+            Logger::error('Mailer success: OTP envoyé à ' . $toEmail);
             return true;
         } catch (MailerException $e) {
-            Logger::error('Mailer error: ' . $e->getMessage());
+            Logger::error('Mailer exception: ' . $e->getMessage());
+            Logger::error('Mailer ErrorInfo: ' . $mail->ErrorInfo);
             return false;
         }
     }

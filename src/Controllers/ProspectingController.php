@@ -33,11 +33,13 @@ final class ProspectingController
         $this->sourceResults = new SourceResultModel();
     }
 
-    public function index(Request $request): void
+    // ✅ PAGE UI (avec sidebar)
+    public function sources(Request $request): void
     {
         unset($request);
 
         $userId = (int) ($this->auth->id() ?? 0);
+
         View::render('prospects/source_selector', [
             'title' => 'Trouver des prospects - Multi-sources',
             'sources' => $this->registry->all(),
@@ -46,7 +48,8 @@ final class ProspectingController
         ]);
     }
 
-    public function sources(Request $request): void
+    // ✅ API JSON (séparée)
+    public function sourcesApi(Request $request): void
     {
         unset($request);
         Response::json(['data' => $this->registry->all()]);
@@ -67,6 +70,7 @@ final class ProspectingController
             $result = $connector->connect($credentials);
 
             $status = (string) ($result['status'] ?? 'error');
+
             $this->connectedAccounts->upsert(
                 (int) $this->auth->id(),
                 $source,
@@ -110,15 +114,18 @@ final class ProspectingController
                     'run_id' => $runId,
                     'run_status' => 'success',
                     'results_count' => count($results),
-                    'results' => $results,
                 ],
             ], 201);
         } catch (\Throwable $e) {
             $this->searchRuns->finish($runId, 'failed', 0, $e->getMessage());
             Logger::error($e->getMessage());
+
             Response::json([
                 'error' => 'Erreur pendant la recherche.',
-                'data' => ['run_id' => $runId, 'run_status' => 'failed'],
+                'data' => [
+                    'run_id' => $runId,
+                    'run_status' => 'failed',
+                ],
             ], 500);
         }
     }
@@ -130,7 +137,6 @@ final class ProspectingController
         }
 
         Response::json(['error' => 'Authentification requise.'], 401);
-
         return false;
     }
 }

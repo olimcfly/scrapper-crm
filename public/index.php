@@ -48,96 +48,94 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
 
 $request = new Request();
 $router = new Router();
+
 $adminController = new AdminController();
 $settingsController = new SettingsController();
 $pipelineController = new PipelineController();
 
 $guard = new AuthGuard(new Auth(Database::connection()));
 
+/*
+|--------------------------------------------------------------------------
+| REDIRECT ROOT
+|--------------------------------------------------------------------------
+*/
 $router->add('GET', '/', static function (): void {
     Response::redirect('/dashboard');
 });
 
-$router->add('GET', '/login', static fn (Request $req): mixed => (new AuthController())->showLogin($req));
-$router->add('POST', '/login', static fn (Request $req): mixed => (new AuthController())->login($req));
-$router->add('GET', '/login/verify', static fn (Request $req): mixed => (new AuthController())->showVerify($req));
-$router->add('POST', '/login/verify', static fn (Request $req): mixed => (new AuthController())->verify($req));
-$router->add('POST', '/logout', static fn (Request $req): mixed => (new AuthController())->logout($req));
+/*
+|--------------------------------------------------------------------------
+| AUTH
+|--------------------------------------------------------------------------
+*/
+$router->add('GET', '/login', fn (Request $req) => (new AuthController())->showLogin($req));
+$router->add('POST', '/login', fn (Request $req) => (new AuthController())->login($req));
+$router->add('GET', '/login/verify', fn (Request $req) => (new AuthController())->showVerify($req));
+$router->add('POST', '/login/verify', fn (Request $req) => (new AuthController())->verify($req));
+$router->add('POST', '/logout', fn (Request $req) => (new AuthController())->logout($req));
 
-// Web routes (PHP views)
-$router->add('GET', '/prospects', $guard->protect(static fn (Request $req): mixed => (new WebProspectController())->index($req)));
-$router->add('GET', '/prospects/create', $guard->protect(static fn (Request $req): mixed => (new WebProspectController())->create($req)));
-$router->add('POST', '/prospects/create', $guard->protect(static fn (Request $req): mixed => (new WebProspectController())->store($req)));
-// Routes statiques avant les routes paramétrées (évite que /prospects/{id} capture "import")
-$router->add('GET', '/prospects/import', $guard->protect(static fn (Request $req): mixed => (new WebProspectController())->importForm($req)));
-$router->add('GET', '/prospects/sources', $guard->protect(static fn (Request $req): mixed => (new ProspectingController())->index($req)));
-$router->add('POST', '/prospects/import/upload', $guard->protect(static fn (Request $req): mixed => (new WebProspectController())->importUpload($req)));
-$router->add('POST', '/prospects/import/process', $guard->protect(static fn (Request $req): mixed => (new WebProspectController())->importProcess($req)));
-$router->add('GET', '/prospects/{id}', $guard->protect(static fn (Request $req, array $params): mixed => (new WebProspectController())->show($req, (int) $params['id'])));
-$router->add('GET', '/prospects/{id}/edit', $guard->protect(static fn (Request $req, array $params): mixed => (new WebProspectController())->edit($req, (int) $params['id'])));
-$router->add('POST', '/prospects/{id}/edit', $guard->protect(static fn (Request $req, array $params): mixed => (new WebProspectController())->update($req, (int) $params['id'])));
-$router->add('POST', '/prospects/{id}/delete', $guard->protect(static fn (Request $req, array $params): mixed => (new WebProspectController())->destroy($req, (int) $params['id'])));
-$router->add('POST', '/prospects/{id}/notes', $guard->protect(static fn (Request $req, array $params): mixed => (new WebProspectController())->addNote($req, (int) $params['id'])));
-$router->add('POST', '/prospects/{id}/status', $guard->protect(static fn (Request $req, array $params): mixed => (new WebProspectController())->changeStatus($req, (int) $params['id'])));
-$router->add('GET', '/prospects/{id}/generated-contents', $guard->protect(static fn (Request $req, array $params): mixed => (new GeneratedContentController())->create($req, (int) $params['id'])));
-$router->add('POST', '/prospects/{id}/generated-contents/generate', $guard->protect(static fn (Request $req, array $params): mixed => (new GeneratedContentController())->generate($req, (int) $params['id'])));
-$router->add('GET', '/settings', $guard->protect(static fn (Request $req): mixed => (new SettingsController())->index($req)));
+/*
+|--------------------------------------------------------------------------
+| PROSPECTS (UI)
+|--------------------------------------------------------------------------
+*/
+$router->add('GET', '/prospects', $guard->protect(fn (Request $req) => (new WebProspectController())->index($req)));
 
-$router->add('GET', '/contenu', $guard->protect(static fn (Request $req): mixed => (new ContentController())->index($req)));
-$router->add('POST', '/contenu/generer', $guard->protect(static fn (Request $req): mixed => (new ContentController())->generate($req)));
-$router->add('POST', '/contenu/dupliquer', $guard->protect(static fn (Request $req): mixed => (new ContentController())->duplicateDraft($req)));
+$router->add('GET', '/prospects/sources', $guard->protect(fn (Request $req) => (new ProspectingController())->sources($req)));
 
+$router->add('GET', '/prospects/create', $guard->protect(fn (Request $req) => (new WebProspectController())->create($req)));
+$router->add('POST', '/prospects/create', $guard->protect(fn (Request $req) => (new WebProspectController())->store($req)));
 
-$router->add('GET', '/dashboard', $guard->protect(static fn (Request $req): mixed => $adminController->dashboard($req)));
-$router->add('GET', '/strategie', $guard->protect(static fn (Request $req): mixed => (new StrategyController())->index($req)));
-$router->add('POST', '/strategie/analyse', $guard->protect(static fn (Request $req): mixed => (new StrategyController())->analyze($req)));
-$router->add('GET', '/messages-ia', $guard->protect(static fn (Request $req): mixed => (new MessagesIaController())->index($req)));
-$router->add('POST', '/messages-ia/generate', $guard->protect(static fn (Request $req): mixed => (new MessagesIaController())->generate($req)));
-$router->add('GET', '/pipeline', $guard->protect(static fn (Request $req): mixed => $pipelineController->index($req)));
-$router->add('POST', '/pipeline/{id}/move', $guard->protect(static fn (Request $req, array $params): mixed => $pipelineController->moveStage($req, (int) $params['id'])));
-$router->add('POST', '/prospects/{id}/messages', $guard->protect(static fn (Request $req, array $params): mixed => $pipelineController->addMessage($req, (int) $params['id'])));
-$router->add('POST', '/prospects/{id}/suggest-next-action', $guard->protect(static fn (Request $req, array $params): mixed => $pipelineController->suggest($req, (int) $params['id'])));
-$router->add('GET', '/admin', $guard->protect(static function (): void {
-    Response::redirect('/dashboard');
-}));
-$router->add('GET', '/admin/dashboard', $guard->protect(static fn (Request $req): mixed => $adminController->dashboard($req)));
-$router->add('GET', '/admin/modules/generation-contenu', $guard->protect(static function (): void {
-    Response::redirect('/contenu');
-}));
-$router->add('GET', '/admin/modules/{module}', $guard->protect(static fn (Request $req, array $params): mixed => $adminController->module($req, (string) $params['module'])));
+$router->add('GET', '/prospects/import', $guard->protect(fn (Request $req) => (new WebProspectController())->importForm($req)));
+$router->add('POST', '/prospects/import/upload', $guard->protect(fn (Request $req) => (new WebProspectController())->importUpload($req)));
+$router->add('POST', '/prospects/import/process', $guard->protect(fn (Request $req) => (new WebProspectController())->importProcess($req)));
 
-$router->add('GET', '/parametres', $guard->protect(static fn (Request $req): mixed => $settingsController->index($req)));
+$router->add('GET', '/prospects/{id}', $guard->protect(fn (Request $req, array $params) => (new WebProspectController())->show($req, (int) $params['id'])));
+$router->add('GET', '/prospects/{id}/edit', $guard->protect(fn (Request $req, array $params) => (new WebProspectController())->edit($req, (int) $params['id'])));
+$router->add('POST', '/prospects/{id}/edit', $guard->protect(fn (Request $req, array $params) => (new WebProspectController())->update($req, (int) $params['id'])));
+$router->add('POST', '/prospects/{id}/delete', $guard->protect(fn (Request $req, array $params) => (new WebProspectController())->destroy($req, (int) $params['id'])));
 
-// API routes (JSON)
-$router->add('GET', '/api/health', static function (): void {
-    Response::json(['status' => 'ok']);
-});
-$router->add('GET', '/api/prospects', static fn (Request $req): mixed => (new ProspectController())->index($req));
-$router->add('GET', '/api/prospects/{id}', static fn (Request $req, array $params): mixed => (new ProspectController())->show($req, (int) $params['id']));
-$router->add('POST', '/api/prospects', static fn (Request $req): mixed => (new ProspectController())->store($req));
-$router->add('PUT', '/api/prospects/{id}', static fn (Request $req, array $params): mixed => (new ProspectController())->update($req, (int) $params['id']));
-$router->add('DELETE', '/api/prospects/{id}', static fn (Request $req, array $params): mixed => (new ProspectController())->delete($req, (int) $params['id']));
-$router->add('GET', '/api/prospects/{id}/notes', static fn (Request $req, array $params): mixed => (new ProspectController())->notes($req, (int) $params['id']));
-$router->add('POST', '/api/prospects/{id}/notes', static fn (Request $req, array $params): mixed => (new ProspectController())->addNote($req, (int) $params['id']));
-$router->add('PATCH', '/api/prospects/{id}/status', static fn (Request $req, array $params): mixed => (new ProspectController())->changeStatus($req, (int) $params['id']));
-$router->add('GET', '/api/prospect-statuses', static fn (Request $req): mixed => (new LookupController())->statuses($req));
-$router->add('GET', '/api/sources', static fn (Request $req): mixed => (new LookupController())->sources($req));
-$router->add('GET', '/api/tags', static fn (Request $req): mixed => (new LookupController())->tags($req));
-$router->add('GET', '/api/prospecting/sources', static fn (Request $req): mixed => (new ProspectingController())->sources($req));
-$router->add('POST', '/api/prospecting/connect/test', static fn (Request $req): mixed => (new ProspectingController())->testConnection($req));
-$router->add('POST', '/api/prospecting/search', static fn (Request $req): mixed => (new ProspectingController())->runSearch($req));
-$router->add('POST', '/api/apify/run/google-maps', static fn (Request $req): mixed => (new ApifyController())->runSource($req, 'google_maps'));
-$router->add('POST', '/api/apify/run/instagram-profile', static fn (Request $req): mixed => (new ApifyController())->runSource($req, 'instagram_profile'));
-$router->add('POST', '/api/apify/run/instagram-hashtag', static fn (Request $req): mixed => (new ApifyController())->runSource($req, 'instagram_hashtag'));
-$router->add('POST', '/api/apify/run/linkedin-profile', static fn (Request $req): mixed => (new ApifyController())->runSource($req, 'linkedin_profile'));
-$router->add('POST', '/api/apify/run/tiktok', static fn (Request $req): mixed => (new ApifyController())->runSource($req, 'tiktok'));
-$router->add('GET', '/api/apify/runs/{runId}', static fn (Request $req, array $params): mixed => (new ApifyController())->getRun($req, (string) $params['runId']));
-$router->add('GET', '/api/apify/datasets/{datasetId}', static fn (Request $req, array $params): mixed => (new ApifyController())->getDataset($req, (string) $params['datasetId']));
-$router->add('POST', '/api/import/google-maps', static fn (Request $req): mixed => (new ApifyController())->importFromSource($req, 'google_maps'));
-$router->add('POST', '/api/import/instagram-profile', static fn (Request $req): mixed => (new ApifyController())->importFromSource($req, 'instagram_profile'));
-$router->add('POST', '/api/import/linkedin-profile', static fn (Request $req): mixed => (new ApifyController())->importFromSource($req, 'linkedin_profile'));
-$router->add('POST', '/api/import/tiktok', static fn (Request $req): mixed => (new ApifyController())->importFromSource($req, 'tiktok'));
+/*
+|--------------------------------------------------------------------------
+| CONTENU
+|--------------------------------------------------------------------------
+*/
+$router->add('GET', '/contenu', $guard->protect(fn (Request $req) => (new ContentController())->index($req)));
+$router->add('POST', '/contenu/generer', $guard->protect(fn (Request $req) => (new ContentController())->generate($req)));
+$router->add('POST', '/contenu/dupliquer', $guard->protect(fn (Request $req) => (new ContentController())->duplicateDraft($req)));
 
+/*
+|--------------------------------------------------------------------------
+| AUTRES MODULES
+|--------------------------------------------------------------------------
+*/
+$router->add('GET', '/dashboard', $guard->protect(fn (Request $req) => $adminController->dashboard($req)));
+
+$router->add('GET', '/strategie', $guard->protect(fn (Request $req) => (new StrategyController())->index($req)));
+$router->add('POST', '/strategie/analyse', $guard->protect(fn (Request $req) => (new StrategyController())->analyze($req)));
+
+$router->add('GET', '/messages-ia', $guard->protect(fn (Request $req) => (new MessagesIaController())->index($req)));
+$router->add('POST', '/messages-ia/generate', $guard->protect(fn (Request $req) => (new MessagesIaController())->generate($req)));
+
+$router->add('GET', '/pipeline', $guard->protect(fn (Request $req) => $pipelineController->index($req)));
+$router->add('POST', '/pipeline/{id}/move', $guard->protect(fn (Request $req, array $params) => $pipelineController->moveStage($req, (int) $params['id'])));
+
+/*
+|--------------------------------------------------------------------------
+| API
+|--------------------------------------------------------------------------
+*/
+$router->add('GET', '/api/health', fn () => Response::json(['status' => 'ok']));
+
+$router->add('POST', '/api/prospecting/connect/test', fn (Request $req) => (new ProspectingController())->testConnection($req));
+$router->add('POST', '/api/prospecting/search', fn (Request $req) => (new ProspectingController())->runSearch($req));
+
+/*
+|--------------------------------------------------------------------------
+| DISPATCH
+|--------------------------------------------------------------------------
+*/
 try {
     $router->dispatch($request);
 } catch (Throwable $e) {

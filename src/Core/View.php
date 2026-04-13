@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Services\Auth;
-use App\Support\AdminModules;
-
+use App\Config\AdminModules;
 final class View
 {
     private static ?Auth $auth = null;

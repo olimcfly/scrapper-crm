@@ -1,35 +1,63 @@
-<div class="card">
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
-    <h2 style="margin:0;"><?= htmlspecialchars((string) ($module['icon'] ?? '📦')) ?> <?= htmlspecialchars((string) ($module['label'] ?? 'Module')) ?></h2>
-    <span class="badge <?= ($module['status'] ?? '') === 'Actif' ? 'actif' : (($module['status'] ?? '') === 'Bêta' ? 'beta' : 'dev') ?>"><?= htmlspecialchars((string) ($module['status'] ?? 'En cours de développement')) ?></span>
+<div class="card module-summary-card">
+  <div class="module-summary-header">
+    <h2 class="module-summary-title">
+      <?= htmlspecialchars((string) ($module['icon'] ?? '📦')) ?>
+      <?= htmlspecialchars((string) ($module['label'] ?? 'Module')) ?>
+    </h2>
+
+    <?php
+      $moduleStatus = (string) ($module['status'] ?? 'placeholder');
+      $moduleStatusLabel = $statusLabels[$moduleStatus] ?? 'En cours de développement';
+      $moduleStatusClass = $statusClassMap[$moduleStatus] ?? 'status-placeholder';
+    ?>
+    <span class="badge status-badge <?= htmlspecialchars($moduleStatusClass) ?>">
+      <?= htmlspecialchars((string) $moduleStatusLabel) ?>
+    </span>
   </div>
-  <p class="muted"><?= htmlspecialchars((string) ($module['description'] ?? 'Ce module est en préparation.')) ?></p>
+
+  <p class="muted module-summary-text">
+    <?= htmlspecialchars((string) ($module['description'] ?? 'Ce module est en préparation.')) ?>
+  </p>
 </div>
 
-<div class="card">
+<div class="card module-placeholder-card">
   <?php if (($isPlaceholderRoute ?? true) === true): ?>
-    <h3 style="margin-top:0;">Page placeholder opérationnelle</h3>
-    <p>Ce module n'est pas encore finalisé, mais la page est disponible pour garantir une navigation stable et cohérente dans l'admin.</p>
-    <ul>
+    <h3 class="card-title">Page placeholder opérationnelle</h3>
+    <p class="module-placeholder-text">
+      Ce module n'est pas encore finalisé, mais la page est disponible pour garantir une navigation stable et cohérente dans l'admin.
+    </p>
+
+    <ul class="module-placeholder-list">
       <li>Accès sécurisé via les routes admin existantes.</li>
       <li>Aucun écran vide ni erreur 404 tant que le module est annoncé dans la sidebar.</li>
-      <li>Statut produit visible (Actif, Bêta, En cours de développement).</li>
+      <li>Statut produit visible : Actif, MVP, Placeholder.</li>
     </ul>
-    <a href="/admin" class="btn">Retour dashboard</a>
+
+    <a href="/admin" class="btn secondary">Retour dashboard</a>
   <?php else: ?>
-    <h3 style="margin-top:0;">Module disponible</h3>
-    <p>Ce module est déjà connecté à une page fonctionnelle du CRM. Utilisez la navigation latérale pour revenir rapidement à l'administration globale.</p>
-    <a href="<?= htmlspecialchars((string) ($module['route'] ?? '/admin')) ?>" class="btn">Ouvrir le module</a>
+    <h3 class="card-title">Module disponible</h3>
+    <p class="module-placeholder-text">
+      Ce module est déjà connecté à une page fonctionnelle du CRM. Utilisez la navigation latérale pour revenir rapidement à l'administration globale.
+    </p>
+
+    <a href="<?= htmlspecialchars((string) ($module['route'] ?? '/admin')) ?>" class="btn primary-cta-button">
+      Ouvrir le module
+    </a>
   <?php endif; ?>
 </div>
 
-<div class="card">
-  <h3 style="margin-top:0;">Hiérarchie cœur produit</h3>
-  <div class="row">
+<div class="card core-hierarchy-card">
+  <h3 class="card-title">Hiérarchie cœur produit</h3>
+
+  <div class="core-modules-grid">
     <?php foreach (($coreModules ?? []) as $core): ?>
-      <div style="border:1px solid #e2e8f0;border-radius:10px;padding:10px;">
-        <strong><?= htmlspecialchars((string) $core['label']) ?></strong>
-        <p class="muted" style="margin:6px 0 0;"><?= htmlspecialchars((string) $core['description']) ?></p>
+      <div class="core-module-item">
+        <strong class="core-module-title">
+          <?= htmlspecialchars((string) $core['label']) ?>
+        </strong>
+        <p class="muted core-module-text">
+          <?= htmlspecialchars((string) $core['description']) ?>
+        </p>
       </div>
     <?php endforeach; ?>
   </div>

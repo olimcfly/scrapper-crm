@@ -1,61 +1,98 @@
-<div class="card page-lead stack-sm">
-  <p class="eyebrow">Phase 1 · Fondations MVP</p>
-  <h2>Dashboard de démarrage mobile-first</h2>
-  <p>Shell responsive actif, navigation stable mobile + desktop, et point d’entrée prospect-first sans écran cassé.</p>
-</div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
 
-<?php require __DIR__ . '/../components/global_states.php'; ?>
+  <link rel="stylesheet" href="/assets/css/dashboard.css">
+</head>
 
-<div class="card stack-sm">
-  <p class="muted">Aujourd’hui</p>
-  <h3>Priorité : relancer 3 prospects chauds</h3>
-  <p class="muted">Concentrez-vous sur la prochaine action à fort impact avant midi.</p>
-  <?php
-    $ctaLabel = 'Ouvrir la liste prospects';
-    $ctaHref = '/prospects';
-    require __DIR__ . '/../components/ui/primary_cta_button.php';
-  ?>
-</div>
+<section class="dashboard-shell stack-lg">
+  <div class="dashboard-top-grid">
+    <article class="card dashboard-hero">
+      <p class="eyebrow">Focus du jour</p>
+      <h1>Relancer 3 prospects chauds</h1>
+      <p class="hero-text">
+        Concentrez-vous sur les actions à fort impact pour faire avancer votre pipeline avant midi.
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="/prospects?filter=hot">Ouvrir les prospects chauds</a>
+        <a class="btn secondary" href="/pipeline">Voir le pipeline</a>
+      </div>
+    </article>
 
-<div class="row">
-  <article class="dashboard-kpi-card">
-    <p class="muted">Prospects actifs</p>
-    <p class="metric-value">24</p>
-  </article>
-  <article class="dashboard-kpi-card">
-    <p class="muted">Messages à envoyer</p>
-    <p class="metric-value">7</p>
-  </article>
-  <article class="dashboard-kpi-card">
-    <p class="muted">Opportunités pipeline</p>
-    <p class="metric-value">11</p>
-  </article>
-</div>
-
-<div class="card stack-sm">
-  <h3>Quick actions</h3>
-  <div class="quick-actions-grid">
-    <a class="btn secondary" href="/prospects/create">+ Prospect</a>
-    <a class="btn secondary" href="/strategie">Stratégie</a>
-    <a class="btn secondary" href="/messages-ia">Messages IA</a>
-    <a class="btn secondary" href="/pipeline">Pipeline</a>
+    <article class="card ai-card">
+      <div class="card-header-inline">
+        <h3>Recommandation IA</h3>
+        <span class="badge badge-high">Priorité haute</span>
+      </div>
+      <p>
+        Sophie Martin montre un signal fort : visite répétée, interaction récente et profil aligné.
+      </p>
+      <div class="hero-actions">
+        <a class="btn secondary" href="/messages-ia">Préparer un message</a>
+      </div>
+    </article>
   </div>
-</div>
 
-<div class="card stack-sm">
-  <h3>Statut modules (phase 1)</h3>
-  <div class="row">
-    <div>
-      <p class="muted">Actifs</p>
-      <p class="metric-value"><?= (int) ($statusCounters['active'] ?? 0) ?></p>
+  <section class="dashboard-kpis">
+    <article class="dashboard-kpi-card">
+      <p class="muted">Prospects actifs</p>
+      <p class="metric-value">24</p>
+      <p class="metric-trend positive">+5 cette semaine</p>
+    </article>
+
+    <article class="dashboard-kpi-card">
+      <p class="muted">Messages à envoyer</p>
+      <p class="metric-value">7</p>
+      <p class="metric-trend">2 urgents aujourd’hui</p>
+    </article>
+
+    <article class="dashboard-kpi-card">
+      <p class="muted">Opportunités pipeline</p>
+      <p class="metric-value">11</p>
+      <p class="metric-trend positive">3 proches conversion</p>
+    </article>
+  </section>
+
+  <article class="card stack-sm">
+    <div class="card-header-inline">
+      <h3>Aperçu pipeline</h3>
+      <a class="text-link" href="/pipeline">Ouvrir</a>
     </div>
-    <div>
-      <p class="muted">MVP</p>
-      <p class="metric-value"><?= (int) ($statusCounters['mvp'] ?? 0) ?></p>
+    <div class="pipeline-preview-grid">
+      <div class="pipeline-stage"><span>Nouveaux</span><strong>8</strong></div>
+      <div class="pipeline-stage"><span>À contacter</span><strong>6</strong></div>
+      <div class="pipeline-stage"><span>En échange</span><strong>4</strong></div>
+      <div class="pipeline-stage"><span>Chauds</span><strong>3</strong></div>
+      <div class="pipeline-stage"><span>Gagnés</span><strong>2</strong></div>
     </div>
-    <div>
-      <p class="muted">Placeholders</p>
-      <p class="metric-value"><?= (int) ($statusCounters['placeholder'] ?? 0) ?></p>
+  </article>
+
+  <article class="card stack-sm">
+    <h3>Actions rapides</h3>
+    <div class="quick-actions-grid premium-actions">
+      <a class="action-tile" href="/prospects/create">+ Prospect</a>
+      <a class="action-tile" href="/strategie">Stratégie</a>
+      <a class="action-tile" href="/messages-ia">Messages IA</a>
+      <a class="action-tile" href="/pipeline">Pipeline</a>
     </div>
-  </div>
-</div>
+  </article>
+
+  <article class="card stack-sm">
+    <h3>Statut des modules</h3>
+    <div class="dashboard-kpis">
+      <div class="dashboard-kpi-card">
+        <p class="muted">Actifs</p>
+        <p class="metric-value"><?= (int) ($statusCounters['active'] ?? 0) ?></p>
+      </div>
+      <div class="dashboard-kpi-card">
+        <p class="muted">MVP</p>
+        <p class="metric-value"><?= (int) ($statusCounters['mvp'] ?? 0) ?></p>
+      </div>
+      <div class="dashboard-kpi-card">
+        <p class="muted">Placeholders</p>
+        <p class="metric-value"><?= (int) ($statusCounters['placeholder'] ?? 0) ?></p>
+      </div>
+    </div>
+  </article>
+</section>

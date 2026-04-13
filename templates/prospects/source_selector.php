@@ -1,76 +1,169 @@
-<div class="card page-lead stack-sm">
-  <p class="eyebrow">Trouver des prospects</p>
-  <h2>Architecture multi-sources</h2>
-  <p>Sépare les connecteurs de prospection (search) des APIs officielles de comptes (connect/sync).</p>
-</div>
+<?php
 
-<div class="card stack-md">
-  <h3>Choisir la source</h3>
-  <div class="row">
-    <div>
-      <label for="source">Source</label>
-      <select id="source"></select>
+function safe_array($value) {
+  return is_array($value) ? $value : [];
+}
+
+function safe_string($value) {
+  return htmlspecialchars((string) ($value ?? ''));
+}
+
+$sourcesData = safe_array($sources ?? null);
+$accountsData = safe_array($connectedAccounts ?? null);
+$runsData = safe_array($searchRuns ?? null);
+
+?>
+
+<div class="page">
+  <div class="container">
+
+    <!-- HEADER -->
+    <div class="page-header">
+      <h1>Prospection multi-sources</h1>
+      <p class="subtitle">
+        Connectez, testez et lancez vos recherches sur différentes plateformes
+      </p>
     </div>
-    <div>
-      <label for="search_type">Type de recherche</label>
-      <select id="search_type"></select>
+
+    <!-- CONFIG -->
+    <div class="card">
+
+      <div class="card-header">
+        <h3>Configuration de la recherche</h3>
+      </div>
+
+      <div class="stack">
+
+        <div class="form-group">
+          <label for="source">Source</label>
+          <select id="source" class="input"></select>
+        </div>
+
+        <div class="form-group">
+          <label for="search_type">Type de recherche</label>
+          <select id="search_type" class="input"></select>
+        </div>
+
+        <div id="dynamic-fields" class="stack"></div>
+
+        <div class="row">
+          <button id="test-connection" class="btn btn-secondary" type="button">
+            Tester connexion
+          </button>
+
+          <button id="run-search" class="btn btn-primary" type="button">
+            Lancer recherche
+          </button>
+        </div>
+
+        <p id="run-feedback" class="muted"></p>
+
+      </div>
+
     </div>
-  </div>
 
-  <div id="dynamic-fields" class="row"></div>
+    <!-- GRID -->
+    <div class="grid">
 
-  <div class="row">
-    <button id="test-connection" class="btn secondary" type="button">Tester connexion</button>
-    <button id="run-search" class="btn" type="button">Lancer recherche</button>
-  </div>
-  <p id="run-feedback" class="muted"></p>
-</div>
+      <!-- STATUT -->
+      <div class="card">
 
-<div class="row">
-  <div class="card" style="flex:2; min-width: 360px;">
-    <h3>Statut de connexion</h3>
-    <table>
-      <thead><tr><th>Source</th><th>Statut</th><th>Erreur</th></tr></thead>
-      <tbody>
-      <?php foreach (($connectedAccounts ?? []) as $account): ?>
-        <tr>
-          <td><?= htmlspecialchars((string) ($account['source'] ?? '')) ?></td>
-          <td><?= htmlspecialchars((string) ($account['status'] ?? '')) ?></td>
-          <td><?= htmlspecialchars((string) ($account['error_message'] ?? '')) ?></td>
-        </tr>
-      <?php endforeach; ?>
-      </tbody>
-    </table>
-  </div>
+        <div class="card-header">
+          <h3>Statut des connexions</h3>
+        </div>
 
-  <div class="card" style="flex:3; min-width: 420px;">
-    <h3>Runs récents</h3>
-    <table>
-      <thead><tr><th>Source</th><th>Type</th><th>Statut run</th><th>Résultats</th><th>Erreur</th></tr></thead>
-      <tbody>
-      <?php foreach (($searchRuns ?? []) as $run): ?>
-        <tr>
-          <td><?= htmlspecialchars((string) ($run['source'] ?? '')) ?></td>
-          <td><?= htmlspecialchars((string) ($run['search_type'] ?? '')) ?></td>
-          <td><?= htmlspecialchars((string) ($run['status'] ?? '')) ?></td>
-          <td><?= htmlspecialchars((string) ($run['results_count'] ?? '0')) ?></td>
-          <td><?= htmlspecialchars((string) ($run['error_message'] ?? '')) ?></td>
-        </tr>
-      <?php endforeach; ?>
-      </tbody>
-    </table>
+        <?php if (empty($accountsData)): ?>
+
+          <div class="empty-state">
+            <p class="muted">Aucune connexion enregistrée</p>
+          </div>
+
+        <?php else: ?>
+
+          <div class="table-wrapper">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Source</th>
+                  <th>Statut</th>
+                  <th>Erreur</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($accountsData as $account): ?>
+                  <tr>
+                    <td><?= safe_string($account['source'] ?? '') ?></td>
+                    <td><?= safe_string($account['status'] ?? '') ?></td>
+                    <td><?= safe_string($account['error_message'] ?? '') ?></td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+
+        <?php endif; ?>
+
+      </div>
+
+      <!-- RUNS -->
+      <div class="card">
+
+        <div class="card-header">
+          <h3>Historique des recherches</h3>
+        </div>
+
+        <?php if (empty($runsData)): ?>
+
+          <div class="empty-state">
+            <p class="muted">Aucune recherche lancée</p>
+          </div>
+
+        <?php else: ?>
+
+          <div class="table-wrapper">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Source</th>
+                  <th>Type</th>
+                  <th>Statut</th>
+                  <th>Résultats</th>
+                  <th>Erreur</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($runsData as $run): ?>
+                  <tr>
+                    <td><?= safe_string($run['source'] ?? '') ?></td>
+                    <td><?= safe_string($run['search_type'] ?? '') ?></td>
+                    <td><?= safe_string($run['status'] ?? '') ?></td>
+                    <td><?= safe_string($run['results_count'] ?? '0') ?></td>
+                    <td><?= safe_string($run['error_message'] ?? '') ?></td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+
+        <?php endif; ?>
+
+      </div>
+
+    </div>
+
   </div>
 </div>
 
 <script>
 (() => {
-  const sources = <?= json_encode($sources ?? [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+  const sources = <?= json_encode($sourcesData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
   const sourceSelect = document.getElementById('source');
   const typeSelect = document.getElementById('search_type');
   const fieldsWrap = document.getElementById('dynamic-fields');
   const feedback = document.getElementById('run-feedback');
 
   const sourceKeys = Object.keys(sources);
+
   sourceKeys.forEach((key) => {
     const option = document.createElement('option');
     option.value = key;
@@ -81,7 +174,9 @@
   const render = () => {
     const source = sourceSelect.value;
     const config = sources[source] || {};
+
     typeSelect.innerHTML = '';
+
     (config.search_types || []).forEach((type) => {
       const option = document.createElement('option');
       option.value = type;
@@ -90,17 +185,17 @@
     });
 
     fieldsWrap.innerHTML = '';
+
     (config.fields || []).forEach((field) => {
       const box = document.createElement('div');
+      box.className = 'form-group';
+
       const label = document.createElement('label');
-      label.setAttribute('for', `fld_${field.name}`);
       label.textContent = field.label;
 
       const input = document.createElement('input');
-      input.id = `fld_${field.name}`;
       input.name = field.name;
-      input.type = field.type || 'text';
-      if (field.required) input.required = true;
+      input.className = 'input';
 
       box.appendChild(label);
       box.appendChild(input);

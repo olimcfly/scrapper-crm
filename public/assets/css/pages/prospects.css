@@ -1,0 +1,321 @@
+.prospects-page-lead {
+  padding: 26px 26px 22px;
+}
+
+.prospects-page-lead h2,
+.prospects-page-lead h1 {
+  margin-bottom: 8px;
+}
+
+.prospects-page-lead p {
+  max-width: 760px;
+}
+
+.prospects-toolbar-card,
+.prospects-filters-card,
+.prospects-results-card,
+.prospects-sources-card,
+.prospects-runs-card,
+.prospect-detail-card,
+.prospect-notes-card,
+.prospect-summary-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.prospects-toolbar-card::before,
+.prospects-filters-card::before,
+.prospects-results-card::before,
+.prospects-sources-card::before,
+.prospects-runs-card::before,
+.prospect-detail-card::before,
+.prospect-notes-card::before,
+.prospect-summary-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary), rgba(37, 99, 235, 0.15));
+}
+
+.prospects-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.prospects-toolbar-left,
+.prospects-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.prospects-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+  gap: 18px;
+  align-items: start;
+}
+
+.prospects-main {
+  min-width: 0;
+}
+
+.prospects-side {
+  display: grid;
+  gap: 18px;
+}
+
+.prospects-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.prospects-form-grid .form-field-full {
+  grid-column: 1 / -1;
+}
+
+.prospects-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.prospects-results-list {
+  display: grid;
+  gap: 14px;
+}
+
+.prospect-card-premium {
+  padding: 18px;
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+  box-shadow: var(--shadow-xs);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.prospect-card-premium:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+  border-color: rgba(37, 99, 235, 0.16);
+}
+
+.prospect-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.prospect-card-identity {
+  min-width: 0;
+}
+
+.prospect-card-name {
+  margin-bottom: 4px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.prospect-card-subtitle {
+  font-size: 0.86rem;
+  color: var(--color-text-muted);
+}
+
+.prospect-card-body {
+  display: grid;
+  gap: 10px;
+}
+
+.prospect-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.prospect-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #f8fafc;
+  border: 1px solid var(--color-border);
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.prospect-card-text {
+  font-size: 0.9rem;
+  color: var(--color-text);
+  line-height: 1.65;
+}
+
+.prospect-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.prospect-summary-list,
+.prospect-notes-list,
+.search-runs-list,
+.connected-accounts-list {
+  display: grid;
+  gap: 12px;
+}
+
+.prospect-summary-item,
+.prospect-note-item,
+.search-run-item,
+.connected-account-item {
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+}
+
+.prospect-summary-item strong,
+.prospect-note-item strong,
+.search-run-item strong,
+.connected-account-item strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--color-text);
+}
+
+.prospect-summary-item p,
+.prospect-note-item p,
+.search-run-item p,
+.connected-account-item p {
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.prospects-source-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.source-card {
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.source-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+  border-color: rgba(37, 99, 235, 0.16);
+}
+
+.source-card-title {
+  margin-bottom: 6px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.source-card-text {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
+}
+
+.source-card-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.prospects-empty {
+  padding: 18px;
+  border: 1px dashed var(--color-border);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+}
+
+.prospects-empty strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--color-text);
+}
+
+.prospects-table-card .table-wrapper,
+.prospects-runs-card .table-wrapper,
+.prospects-sources-card .table-wrapper {
+  border-radius: 18px;
+}
+
+.prospects-inline-feedback {
+  margin-top: 12px;
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+}
+
+.prospects-highlight {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: 0.9rem;
+  border: 1px solid rgba(37, 99, 235, 0.14);
+}
+
+@media (max-width: 1100px) {
+  .prospects-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .prospects-side {
+    grid-template-columns: 1fr;
+  }
+
+  .prospects-source-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .prospects-page-lead {
+    padding: 20px 20px 18px;
+  }
+
+  .prospects-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .prospects-form-grid .form-field-full {
+    grid-column: auto;
+  }
+
+  .prospect-card-head,
+  .prospects-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .prospect-card-premium,
+  .source-card,
+  .prospect-summary-item,
+  .prospect-note-item,
+  .search-run-item,
+  .connected-account-item,
+  .prospects-empty {
+    border-radius: 16px;
+  }
+}

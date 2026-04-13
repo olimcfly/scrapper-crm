@@ -1,0 +1,29 @@
+@media (max-width: 980px) {
+  .workspace {
+    padding: 18px 16px 24px;
+  }
+
+  .topbar {
+    padding: 12px 14px;
+    border-radius: 14px;
+  }
+
+  .card {
+    padding: 16px;
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .workspace {
+    padding: 14px 12px 90px;
+  }
+}

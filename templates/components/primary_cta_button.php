@@ -5,14 +5,22 @@ declare(strict_types=1);
 $href = isset($href) ? (string) $href : null;
 $label = (string) ($label ?? 'Action');
 $variant = (string) ($variant ?? 'primary');
-$className = trim('btn primary-cta-button ' . ($variant === 'secondary' ? 'secondary' : '') . ' ' . (string) ($className ?? ''));
+
+$baseClass = 'btn primary-cta-button';
+$variantClass = $variant === 'secondary' ? 'btn-secondary' : 'btn-primary';
+
+$className = trim($baseClass . ' ' . $variantClass . ' ' . (string) ($className ?? ''));
 ?>
+
 <?php if ($href !== null): ?>
   <a class="<?= htmlspecialchars($className) ?>" href="<?= htmlspecialchars($href) ?>">
-    <?= htmlspecialchars($label) ?>
+    <span class="btn-label"><?= htmlspecialchars($label) ?></span>
   </a>
 <?php else: ?>
-  <button class="<?= htmlspecialchars($className) ?>" type="<?= htmlspecialchars((string) ($type ?? 'button')) ?>">
-    <?= htmlspecialchars($label) ?>
+  <button 
+    class="<?= htmlspecialchars($className) ?>" 
+    type="<?= htmlspecialchars((string) ($type ?? 'button')) ?>"
+  >
+    <span class="btn-label"><?= htmlspecialchars($label) ?></span>
   </button>
 <?php endif; ?>

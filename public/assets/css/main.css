@@ -1,0 +1,23 @@
+@import url('/assets/css/base/reset.css');
+@import url('/assets/css/base/variables.css');
+@import url('/assets/css/base/typography.css');
+
+@import url('/assets/css/layout/shell.css');
+@import url('/assets/css/layout/topbar.css');
+@import url('/assets/css/layout/sidebar.css');
+
+@import url('/assets/css/components/buttons.css');
+@import url('/assets/css/components/cards.css');
+@import url('/assets/css/components/forms.css');
+@import url('/assets/css/components/tables.css');
+@import url('/assets/css/components/badges.css');
+@import url('/assets/css/components/alerts.css');
+
+@import url('/assets/css/pages/dashboard.css');
+@import url('/assets/css/pages/prospects.css');
+@import url('/assets/css/pages/strategy.css');
+@import url('/assets/css/pages/content.css');
+@import url('/assets/css/pages/messages.css');
+@import url('/assets/css/pages/pipeline.css');
+
+@import url('/assets/css/layout/responsive.css');

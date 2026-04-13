@@ -1,20 +1,36 @@
-<?php
-
-declare(strict_types=1);
-?>
 <header class="topbar topbar-compact">
+  
   <div class="topbar-main">
-    <h1><?= htmlspecialchars((string) ($title ?? 'CRM')) ?></h1>
-    <p class="muted" style="margin-bottom:0;">Pilotage prospect-first Â· mobile-first</p>
+    <h1 class="topbar-title">
+      <?= htmlspecialchars((string) ($title ?? 'CRM')) ?>
+    </h1>
+
+   
   </div>
+
   <?php if (($isAuthenticated ?? false) === true): ?>
     <div class="topbar-actions">
-      <input class="search-input" type="search" placeholder="Recherche rapide" aria-label="Recherche rapide">
-      <span class="user-chip"><?= htmlspecialchars((string) ($authUser['name'] ?? 'Utilisateur')) ?></span>
-      <form method="post" action="/logout" style="display:inline;">
+      
+      <input 
+        class="topbar-search" 
+        type="search" 
+        placeholder="Recherche rapide" 
+        aria-label="Recherche rapide"
+      >
+
+      <span class="user-chip">
+        <?= htmlspecialchars((string) ($authUser['name'] ?? 'Utilisateur')) ?>
+      </span>
+
+      <form method="post" action="/logout" class="logout-form">
         <input type="hidden" name="_csrf" value="<?= htmlspecialchars((string) ($csrfToken ?? '')) ?>">
-        <button type="submit" class="btn secondary compact">DÃ©connexion</button>
+        
+        <button type="submit" class="btn btn-secondary btn-compact">
+          D¨¦connexion
+        </button>
       </form>
+
     </div>
   <?php endif; ?>
+
 </header>

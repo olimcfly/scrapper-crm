@@ -9,19 +9,27 @@ final class AdminModules
     /**
      * @return array<int, array{key:string,label:string,description:string,path:string,status:string,core:bool,ready:bool,nav:string}>
      */
-    public static function all(): array
-    {
-        return [
-            ['key' => 'dashboard', 'label' => 'Dashboard', 'description' => 'Vue de démarrage avec prochaines actions prioritaires.', 'path' => '/dashboard', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'dashboard'],
-            ['key' => 'collecte-profils', 'label' => 'Prospects', 'description' => 'Collecte multi-sources, connexions et recherche par connecteur.', 'path' => '/prospects/sources', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'prospects'],
-            ['key' => 'strategie-prospect', 'label' => 'Stratégie', 'description' => 'Analyse psychologique du prospect et recommandations marketing actionnables.', 'path' => '/strategie', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'strategy'],
-            ['key' => 'generation-contenu', 'label' => 'Contenu', 'description' => 'Génération de contenu orientée objectif commercial.', 'path' => '/contenu', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'secondary'],
-            ['key' => 'messages-ia', 'label' => 'Messages IA', 'description' => 'Flow guidé générer → éditer → envoyer avec historique minimal.', 'path' => '/messages-ia', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'messages'],
-            ['key' => 'contacts', 'label' => 'Contacts', 'description' => 'Contacts actionnables avec prochaine action visible.', 'path' => '/admin/modules/contacts', 'status' => 'mvp', 'core' => true, 'ready' => false, 'nav' => 'secondary'],
-            ['key' => 'pipeline', 'label' => 'Pipeline', 'description' => 'Kanban mobile pour guider chaque prochaine action de conversion.', 'path' => '/pipeline', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'pipeline'],
-            ['key' => 'settings', 'label' => 'Paramètres', 'description' => 'Configuration de l’espace et préférences.', 'path' => '/settings', 'status' => 'placeholder', 'core' => false, 'ready' => true, 'nav' => 'secondary'],
-        ];
-    }
+   public static function all(): array
+{
+    return [
+        ['key' => 'dashboard', 'label' => 'Dashboard', 'icon' => '🏠', 'description' => 'Vue globale', 'path' => '/dashboard', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'main'],
+
+        ['key' => 'collecte-profils', 'label' => 'Prospects', 'icon' => '👥', 'description' => 'Collecte multi-source', 'path' => '/prospects/sources', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'main'],
+
+        ['key' => 'strategie-prospect', 'label' => 'Stratégie', 'icon' => '🎯', 'description' => 'Analyse prospect', 'path' => '/strategie', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'main'],
+
+        ['key' => 'generation-contenu', 'label' => 'Contenu', 'icon' => '✍️', 'description' => 'Création ciblée', 'path' => '/contenu', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'main'],
+
+        ['key' => 'messages-ia', 'label' => 'Messages IA', 'icon' => '💬', 'description' => 'Générer et envoyer', 'path' => '/messages-ia', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'main'],
+
+        ['key' => 'pipeline', 'label' => 'Pipeline', 'icon' => '📈', 'description' => 'Suivi conversion', 'path' => '/pipeline', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'main'],
+
+        // SECONDARY
+        ['key' => 'contacts', 'label' => 'Contacts', 'icon' => '📇', 'description' => 'Suivi actionnable', 'path' => '/admin/modules/contacts', 'status' => 'mvp', 'core' => true, 'ready' => false, 'nav' => 'secondary'],
+
+        ['key' => 'settings', 'label' => 'Paramètres', 'icon' => '⚙️', 'description' => 'Préférences', 'path' => '/settings', 'status' => 'placeholder', 'core' => false, 'ready' => true, 'nav' => 'secondary'],
+    ];
+}
 
     /** @return array{active:int,mvp:int,placeholder:int} */
     public static function statusCounters(): array

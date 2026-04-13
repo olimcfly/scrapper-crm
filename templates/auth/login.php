@@ -1,235 +1,115 @@
-<style>
-  .login-page {
-    min-height: 100dvh;
-    display: grid;
-    grid-template-columns: 1fr;
-    background: radial-gradient(circle at top right, #e9efff 0%, #f3f6fb 40%, #eef2f7 100%);
-  }
-
-  .login-visual {
-    display: none;
-    position: relative;
-    min-height: 100dvh;
-    padding: clamp(34px, 4vw, 56px);
-    color: #dbeafe;
-    background: linear-gradient(165deg, #0f172a 0%, #1e3a8a 42%, #2563eb 100%);
-    overflow: hidden;
-  }
-
-  .login-visual::after {
-    content: '';
-    position: absolute;
-    width: 360px;
-    height: 360px;
-    border-radius: 999px;
-    right: -120px;
-    bottom: -120px;
-    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.28), transparent 66%);
-  }
-
-  .login-visual-content {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    gap: 16px;
-    align-self: end;
-    max-width: 520px;
-  }
-
-  .login-brand {
-    margin: 0;
-    font-size: clamp(1.8rem, 2.8vw, 2.7rem);
-    font-weight: 700;
-    color: #fff;
-  }
-
-  .login-tagline {
-    color: rgba(219, 234, 254, 0.9);
-    font-size: 1rem;
-    line-height: 1.55;
-  }
-
-  .login-kpi-grid {
-    margin-top: 8px;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  .login-kpi {
-    background: rgba(15, 23, 42, 0.33);
-    border: 1px solid rgba(191, 219, 254, 0.22);
-    border-radius: 12px;
-    padding: 10px;
-  }
-
-  .login-kpi strong {
-    display: block;
-    color: #fff;
-    font-size: 1.05rem;
-  }
-
-  .login-kpi span {
-    font-size: .8rem;
-    color: rgba(219, 234, 254, 0.9);
-  }
-
-  .login-form-area {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: clamp(18px, 4vw, 56px);
-  }
-
-  .login-card {
-    width: 100%;
-    max-width: 460px;
-    padding: clamp(24px, 3.6vw, 34px);
-    border-radius: 20px;
-    background: #fff;
-    border: 1px solid #dbe3ee;
-    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
-  }
-
-  .login-overline {
-    margin: 0;
-    text-transform: uppercase;
-    font-size: 12px;
-    letter-spacing: .08em;
-    color: #2563eb;
-    font-weight: 700;
-  }
-
-  .login-title {
-    margin: 10px 0 8px;
-    font-size: clamp(1.7rem, 2.4vw, 2.1rem);
-    color: #0f172a;
-    line-height: 1.15;
-  }
-
-  .login-subtitle {
-    margin: 0 0 22px;
-    color: #64748b;
-    line-height: 1.55;
-    font-size: .95rem;
-  }
-
-  .login-field { margin-bottom: 16px; }
-
-  .login-label {
-    display: block;
-    margin-bottom: 7px;
-    color: #1e293b;
-    font-weight: 600;
-    font-size: 0.92rem;
-  }
-
-  .login-input {
-    width: 100%;
-    border: 1px solid #cbd5e1;
-    border-radius: 12px;
-    background: #fff;
-    padding: 12px 14px;
-    font-size: 1rem;
-    color: #0f172a;
-    transition: border-color 0.18s ease, box-shadow 0.18s ease;
-  }
-
-  .login-input:focus {
-    outline: none;
-    border-color: #60a5fa;
-    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
-  }
-
-  .login-submit {
-    width: 100%;
-    margin-top: 6px;
-    border: none;
-    border-radius: 12px;
-    padding: 12px 16px;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    color: #fff;
-    font-size: .98rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.16s ease, filter 0.16s ease;
-  }
-
-  .login-submit:hover { filter: brightness(1.03); transform: translateY(-1px); }
-
-  .login-footnote {
-    margin: 16px 0 0;
-    text-align: center;
-    font-size: 0.85rem;
-    color: #64748b;
-  }
-
-  .login-errors {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    color: #991b1b;
-    border-radius: 12px;
-    padding: 12px 14px;
-    margin-bottom: 16px;
-  }
-
-  .login-errors ul { margin: 8px 0 0 18px; padding: 0; }
-
-  @media (min-width: 980px) {
-    .login-page { grid-template-columns: minmax(460px, 1fr) minmax(520px, 1fr); }
-    .login-visual { display: grid; }
-  }
-</style>
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="/assets/css/auth.css">
 
 <div class="login-page">
-  <section class="login-visual" aria-label="Présentation SCRAPPER CRM">
+
+  <section class="login-visual" aria-label="CRM">
     <div class="login-visual-content">
-      <h1 class="login-brand">SCRAPPER CRM</h1>
-      <p class="login-tagline">Centralisez vos prospects, pilotez le pipeline et sécurisez vos relances depuis une seule interface.</p>
-      <div class="login-kpi-grid">
-        <div class="login-kpi"><strong>24</strong><span>Prospects actifs</span></div>
-        <div class="login-kpi"><strong>11</strong><span>Opportunités</span></div>
-        <div class="login-kpi"><strong>7</strong><span>Actions du jour</span></div>
+
+      <div class="login-visual-top">
+        <span class="login-eyebrow">Prospection organique assistée par IA</span>
+
+        <h1 class="login-title-main">MON CRM</h1>
+
+        <p class="login-description">
+          Centralisez vos prospects, pilotez vos relances et transformez votre activité
+          avec une interface pensée pour l'action.
+        </p>
+
+        <div class="login-features">
+          <div class="login-feature">
+            <span class="feature-dot"></span>
+            <span>Vue claire sur vos prospects et opportunités</span>
+          </div>
+
+          <div class="login-feature">
+            <span class="feature-dot"></span>
+            <span>Connexion rapide par code sécurisé</span>
+          </div>
+
+          <div class="login-feature">
+            <span class="feature-dot"></span>
+            <span>Base évolutive vers un CRM intelligent</span>
+          </div>
+        </div>
       </div>
+
+      <div class="login-visual-bottom">
+        <div class="kpi-panel">
+          <p class="kpi-title">Activité</p>
+
+          <div class="kpi-grid">
+            <div class="kpi"><strong>24</strong><span>Prospects</span></div>
+            <div class="kpi"><strong>11</strong><span>Pipeline</span></div>
+            <div class="kpi"><strong>7</strong><span>Actions</span></div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
   <section class="login-form-area">
-    <div class="login-card">
-      <p class="login-overline">Accès sécurisé</p>
-      <h2 class="login-title">Connexion à votre espace</h2>
-      <p class="login-subtitle">Entrez votre email professionnel pour recevoir un code de connexion à usage unique.</p>
+    <div class="login-form-shell">
 
-      <?php if (!empty($errors)): ?>
-        <div class="login-errors">
-          <strong>Impossible de vous connecter :</strong>
-          <ul>
-            <?php foreach ($errors as $error): ?>
-              <li><?= htmlspecialchars($error) ?></li>
-            <?php endforeach; ?>
-          </ul>
-        </div>
-      <?php endif; ?>
+      <div class="login-mobile-brand">
+        <span class="brand-mark">SC</span>
+        <span>SCRAPPER CRM</span>
+      </div>
 
-      <form method="post" action="/login" novalidate>
-        <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken ?? '') ?>">
-        <div class="login-field">
-          <label class="login-label" for="email">Email professionnel</label>
-          <input
-            class="login-input"
-            id="email"
-            type="email"
-            name="email"
-            autocomplete="email"
-            required
-            value="<?= htmlspecialchars((string) ($old['email'] ?? '')) ?>"
-          >
-        </div>
+      <div class="card login-card">
 
-        <button type="submit" class="login-submit">Recevoir mon code de connexion</button>
-      </form>
+        <p class="form-eyebrow">Accès sécurisé</p>
 
-      <p class="login-footnote">Authentification sans mot de passe · session sécurisée</p>
+        <h2 class="form-title">Connexion</h2>
+
+        <p class="form-description">
+          Entrez votre email pour recevoir un code temporaire sécurisé.
+        </p>
+
+        <?php if (!empty($errors)): ?>
+          <div class="global-state global-error">
+            <span class="state-dot"></span>
+            <div class="state-content">
+              <strong class="state-title">Erreur</strong>
+              <div class="state-message">
+                Impossible de finaliser la connexion
+              </div>
+            </div>
+          </div>
+        <?php endif; ?>
+
+        <form method="post" action="/login" class="login-form">
+
+          <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken ?? '') ?>">
+
+          <div class="form-field">
+            <label class="form-label" for="email">Email</label>
+
+            <input 
+              class="form-input" 
+              id="email" 
+              type="email" 
+              name="email"
+              placeholder="vous@entreprise.fr"
+              required
+              value="<?= htmlspecialchars((string)($old['email'] ?? '')) ?>"
+            >
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-cta">
+            Recevoir mon code
+          </button>
+
+          <p class="form-footnote">
+            Connexion sécurisée · sans mot de passe
+          </p>
+
+        </form>
+
+      </div>
+
     </div>
   </section>
+
 </div>
