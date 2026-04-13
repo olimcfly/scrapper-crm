@@ -1,71 +1,46 @@
-/* TOPBAR CLEAN */
-
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  min-width: 0;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+}
+
+.topbar-inner {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 20px;
-  padding: 14px 18px;
-  border-radius: 18px;
-  border: 1px solid var(--color-border);
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(10px);
-  box-shadow: var(--shadow-xs);
+  gap: 12px;
 }
 
-.topbar-main {
-  display: flex;
-  flex-direction: column;
+.topbar-left,
+.topbar-right {
   min-width: 0;
 }
 
-/* EYEBROW */
-
-.topbar-eyebrow {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--color-text-soft);
-  margin: 0;
-}
-
-/* TITLE */
-
 .topbar-title {
+  margin: 0;
   font-size: 1.1rem;
-  margin: 2px 0 0;
 }
 
-/* ACTIONS */
+.topbar-subtitle {
+  margin: 4px 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
 
-.topbar-actions {
-  display: flex;
+.topbar-user {
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-}
-
-/* SEARCH */
-
-.topbar-search {
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid #e5e7eb;
-  font-size: 0.8rem;
-}
-
-/* USER */
-
-.user-chip {
   padding: 6px 10px;
   border-radius: 999px;
-  background: #f3f4f6;
+  background: var(--color-surface-soft);
   font-size: 0.8rem;
-}
-
-/* BUTTON */
-
-.btn-compact {
-  padding: 6px 10px;
-  font-size: 0.75rem;
+  color: var(--color-text-muted);
 }

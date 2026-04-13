@@ -1,152 +1,109 @@
-/* =========================
-   MODULE LINK (NOUVEAU HTML)
-========================= */
+.sidebar {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  min-width: 0;
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-right: 1px solid var(--color-border);
+  background: var(--color-surface);
+  overflow-y: auto;
+}
 
-.module-link {
-  display: block;
-  padding: 12px;
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 8px;
+}
+
+.logo {
+  width: 36px;
+  height: 36px;
   border-radius: 10px;
-  text-decoration: none;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+}
+
+.sidebar-section-title {
+  margin: 6px 8px 0;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-soft);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px;
+  border-radius: 10px;
   color: var(--color-text);
-  transition: all 0.2s ease;
+  text-decoration: none;
 }
 
-.module-link:hover {
+.sidebar-link:hover {
   background: var(--color-surface-hover);
-  color: var(--color-primary);
 }
 
-.module-link.active {
-  background: var(--color-primary-soft);
+.sidebar-link.active {
   color: var(--color-primary);
+  background: var(--color-primary-soft);
   font-weight: 600;
 }
 
-.label-row {
+.sidebar-link-left {
+  min-width: 0;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-}
-
-.module-label {
-  font-size: 0.95rem;
-}
-
-.module-description {
-  display: block;
-  margin-top: 4px;
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-}
-
-.status-badge {
-  font-size: 0.65rem;
-  padding: 2px 6px;
-  border-radius: 6px;
-  background: #e5e7eb;
-}
-
-/* =========================
-   EMPTY STATE (UNIFIÉ)
-========================= */
-
-.empty-guided,
-.empty-state-guided {
-  text-align: center;
-  padding: 32px 20px;
-}
-
-.empty-eyebrow {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  color: var(--color-text-soft);
-  margin-bottom: 8px;
-}
-
-.empty-title {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-}
-
-.empty-description,
-.empty-message {
-  font-size: 0.9rem;
-  color: var(--color-text-muted);
-  margin-bottom: 16px;
-}
-
-.empty-cta {
-  display: flex;
-  justify-content: center;
-}
-
-/* =========================
-   GLOBAL STATE (UNIFIÉ)
-========================= */
-
-.global-state {
-  display: flex;
-  align-items: flex-start;
   gap: 10px;
-  padding: 12px;
-  border-radius: 10px;
 }
 
-.global-error {
-  background: #fee2e2;
-  color: #991b1b;
+.icon {
+  width: 18px;
+  text-align: center;
 }
 
-.state-dot {
-  width: 8px;
-  height: 8px;
-  margin-top: 6px;
-  border-radius: 50%;
-  background: currentColor;
+.sidebar-footer {
+  margin-top: auto;
+  padding: 8px;
 }
 
-.state-content {
+.user {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  gap: 10px;
 }
 
-.state-title {
-  font-size: 0.9rem;
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
 }
 
-.state-message {
+.muted {
+  color: var(--color-text-muted);
   font-size: 0.8rem;
-  opacity: 0.85;
-}
-
-/* =========================
-   SKELETON (UNIFIÉ)
-========================= */
-
-.skeleton-card {
-  padding: 16px;
-}
-
-.skeleton-line {
-  height: 10px;
-  border-radius: 6px;
-  background: #e5e7eb;
-  margin-bottom: 10px;
-  animation: skeleton-loading 1.2s infinite ease-in-out;
-}
-
-.skeleton-title {
-  width: 50%;
-  height: 12px;
-}
-
-.skeleton-text {
-  width: 80%;
-}
-
-@keyframes skeleton-loading {
-  0% { opacity: 0.4; }
-  50% { opacity: 1; }
-  100% { opacity: 0.4; }
 }

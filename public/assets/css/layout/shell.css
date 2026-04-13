@@ -5,6 +5,7 @@ body {
 
 body {
   min-height: 100vh;
+  background: var(--color-bg);
 }
 
 .app-shell {
@@ -13,12 +14,24 @@ body {
   min-height: 100vh;
 }
 
-.workspace {
+.app-main {
   min-width: 0;
-  padding: 24px 24px 28px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0;
+}
+
+.page-content {
+  min-width: 0;
+  width: 100%;
+  padding: 24px;
   background:
     radial-gradient(circle at top right, rgba(37, 99, 235, 0.06), transparent 25%),
     var(--color-bg);
+}
+
+.page-content > * {
+  min-width: 0;
 }
 
 .container {
