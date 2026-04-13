@@ -1,14 +1,15 @@
 <?php
 $categoryOrder = [
     'Tous',
-    'Agents immobiliers',
-    'Commerçants',
-    'Thérapeutes',
-    'Coachs',
-    'Artisans',
-    'Indépendants',
-    'Restaurants',
-    'Autres',
+    'Masseuses bien-être',
+    'Esthéticiennes',
+    'Sophrologues',
+    'Réflexologues',
+    'Naturopathes',
+    'Énergéticiennes',
+    'Coach bien-être',
+    'Praticiennes SPA',
+    'Autres praticiennes',
 ];
 
 $activeCategory = trim((string) ($filters['category'] ?? 'Tous'));
@@ -23,17 +24,18 @@ $detectCategory = static function (array $prospect) use ($normalize): string {
     $haystack = $activity . ' ' . $business;
 
     if ($haystack === '') {
-        return 'Autres';
+        return 'Autres praticiennes';
     }
 
     $mapping = [
-        'Agents immobiliers' => ['agent immobilier', 'immobilier', 'mandataire'],
-        'Commerçants' => ['commerce', 'boutique', 'magasin', 'retail', 'e-commerce'],
-        'Thérapeutes' => ['thérapeute', 'therapeute', 'psychologue', 'naturopathe', 'sophrologue'],
-        'Coachs' => ['coach', 'coaching', 'mentor'],
-        'Artisans' => ['artisan', 'plombier', 'électricien', 'electricien', 'menuisier', 'coiffeur'],
-        'Indépendants' => ['freelance', 'indépendant', 'independant', 'consultant', 'solopreneur'],
-        'Restaurants' => ['restaurant', 'restauration', 'traiteur', 'café', 'cafe', 'bar'],
+        'Masseuses bien-être' => ['masseuse bien-être', 'masseuse bien etre', 'massothérapie', 'massotherapeute', 'massage', 'massothérapeute'],
+        'Esthéticiennes' => ['esthéticienne', 'estheticienne', 'soins esthétiques', 'soins esthetiques', 'beauté', 'beaute'],
+        'Sophrologues' => ['sophrologue', 'sophrologie'],
+        'Réflexologues' => ['réflexologue', 'reflexologue', 'réflexologie', 'reflexologie'],
+        'Naturopathes' => ['naturopathe', 'naturopathie'],
+        'Énergéticiennes' => ['énergéticienne', 'energeticienne', 'énergétique', 'energetique', 'reiki', 'magnétiseuse', 'magnetiseuse'],
+        'Coach bien-être' => ['coach bien-être', 'coach bien etre', 'coaching bien-être', 'coaching bien etre', 'wellness coach'],
+        'Praticiennes SPA' => ['spa', 'spa praticienne', 'soin spa', 'hydrothérapie', 'hydrotherapie'],
     ];
 
     foreach ($mapping as $label => $keywords) {
@@ -44,7 +46,7 @@ $detectCategory = static function (array $prospect) use ($normalize): string {
         }
     }
 
-    return 'Autres';
+    return 'Autres praticiennes';
 };
 
 $statusLabel = '';
@@ -630,7 +632,7 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
     <input type="hidden" name="category" value="<?= htmlspecialchars($activeCategory) ?>" data-category-input>
     <div class="finder-toolbar-head">
       <div class="finder-title-row">
-        <h2>Trouver des prospects</h2>
+        <h2>Trouver des praticiennes bien-être</h2>
         <p class="finder-kpi"><?= $totalProspects ?> résultat(s)</p>
       </div>
 
@@ -639,7 +641,7 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
         <input
           type="search"
           name="q"
-          placeholder="Nom, activité, ville, email..."
+          placeholder="Nom, spécialité, ville, Instagram, site web..."
           value="<?= htmlspecialchars((string) ($filters['q'] ?? '')) ?>"
           autocomplete="off"
           data-search-input
@@ -647,7 +649,7 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
       </div>
     </div>
 
-    <div class="category-scroll" role="tablist" aria-label="Catégories de prospects">
+    <div class="category-scroll" role="tablist" aria-label="Catégories de praticiennes bien-être">
       <?php foreach ($categoryOrder as $category): ?>
         <?php $isActive = $category === $activeCategory; ?>
         <button
@@ -662,12 +664,12 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
     </div>
 
     <div class="finder-toolbar">
-      <div class="finder-kpi">Pipeline de recherche et priorisation CRM</div>
+      <div class="finder-kpi">Recherche ciblée de professionnelles du bien-être à accompagner dans le développement de leur activité.</div>
       <div class="finder-actions">
         <button type="button" class="finder-btn" data-open-sheet>
           Filtres avancés<?= count($cleanFilters) > 0 ? ' • ' . count($cleanFilters) : '' ?>
         </button>
-        <a class="btn secondary compact" href="/prospects/create">+ Nouveau prospect</a>
+        <a class="btn secondary compact" href="/prospects/create">+ Nouvelle praticienne</a>
       </div>
     </div>
   </form>
@@ -683,7 +685,7 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
   <div class="active-filters" data-active-filters></div>
 
   <div class="finder-loading" data-loading-state>
-    <p>Chargement intelligent des prospects...</p>
+    <p>Chargement intelligent des praticiennes bien-être...</p>
     <div class="finder-loading-grid">
       <div class="finder-skeleton"></div>
       <div class="finder-skeleton"></div>
@@ -693,9 +695,9 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
 
   <?php if (empty($prospects)): ?>
     <article class="finder-empty" data-empty-state>
-      <h3>Aucun prospect correspondant</h3>
+      <h3>Aucune praticienne correspondante</h3>
       <p>Changez de catégorie ou allégez les filtres avancés pour élargir la recherche.</p>
-      <p style="margin-top:10px;"><a class="btn" href="/prospects/create">Ajouter un prospect</a></p>
+      <p style="margin-top:10px;"><a class="btn" href="/prospects/create">Ajouter une praticienne</a></p>
     </article>
   <?php else: ?>
     <div class="prospect-list" data-prospect-list style="display:none;">
@@ -709,8 +711,8 @@ $totalProspects = (int) ($pagination['total'] ?? 0);
     </div>
 
     <article class="finder-empty" data-empty-state style="display:none;">
-      <h3>Aucun prospect après filtrage</h3>
-      <p>Ajustez les filtres actifs, puis relancez la recherche pour retrouver des opportunités.</p>
+      <h3>Aucune praticienne après filtrage</h3>
+      <p>Ajustez les filtres actifs, puis relancez la recherche pour retrouver des praticiennes à accompagner.</p>
     </article>
 
     <?php

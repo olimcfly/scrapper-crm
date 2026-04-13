@@ -31,8 +31,8 @@
 
   const mockProspects = [
     {
-      search: 'Sophie Martin coach lyon',
-      category: 'Coachs',
+      search: 'Sophie Martin coach bien-être lyon',
+      category: 'Coach bien-être',
       city: 'Lyon',
       awareness: 'Conscient du besoin',
       website: 'oui',
@@ -42,8 +42,8 @@
       zone: 'Locale',
     },
     {
-      search: 'Atelier Design artisan nantes',
-      category: 'Artisans',
+      search: 'Espace Harmonie spa nantes',
+      category: 'Praticiennes SPA',
       city: 'Nantes',
       awareness: 'À éduquer',
       website: 'non',
