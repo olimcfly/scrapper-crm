@@ -27,6 +27,8 @@ final class ApifyRunService
             throw new RuntimeException('Source Apify non configurée: ' . $source);
         }
 
+        $input = $this->normalizeInputForSource($source, $input);
+
         $query = [];
         if ($waitForFinish !== null && $waitForFinish > 0) {
             $query['waitForFinish'] = $waitForFinish;
@@ -38,5 +40,41 @@ final class ApifyRunService
     public function getRun(string $runId): array
     {
         return $this->client->get('/v2/actor-runs/' . rawurlencode($runId));
+    }
+
+    /** @param array<string, mixed> $input */
+    private function normalizeInputForSource(string $source, array $input): array
+    {
+        if ($source !== 'tiktok') {
+            return $input;
+        }
+
+        $hashtags = [];
+        if (is_array($input['hashtags'] ?? null)) {
+            foreach ($input['hashtags'] as $tag) {
+                $normalized = trim((string) $tag);
+                if ($normalized !== '') {
+                    $hashtags[] = ltrim($normalized, '#');
+                }
+            }
+        }
+
+        if ($hashtags === []) {
+            $fallbackTag = trim((string) ($input['hashtag'] ?? 'fyp'));
+            $hashtags = [ltrim($fallbackTag !== '' ? $fallbackTag : 'fyp', '#')];
+        }
+
+        return array_merge([
+            'hashtags' => $hashtags,
+            'resultsPerPage' => 100,
+            'maxFollowersPerProfile' => 0,
+            'maxFollowingPerProfile' => 0,
+            'commentsPerPost' => 0,
+            'topLevelCommentsPerPost' => 0,
+            'maxRepliesPerComment' => 0,
+            'proxyCountryCode' => 'None',
+        ], $input, [
+            'hashtags' => $hashtags,
+        ]);
     }
 }
