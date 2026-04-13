@@ -8,6 +8,7 @@ use App\Controllers\AuthController;
 use App\Controllers\GeneratedContentController;
 use App\Controllers\LookupController;
 use App\Controllers\PipelineController;
+use App\Controllers\ProspectingController;
 use App\Controllers\ProspectController;
 use App\Controllers\SettingsController;
 use App\Controllers\StrategyController;
@@ -67,6 +68,7 @@ $router->add('GET', '/prospects/create', $guard->protect(static fn (Request $req
 $router->add('POST', '/prospects/create', $guard->protect(static fn (Request $req): mixed => (new WebProspectController())->store($req)));
 // Routes statiques avant les routes paramétrées (évite que /prospects/{id} capture "import")
 $router->add('GET', '/prospects/import', $guard->protect(static fn (Request $req): mixed => (new WebProspectController())->importForm($req)));
+$router->add('GET', '/prospects/sources', $guard->protect(static fn (Request $req): mixed => (new ProspectingController())->index($req)));
 $router->add('POST', '/prospects/import/upload', $guard->protect(static fn (Request $req): mixed => (new WebProspectController())->importUpload($req)));
 $router->add('POST', '/prospects/import/process', $guard->protect(static fn (Request $req): mixed => (new WebProspectController())->importProcess($req)));
 $router->add('GET', '/prospects/{id}', $guard->protect(static fn (Request $req, array $params): mixed => (new WebProspectController())->show($req, (int) $params['id'])));
@@ -115,6 +117,9 @@ $router->add('PATCH', '/api/prospects/{id}/status', static fn (Request $req, arr
 $router->add('GET', '/api/prospect-statuses', static fn (Request $req): mixed => (new LookupController())->statuses($req));
 $router->add('GET', '/api/sources', static fn (Request $req): mixed => (new LookupController())->sources($req));
 $router->add('GET', '/api/tags', static fn (Request $req): mixed => (new LookupController())->tags($req));
+$router->add('GET', '/api/prospecting/sources', static fn (Request $req): mixed => (new ProspectingController())->sources($req));
+$router->add('POST', '/api/prospecting/connect/test', static fn (Request $req): mixed => (new ProspectingController())->testConnection($req));
+$router->add('POST', '/api/prospecting/search', static fn (Request $req): mixed => (new ProspectingController())->runSearch($req));
 $router->add('POST', '/api/apify/run/google-maps', static fn (Request $req): mixed => (new ApifyController())->runSource($req, 'google_maps'));
 $router->add('POST', '/api/apify/run/instagram-profile', static fn (Request $req): mixed => (new ApifyController())->runSource($req, 'instagram_profile'));
 $router->add('POST', '/api/apify/run/instagram-hashtag', static fn (Request $req): mixed => (new ApifyController())->runSource($req, 'instagram_hashtag'));

@@ -15,9 +15,9 @@ final class AdminModules
             [
                 'slug' => 'collecte-profils',
                 'label' => 'Collecte profils',
-                'description' => 'Import et enrichissement des profils cibles.',
+                'description' => 'Architecture multi-sources et connecteurs de prospection.',
                 'status' => 'Actif',
-                'route' => '/prospects/import',
+                'route' => '/prospects/sources',
                 'icon' => '🔎',
                 'is_core' => true,
             ],
