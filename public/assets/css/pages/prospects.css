@@ -1,321 +1,396 @@
-.prospects-page-lead {
-  padding: 26px 26px 22px;
-}
-
-.prospects-page-lead h2,
-.prospects-page-lead h1 {
-  margin-bottom: 8px;
-}
-
-.prospects-page-lead p {
-  max-width: 760px;
-}
-
-.prospects-toolbar-card,
-.prospects-filters-card,
-.prospects-results-card,
-.prospects-sources-card,
-.prospects-runs-card,
-.prospect-detail-card,
-.prospect-notes-card,
-.prospect-summary-card {
-  position: relative;
-  overflow: hidden;
-}
-
-.prospects-toolbar-card::before,
-.prospects-filters-card::before,
-.prospects-results-card::before,
-.prospects-sources-card::before,
-.prospects-runs-card::before,
-.prospect-detail-card::before,
-.prospect-notes-card::before,
-.prospect-summary-card::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--color-primary), rgba(37, 99, 235, 0.15));
-}
-
-.prospects-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-
-.prospects-toolbar-left,
-.prospects-toolbar-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.prospects-layout {
+.prospects-finder {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
-  gap: 18px;
-  align-items: start;
-}
-
-.prospects-main {
-  min-width: 0;
-}
-
-.prospects-side {
-  display: grid;
-  gap: 18px;
-}
-
-.prospects-form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.prospects-form-grid .form-field-full {
-  grid-column: 1 / -1;
-}
-
-.prospects-actions {
-  display: flex;
-  align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 18px;
 }
 
-.prospects-results-list {
-  display: grid;
-  gap: 14px;
-}
-
-.prospect-card-premium {
-  padding: 18px;
+.finder-header {
   border: 1px solid var(--color-border);
-  border-radius: 18px;
-  background: linear-gradient(180deg, #ffffff, #fbfdff);
-  box-shadow: var(--shadow-xs);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+  border-radius: var(--radius-lg);
+  background: #fff;
+  padding: 12px;
 }
 
-.prospect-card-premium:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
-  border-color: rgba(37, 99, 235, 0.16);
-}
-
-.prospect-card-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 10px;
-}
-
-.prospect-card-identity {
-  min-width: 0;
-}
-
-.prospect-card-name {
-  margin-bottom: 4px;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--color-text);
-}
-
-.prospect-card-subtitle {
-  font-size: 0.86rem;
-  color: var(--color-text-muted);
-}
-
-.prospect-card-body {
+.finder-toolbar-head {
   display: grid;
   gap: 10px;
 }
 
-.prospect-card-meta {
+.finder-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.finder-title-row h2 {
+  font-size: 1.05rem;
+}
+
+.finder-kpi {
+  font-size: 0.8rem;
+  color: var(--color-text-soft);
+}
+
+.finder-search input {
+  min-height: 42px;
+}
+
+.category-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 0 2px;
+}
+
+.category-chip {
+  border: 1px solid var(--color-border);
+  background: #fff;
+  color: var(--color-text-muted);
+  border-radius: 999px;
+  min-height: 34px;
+  padding: 0 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.category-chip[aria-pressed="true"] {
+  color: var(--color-primary);
+  border-color: rgba(29, 78, 216, 0.24);
+  background: var(--color-primary-soft);
+}
+
+.finder-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.finder-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.active-filters {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.prospect-chip {
+.active-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  font-size: 0.76rem;
+  color: var(--color-text-muted);
+  background: #fff;
+}
+
+.active-filter-clear {
+  border: 0;
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.finder-loading {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: #fff;
+  padding: 14px;
+}
+
+.finder-loading p {
+  margin: 0 0 10px;
+}
+
+.finder-loading-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.finder-skeleton {
+  height: 84px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, #f8fafc 0%, #eef2f7 50%, #f8fafc 100%);
+  background-size: 220% 100%;
+  animation: finder-shimmer 1.2s linear infinite;
+}
+
+@keyframes finder-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
+.prospect-list {
+  display: grid;
+  gap: 10px;
+}
+
+.prospect-card {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: #fff;
+  padding: 12px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.prospect-card:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-sm);
+}
+
+.prospect-card[data-state="selected"] {
+  border-color: rgba(29, 78, 216, 0.38);
+}
+
+.prospect-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.prospect-name {
+  font-size: 0.98rem;
+}
+
+.prospect-meta {
+  margin: 2px 0 0;
+  font-size: 0.84rem;
+  color: var(--color-text-soft);
+}
+
+.status-pill,
+.prospect-badge {
   display: inline-flex;
   align-items: center;
   min-height: 26px;
-  padding: 0 10px;
+  padding: 0 9px;
   border-radius: 999px;
-  background: #f8fafc;
   border: 1px solid var(--color-border);
-  font-size: 0.78rem;
+  background: var(--color-surface-soft);
+  font-size: 0.74rem;
+  font-weight: 600;
   color: var(--color-text-muted);
 }
 
-.prospect-card-text {
-  font-size: 0.9rem;
-  color: var(--color-text);
-  line-height: 1.65;
-}
-
-.prospect-card-actions {
+.prospect-badges {
   display: flex;
-  align-items: center;
-  gap: 10px;
   flex-wrap: wrap;
-  margin-top: 12px;
+  gap: 6px;
 }
 
-.prospect-summary-list,
-.prospect-notes-list,
-.search-runs-list,
-.connected-accounts-list {
-  display: grid;
-  gap: 12px;
-}
-
-.prospect-summary-item,
-.prospect-note-item,
-.search-run-item,
-.connected-account-item {
-  padding: 14px 16px;
-  border: 1px solid var(--color-border);
-  border-radius: 16px;
-  background: linear-gradient(180deg, #ffffff, #fbfdff);
-}
-
-.prospect-summary-item strong,
-.prospect-note-item strong,
-.search-run-item strong,
-.connected-account-item strong {
-  display: block;
-  margin-bottom: 4px;
-  color: var(--color-text);
-}
-
-.prospect-summary-item p,
-.prospect-note-item p,
-.search-run-item p,
-.connected-account-item p {
-  margin: 0;
-  font-size: 0.88rem;
-}
-
-.prospects-source-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.source-card {
-  padding: 16px;
-  border: 1px solid var(--color-border);
-  border-radius: 18px;
-  background: linear-gradient(180deg, #ffffff, #fbfdff);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
-}
-
-.source-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
-  border-color: rgba(37, 99, 235, 0.16);
-}
-
-.source-card-title {
-  margin-bottom: 6px;
-  font-weight: 700;
-  color: var(--color-text);
-}
-
-.source-card-text {
-  font-size: 0.88rem;
-  color: var(--color-text-muted);
-  margin-bottom: 12px;
-}
-
-.source-card-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.prospects-empty {
-  padding: 18px;
-  border: 1px dashed var(--color-border);
-  border-radius: 18px;
-  background: linear-gradient(180deg, #ffffff, #fbfdff);
-}
-
-.prospects-empty strong {
-  display: block;
-  margin-bottom: 6px;
-  color: var(--color-text);
-}
-
-.prospects-table-card .table-wrapper,
-.prospects-runs-card .table-wrapper,
-.prospects-sources-card .table-wrapper {
-  border-radius: 18px;
-}
-
-.prospects-inline-feedback {
-  margin-top: 12px;
-  font-size: 0.88rem;
-  color: var(--color-text-muted);
-}
-
-.prospects-highlight {
-  padding: 14px 16px;
-  border-radius: 16px;
+.score-pill {
   background: var(--color-primary-soft);
   color: var(--color-primary);
-  font-size: 0.9rem;
-  border: 1px solid rgba(37, 99, 235, 0.14);
+  border-color: rgba(29, 78, 216, 0.2);
 }
 
-@media (max-width: 1100px) {
-  .prospects-layout {
-    grid-template-columns: 1fr;
+.awareness-hot,
+.priority-high {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  border-color: rgba(185, 28, 28, 0.18);
+}
+
+.awareness-warm,
+.priority-medium {
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
+  border-color: rgba(180, 83, 9, 0.18);
+}
+
+.awareness-cold,
+.priority-low {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+  border-color: rgba(21, 128, 61, 0.18);
+}
+
+.presence-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.presence-item {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface-soft);
+  padding: 8px;
+  display: grid;
+  gap: 4px;
+}
+
+.presence-item span:first-child {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-soft);
+}
+
+.presence-ok,
+.presence-neutral,
+.presence-off {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.quick-action {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 0.79rem;
+  font-weight: 600;
+}
+
+.quick-action.ia,
+.quick-action:hover {
+  border-color: rgba(29, 78, 216, 0.24);
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.finder-pagination {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.bottom-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.42);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast);
+  z-index: 47;
+}
+
+.bottom-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 48;
+  background: #fff;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border: 1px solid var(--color-border);
+  padding: 10px 12px calc(14px + env(safe-area-inset-bottom));
+  transform: translateY(100%);
+  transition: transform var(--transition-fast);
+  max-height: min(80vh, 680px);
+  overflow-y: auto;
+}
+
+.sheet-handle {
+  width: 42px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-border-strong);
+  margin: 0 auto 12px;
+}
+
+.sheet-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.sheet-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+}
+
+.sheet-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.sheet-grid label {
+  display: grid;
+  gap: 6px;
+}
+
+.sheet-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+body.bottom-sheet-open {
+  overflow: hidden;
+}
+
+body.bottom-sheet-open .bottom-sheet-backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.bottom-sheet-open .bottom-sheet {
+  transform: translateY(0);
+}
+
+@media (min-width: 992px) {
+  .finder-header {
+    padding: 14px;
   }
 
-  .prospects-side {
-    grid-template-columns: 1fr;
+  .finder-toolbar-head {
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 460px);
+    align-items: end;
   }
 
-  .prospects-source-grid {
-    grid-template-columns: 1fr;
+  .quick-actions {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .bottom-sheet,
+  .bottom-sheet-backdrop {
+    display: none;
   }
 }
 
 @media (max-width: 760px) {
-  .prospects-page-lead {
-    padding: 20px 20px 18px;
-  }
-
-  .prospects-form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .prospects-form-grid .form-field-full {
-    grid-column: auto;
-  }
-
-  .prospect-card-head,
-  .prospects-toolbar {
+  .finder-toolbar {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
   }
 
-  .prospect-card-premium,
-  .source-card,
-  .prospect-summary-item,
-  .prospect-note-item,
-  .search-run-item,
-  .connected-account-item,
-  .prospects-empty {
-    border-radius: 16px;
+  .finder-actions {
+    width: 100%;
+  }
+
+  .finder-actions .btn {
+    flex: 1 1 0;
   }
 }

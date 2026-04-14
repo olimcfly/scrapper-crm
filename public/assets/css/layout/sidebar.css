@@ -12,9 +12,9 @@
     padding: 20px 14px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
     border-right: 1px solid var(--color-border);
-    background: var(--color-surface);
+    background: #fff;
     overflow-y: auto;
   }
 
@@ -29,19 +29,19 @@
   .logo {
     width: 36px;
     height: 36px;
-    border-radius: 10px;
+    border-radius: 11px;
     display: grid;
     place-items: center;
     color: #fff;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+    background: var(--color-primary);
   }
 
   .sidebar-section-title {
     margin: 6px 8px 0;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
     color: var(--color-text-soft);
   }
 
@@ -59,17 +59,21 @@
     min-width: 0;
     padding: 10px;
     border-radius: 10px;
+    border: 1px solid transparent;
     color: var(--color-text);
     text-decoration: none;
+    transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
   }
 
   .sidebar-link:hover {
-    background: var(--color-surface-hover);
+    background: var(--color-surface-soft);
+    border-color: var(--color-border);
   }
 
   .sidebar-link.active {
     color: var(--color-primary);
     background: var(--color-primary-soft);
+    border-color: rgba(29, 78, 216, 0.16);
     font-weight: 600;
   }
 
@@ -110,7 +114,7 @@
 
   .muted {
     color: var(--color-text-muted);
-    font-size: 0.8rem;
+    font-size: 0.82rem;
   }
 }
 
@@ -122,7 +126,7 @@
   z-index: 45;
   padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--color-border);
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(10px);
 }
 
@@ -136,13 +140,13 @@
 
 .bottom-nav-link {
   min-height: 56px;
-  border-radius: 14px;
+  border-radius: 12px;
   color: var(--color-text-soft);
   text-decoration: none;
   display: grid;
   place-items: center;
   gap: 2px;
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   font-weight: 600;
 }
 
