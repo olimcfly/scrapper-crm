@@ -14,7 +14,7 @@ final class AdminModules
         return [
             [
                 'slug' => 'collecte-profils',
-                'label' => 'Collecte profils',
+                'label' => 'Trouver des prospects',
                 'description' => 'Architecture multi-sources et connecteurs de prospection.',
                 'status' => 'Actif',
                 'route' => '/prospects/sources',
