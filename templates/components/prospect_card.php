@@ -68,7 +68,7 @@ $cardState = (string) ($cardState ?? 'default');
   data-zone="<?= htmlspecialchars($zoneScope) ?>"
 >
   <div class="prospect-top">
-    <div>
+    <div class="prospect-identity">
       <h3 class="prospect-name"><?= htmlspecialchars($fullName) ?></h3>
       <p class="prospect-meta"><?= htmlspecialchars($activity) ?> · <?= htmlspecialchars($city) ?></p>
     </div>
@@ -88,10 +88,13 @@ $cardState = (string) ($cardState ?? 'default');
     <?php $indicatorLabel = 'Zone'; $indicatorValue = $zoneScope; $indicatorState = 'neutral'; require __DIR__ . '/prospect_indicator.php'; ?>
   </div>
 
-  <div class="quick-actions">
-    <a class="quick-action" data-quick-action="view" href="/prospects/<?= (int) $prospectCard['id'] ?>">Voir</a>
-    <a class="quick-action ia" data-quick-action="ai-analysis" href="/strategie">Analyse IA</a>
-    <a class="quick-action" data-quick-action="generate-message" href="/prospects/<?= (int) $prospectCard['id'] ?>/generated-contents">Générer message</a>
-    <a class="quick-action" data-quick-action="add-pipeline" href="/pipeline#prospect-<?= (int) $prospectCard['id'] ?>">Ajouter au pipeline</a>
+  <div class="quick-actions quick-actions-primary">
+    <a class="quick-action primary" data-quick-action="view" href="/prospects/<?= (int) $prospectCard['id'] ?>">Voir</a>
+    <a class="quick-action ia primary" data-quick-action="ai-analysis" href="/strategie">Analyse IA</a>
+  </div>
+
+  <div class="quick-actions quick-actions-secondary">
+    <a class="quick-action secondary" data-quick-action="generate-message" href="/prospects/<?= (int) $prospectCard['id'] ?>/generated-contents">Générer message</a>
+    <a class="quick-action secondary" data-quick-action="add-pipeline" href="/pipeline#prospect-<?= (int) $prospectCard['id'] ?>">Ajouter au pipeline</a>
   </div>
 </article>

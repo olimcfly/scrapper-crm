@@ -1,23 +1,51 @@
 <section class="dashboard-premium">
   <header class="dashboard-hero card">
     <div class="dashboard-hero-main">
-      <p class="eyebrow">Cockpit CRM</p>
-      <h1>Priorités commerciales du jour</h1>
-      <p class="dashboard-hero-text">Pilotez la prospection, les relances et le pipeline depuis une vue produit claire, rapide et orientée action.</p>
+      <p class="eyebrow">Prospection first</p>
+      <h1>Lancez votre prochaine vague de prospection</h1>
+      <p class="dashboard-hero-text">Collectez vite des prospects qualifiés, priorisez les plus chauds et passez à l’action commerciale immédiatement.</p>
 
       <div class="dashboard-hero-cta">
-        <a class="btn btn-primary" href="/prospects/create">+ Ajouter un prospect</a>
+        <a class="btn btn-primary hero-primary-cta" href="/prospects">Trouver des prospects</a>
         <a class="btn btn-secondary" href="/prospects?filter=hot">Voir les prospects chauds</a>
       </div>
     </div>
 
     <aside class="dashboard-hero-panel" aria-label="Focus conversion">
-      <p class="dashboard-panel-label">Focus conversion</p>
-      <p class="dashboard-panel-value">3 opportunités</p>
-      <p class="dashboard-panel-text">à moins de 7 jours de signature selon l’activité pipeline.</p>
-      <a class="dashboard-panel-link" href="/pipeline">Ouvrir le pipeline →</a>
+      <p class="dashboard-panel-label">Collection intelligente</p>
+      <p class="dashboard-panel-value">24 prospects</p>
+      <p class="dashboard-panel-text"><strong>9</strong> à fort potentiel · <strong>6</strong> à analyser en priorité.</p>
+      <a class="dashboard-panel-link" href="/prospects">Voir la collection →</a>
     </aside>
   </header>
+
+  <section class="card dashboard-collection-focus" aria-label="Collection intelligente de prospects">
+    <div class="card-header-inline">
+      <h3>Collection intelligente</h3>
+      <a class="text-link" href="/prospects">Voir la collection</a>
+    </div>
+    <p class="dashboard-collection-text">Votre base active est prête pour la prospection : ciblez les contacts à fort potentiel et accélérez l’analyse commerciale.</p>
+    <div class="dashboard-kpis dashboard-collection-kpis">
+      <article class="dashboard-kpi-card kpi-primary">
+        <p class="muted">Total prospects</p>
+        <p class="metric-value">24</p>
+        <p class="metric-trend positive">Base active</p>
+      </article>
+
+      <article class="dashboard-kpi-card">
+        <p class="muted">Fort potentiel</p>
+        <p class="metric-value">9</p>
+        <p class="metric-trend positive">À contacter vite</p>
+      </article>
+
+      <article class="dashboard-kpi-card">
+        <p class="muted">À analyser</p>
+        <p class="metric-value">6</p>
+        <p class="metric-trend">Avec analyse IA</p>
+      </article>
+    </div>
+    <a class="btn btn-secondary dashboard-collection-cta" href="/prospects">Voir la collection</a>
+  </section>
 
   <section class="dashboard-kpis" aria-label="Indicateurs clés">
     <article class="dashboard-kpi-card kpi-primary">
@@ -36,12 +64,6 @@
       <p class="muted">Opportunités pipeline</p>
       <p class="metric-value">11</p>
       <p class="metric-trend positive">3 proches conversion</p>
-    </article>
-
-    <article class="dashboard-kpi-card">
-      <p class="muted">Relances en retard</p>
-      <p class="metric-value">4</p>
-      <p class="metric-trend">À traiter avant 17h</p>
     </article>
   </section>
 
@@ -86,7 +108,7 @@
     </article>
 
     <aside class="dashboard-side-stack">
-      <section class="card stack-sm dashboard-recent-card" aria-label="Prospects récents">
+      <section class="card stack-sm dashboard-recent-card mobile-secondary-block" aria-label="Prospects récents">
         <div class="card-header-inline">
           <h3>Prospects récents</h3>
           <a class="text-link" href="/prospects">Voir tout</a>
@@ -119,7 +141,7 @@
         </div>
       </section>
 
-      <article class="card stack-sm dashboard-modules-card">
+      <article class="card stack-sm dashboard-modules-card mobile-secondary-block">
         <h3>Statut des modules</h3>
         <div class="dashboard-kpis dashboard-kpis-modules">
           <div class="dashboard-kpi-card">
