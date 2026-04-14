@@ -13,18 +13,21 @@ use App\Core\View;
 use App\Models\AiMessageDraftModel;
 use App\Services\AiMessageGenerator;
 use App\Services\Auth;
+use App\Services\StrategicFoundationContextService;
 
 final class MessagesController
 {
     private AiMessageDraftModel $drafts;
     private Auth $auth;
     private AiMessageGenerator $generator;
+    private StrategicFoundationContextService $foundationContext;
 
     public function __construct()
     {
         $this->drafts = new AiMessageDraftModel();
         $this->auth = new Auth(Database::connection());
         $this->generator = new AiMessageGenerator();
+        $this->foundationContext = new StrategicFoundationContextService();
     }
 
     public function index(Request $request): void
@@ -33,6 +36,8 @@ final class MessagesController
         $analysis = Session::get('strategy_to_content_analysis', []);
         $analysisId = (int) Session::get('strategy_to_content_analysis_id', 0);
         $history = [];
+        $foundationSummary = [];
+        $foundationIncomplete = true;
         $draftText = '';
         $selectedType = 'dm';
         $selectedChannel = 'whatsapp';
@@ -41,6 +46,9 @@ final class MessagesController
         if (is_array($user) && isset($user['id'])) {
             $history = $this->drafts->latestByUser((int) $user['id'], 20);
             $openDraftId = (int) ($query['draft_id'] ?? 0);
+            $foundation = $this->foundationContext->getForUser((int) $user['id']);
+            $foundationSummary = $this->foundationContext->quickSummary($foundation);
+            $foundationIncomplete = !$this->foundationContext->completionStats($foundation)['is_complete'];
             if ($openDraftId > 0) {
                 $draft = $this->drafts->findByIdForUser($openDraftId, (int) $user['id']);
                 if (is_array($draft)) {
@@ -62,6 +70,8 @@ final class MessagesController
             'history' => $history,
             'successMessage' => Session::consumeFlash('success'),
             'warningMessage' => Session::consumeFlash('warning'),
+            'foundationSummary' => $foundationSummary,
+            'foundationIncomplete' => $foundationIncomplete,
         ]);
     }
 
@@ -88,7 +98,13 @@ final class MessagesController
             $type = 'dm';
         }
 
-        $text = $this->generator->generate($analysis, ['channel' => $channel, 'message_type' => $type]);
+        $foundationSummary = [];
+        $user = $this->auth->user();
+        if (is_array($user) && isset($user['id'])) {
+            $foundationSummary = $this->foundationContext->quickSummary($this->foundationContext->getForUser((int) $user['id']));
+        }
+
+        $text = $this->generator->generate($analysis, ['channel' => $channel, 'message_type' => $type], $foundationSummary);
 
         $user = $this->auth->user();
         if (is_array($user) && isset($user['id'])) {

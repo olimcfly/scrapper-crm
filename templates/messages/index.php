@@ -39,6 +39,14 @@ $channelValue = (string) ($selectedChannel ?? 'whatsapp');
       </div>
     <?php endif; ?>
 
+
+    <?php if (($foundationIncomplete ?? true) === true): ?>
+      <div class="global-state warning">
+        <span class="state-dot"></span>
+        <p>Ta Fondation stratégique est incomplète. <a href="/fondation-strategique">Compléter pour améliorer les messages IA</a></p>
+      </div>
+    <?php endif; ?>
+
     <?php if ($analysisData === [] || (int) ($analysisId ?? 0) <= 0): ?>
 
       <div class="card">

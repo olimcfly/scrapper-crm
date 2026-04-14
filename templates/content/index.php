@@ -146,6 +146,19 @@ $progressRatio = $generatedData !== null ? 100 : ($analysisData === [] ? 15 : 55
     </div>
   <?php endif; ?>
 
+
+  <?php if (($foundationIncomplete ?? true) === true): ?>
+    <div class="global-state warning">
+      <span class="state-dot"></span>
+      <p>Complète ta Fondation stratégique pour générer des contenus plus précis. <a href="/fondation-strategique">Compléter ma fondation</a></p>
+    </div>
+  <?php elseif (!empty(($foundationSummary ?? [])['offer_name'])): ?>
+    <div class="global-state success">
+      <span class="state-dot"></span>
+      <p>Contexte Fondation actif : offre "<?= safe_string(($foundationSummary ?? [])['offer_name'] ?? '') ?>".</p>
+    </div>
+  <?php endif; ?>
+
   <nav class="studio-tabs" aria-label="Sections du studio">
     <button type="button" class="studio-tab is-active" data-studio-tab="creer">Créer</button>
     <button type="button" class="studio-tab" data-studio-tab="modeles">Modèles</button>

@@ -158,6 +158,17 @@ $defaultsByPersona = (array) ($catalog['defaults_by_persona'] ?? []);
         </div>
       </section>
 
+
+      <section class="card">
+        <div class="card-header"><h3>Ponts utiles</h3></div>
+        <div class="row wrap">
+          <a class="btn btn-secondary btn-compact" href="/fondation-strategique">Compléter ma fondation</a>
+          <a class="btn btn-secondary btn-compact" href="/ressources">Voir les ressources utiles</a>
+          <a class="btn btn-secondary btn-compact" href="/formation">Suivre une mini formation</a>
+          <a class="btn btn-primary btn-compact" href="/pages-publiques">Créer une page publique</a>
+        </div>
+      </section>
+
       <section class="card">
         <div class="card-header">
           <h3>Historique des analyses</h3>

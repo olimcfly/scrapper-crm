@@ -6,6 +6,10 @@ use App\Controllers\AdminController;
 use App\Controllers\ApifyController;
 use App\Controllers\AuthController;
 use App\Controllers\ContentController;
+use App\Controllers\FoundationController;
+use App\Controllers\PublicPagesController;
+use App\Controllers\ResourcesController;
+use App\Controllers\TrainingController;
 use App\Controllers\MessagesController;
 use App\Controllers\PipelineController;
 use App\Controllers\ProspectingController;
@@ -130,6 +134,19 @@ $router->add('POST', '/prospects/{id}/status', $guard->protect(fn (Request $req,
 
 $router->add('GET', '/settings', $guard->protect(fn (Request $req) => $settingsController->index($req)));
 $router->add('GET', '/admin/modules/{moduleKey}', $guard->protect(fn (Request $req, array $params) => $adminController->moduleAlias($req, (string) $params['moduleKey'])));
+
+
+$router->add('GET', '/fondation-strategique', $guard->protect(fn (Request $req) => (new FoundationController())->index($req)));
+$router->add('POST', '/fondation-strategique', $guard->protect(fn (Request $req) => (new FoundationController())->save($req)));
+
+$router->add('GET', '/pages-publiques', $guard->protect(fn (Request $req) => (new PublicPagesController())->index($req)));
+$router->add('GET', '/pages-publiques/{id}/edit', $guard->protect(fn (Request $req, array $params) => (new PublicPagesController())->edit($req, (int) $params['id'])));
+$router->add('POST', '/pages-publiques/{id}/edit', $guard->protect(fn (Request $req, array $params) => (new PublicPagesController())->update($req, (int) $params['id'])));
+
+$router->add('GET', '/ressources', $guard->protect(fn (Request $req) => (new ResourcesController())->index($req)));
+$router->add('GET', '/formation', $guard->protect(fn (Request $req) => (new TrainingController())->index($req)));
+
+$router->add('GET', '/p/{slug}', fn (Request $req, array $params) => (new PublicPagesController())->showPublic($req, (string) $params['slug']));
 
 /*
 |--------------------------------------------------------------------------

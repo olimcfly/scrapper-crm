@@ -15,6 +15,7 @@ use App\Services\Auth;
 use App\Services\Logger;
 use App\Services\OpenAiClient;
 use App\Services\StrategyAnalysisBuilderService;
+use App\Services\StrategicFoundationContextService;
 use Throwable;
 
 final class StrategyController
@@ -23,6 +24,7 @@ final class StrategyController
     private StrategyAnalysisBuilderService $builder;
     private ?StrategyAnalysisModel $analyses = null;
     private ?Auth $auth = null;
+    private StrategicFoundationContextService $foundationContext;
 
     /** @var array<string,mixed>|null */
     private ?array $strategyConfig = null;
@@ -31,6 +33,7 @@ final class StrategyController
     {
         $this->openAiClient = new OpenAiClient();
         $this->builder = new StrategyAnalysisBuilderService();
+        $this->foundationContext = new StrategicFoundationContextService();
     }
 
     public function index(Request $request): void
@@ -97,6 +100,11 @@ final class StrategyController
             ? $profileInput
             : $this->builder->buildProfileText($selection, $config);
 
+        $foundationContext = $this->resolveFoundationPromptContext();
+        if ($foundationContext !== '') {
+            $profile .= "\n\nContexte Fondation stratégique:\n" . $foundationContext;
+        }
+
         if (mb_strlen($profile) < 40) {
             Response::json(['error' => 'Le cadrage est trop court pour une analyse utile.'], 422);
             return;
@@ -106,6 +114,7 @@ final class StrategyController
             $raw = $this->openAiClient->generateStructuredAnalysis($profile);
             $analysis = $this->normalizeAnalysis($raw['output_text']);
             $analysis['guided_summary'] = $this->builder->buildHumanSummary($selection, $config);
+            $analysis['foundation_context_used'] = $foundationContext !== ''; 
 
             $analysisId = $this->storeAnalysisSafely($profile, $analysis, $selection);
 
@@ -128,6 +137,7 @@ final class StrategyController
             if ($shouldFallback) {
                 $analysis = $this->buildFallbackAnalysis($profile);
                 $analysis['guided_summary'] = $this->builder->buildHumanSummary($selection, $config);
+            $analysis['foundation_context_used'] = $foundationContext !== ''; 
                 Response::json([
                     'success' => true,
                     'data' => $analysis,
@@ -301,6 +311,23 @@ final class StrategyController
     }
 
     /** @return array<string,mixed> */
+    private function resolveFoundationPromptContext(): string
+    {
+        try {
+            if (!$this->auth instanceof Auth) {
+                $this->auth = new Auth(Database::connection());
+            }
+            $user = $this->auth->user();
+            if (!is_array($user) || !isset($user['id'])) {
+                return "";
+            }
+
+            return $this->foundationContext->toPromptContext($this->foundationContext->getForUser((int) $user['id']));
+        } catch (Throwable) {
+            return "";
+        }
+    }
+
     private function strategyConfig(): array
     {
         if (is_array($this->strategyConfig)) {

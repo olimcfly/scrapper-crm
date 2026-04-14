@@ -13,6 +13,7 @@ use App\Core\View;
 use App\Models\ContentDraftModel;
 use App\Services\Auth;
 use App\Services\ProspectContentGenerator;
+use App\Services\StrategicFoundationContextService;
 
 final class ContentController
 {
@@ -24,12 +25,14 @@ final class ContentController
     private ProspectContentGenerator $generator;
     private ContentDraftModel $drafts;
     private Auth $auth;
+    private StrategicFoundationContextService $foundationContext;
 
     public function __construct()
     {
         $this->generator = new ProspectContentGenerator();
         $this->drafts = new ContentDraftModel();
         $this->auth = new Auth(Database::connection());
+        $this->foundationContext = new StrategicFoundationContextService();
     }
 
     public function index(Request $request): void
@@ -41,6 +44,14 @@ final class ContentController
 
         $user = $this->auth->user();
         $history = [];
+        $foundationSummary = [];
+        $foundationIncomplete = true;
+        if (is_array($user) && isset($user['id'])) {
+            $foundation = $this->foundationContext->getForUser((int) $user['id']);
+            $foundationSummary = $this->foundationContext->quickSummary($foundation);
+            $foundationIncomplete = !$this->foundationContext->completionStats($foundation)['is_complete'];
+        }
+
         if (is_array($user) && isset($user['id'])) {
             $history = $this->drafts->latestByUser((int) $user['id'], 20);
 
@@ -79,6 +90,8 @@ final class ContentController
             'history' => $history,
             'warningMessage' => Session::consumeFlash('warning'),
             'successMessage' => Session::consumeFlash('success'),
+            'foundationSummary' => $foundationSummary,
+            'foundationIncomplete' => $foundationIncomplete,
         ]);
     }
 
@@ -100,7 +113,13 @@ final class ContentController
         $options = $this->sanitizeOptions($request->input());
         Session::put(self::SESSION_KEY_OPTIONS, $options);
 
-        $generated = $this->generator->generate($analysis, $options);
+        $foundationContext = [];
+        $user = $this->auth->user();
+        if (is_array($user) && isset($user['id'])) {
+            $foundationContext = $this->foundationContext->quickSummary($this->foundationContext->getForUser((int) $user['id']));
+        }
+
+        $generated = $this->generator->generate($analysis, $options, $foundationContext);
         Session::put(self::SESSION_KEY_GENERATED, $generated);
 
         $this->persistDraft($analysis, $options, $generated, $request->input());

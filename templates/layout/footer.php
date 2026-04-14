@@ -10,11 +10,15 @@
     <?php
       $currentPath = parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH) ?: '';
       $mobileSidebarItems = [
-        ['label' => 'Tableau de bord', 'icon' => '🏠', 'path' => '/dashboard'],
-        ['label' => 'Prospects', 'icon' => '👥', 'path' => '/prospects/sources'],
-        ['label' => 'Stratégie', 'icon' => '🎯', 'path' => '/strategie'],
-        ['label' => 'Messages', 'icon' => '💬', 'path' => '/messages-ia'],
-        ['label' => 'Pipeline commercial', 'icon' => '📈', 'path' => '/pipeline'],
+        ['label' => 'Dashboard', 'icon' => '🏠', 'path' => '/dashboard'],
+        ['label' => 'Prospection', 'icon' => '🔎', 'path' => '/prospects/sources'],
+        ['label' => 'Analyse', 'icon' => '🎯', 'path' => '/strategie'],
+        ['label' => 'Studio', 'icon' => '✍️', 'path' => '/contenu'],
+        ['label' => 'Messages IA', 'icon' => '💬', 'path' => '/messages-ia'],
+        ['label' => 'Fondation', 'icon' => '🧠', 'path' => '/fondation-strategique'],
+        ['label' => 'Pages publiques', 'icon' => '🌐', 'path' => '/pages-publiques'],
+        ['label' => 'Ressources', 'icon' => '📚', 'path' => '/ressources'],
+        ['label' => 'Formation', 'icon' => '🎓', 'path' => '/formation'],
         ['label' => 'Paramètres', 'icon' => '⚙️', 'path' => '/settings'],
       ];
     ?>
