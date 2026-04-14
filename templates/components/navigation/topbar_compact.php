@@ -10,7 +10,7 @@ $sectionByRoot = [
   'messages-ia' => 'Messages',
   'messages' => 'Messages',
   'strategie' => 'Stratégie',
-  'contenu' => 'Contenu',
+  'contenu' => 'Studio de Contenu IA',
   'settings' => 'Paramètres',
   'admin' => 'Administration',
 ];

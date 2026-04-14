@@ -69,7 +69,7 @@ final class ContentController
         }
 
         View::render('content/index', [
-            'title' => 'Contenu',
+            'title' => 'Studio de Contenu IA',
             'analysis' => is_array($analysis) ? $analysis : [],
             'generated' => is_array($generated) ? $generated : null,
             'options' => is_array($options) ? $options : $this->defaultOptions(),
