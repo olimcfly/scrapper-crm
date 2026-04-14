@@ -99,15 +99,30 @@ final class ProspectingController
         $searchType = (string) ($input['search_type'] ?? 'manual');
         $filters = is_array($input['filters'] ?? null) ? $input['filters'] : [];
 
-        $runId = $this->searchRuns->create((int) $this->auth->id(), $source, $searchType, $filters);
-
+        $runId = null;
+        $userId = (int) ($this->auth->id() ?? 0);
         try {
+            Logger::info(sprintf(
+                '[Prospecting] runSearch started user_id=%d source=%s search_type=%s',
+                $userId,
+                $source,
+                $searchType
+            ));
+
+            $runId = $this->searchRuns->create($userId, $source, $searchType, $filters);
             $connector = $this->registry->connector($source);
             $result = $connector->search($filters);
             $results = is_array($result['results'] ?? null) ? $result['results'] : [];
 
             $this->sourceResults->bulkInsert($runId, $source, $results);
             $this->searchRuns->finish($runId, 'success', count($results));
+
+            Logger::info(sprintf(
+                '[Prospecting] runSearch success run_id=%d source=%s results=%d',
+                $runId,
+                $source,
+                count($results)
+            ));
 
             Response::json([
                 'data' => [
@@ -116,12 +131,41 @@ final class ProspectingController
                     'results_count' => count($results),
                 ],
             ], 201);
-        } catch (\Throwable $e) {
-            $this->searchRuns->finish($runId, 'failed', 0, $e->getMessage());
-            Logger::error($e->getMessage());
+        } catch (RuntimeException $e) {
+            if (is_int($runId)) {
+                $this->searchRuns->finish($runId, 'failed', 0, $e->getMessage());
+            }
+
+            Logger::error(sprintf(
+                '[Prospecting] runSearch runtime_error source=%s run_id=%s message=%s',
+                $source,
+                is_int($runId) ? (string) $runId : 'n/a',
+                $e->getMessage()
+            ));
 
             Response::json([
-                'error' => 'Erreur pendant la recherche.',
+                'error' => $e->getMessage(),
+                'error_type' => 'prospecting_runtime_error',
+                'data' => [
+                    'run_id' => $runId,
+                    'run_status' => 'failed',
+                ],
+            ], 422);
+        } catch (\Throwable $e) {
+            if (is_int($runId)) {
+                $this->searchRuns->finish($runId, 'failed', 0, $e->getMessage());
+            }
+
+            Logger::error(sprintf(
+                '[Prospecting] runSearch unexpected_error source=%s run_id=%s message=%s',
+                $source,
+                is_int($runId) ? (string) $runId : 'n/a',
+                $e->getMessage()
+            ));
+
+            Response::json([
+                'error' => 'Erreur interne pendant la recherche.',
+                'error_type' => 'prospecting_internal_error',
                 'data' => [
                     'run_id' => $runId,
                     'run_status' => 'failed',
