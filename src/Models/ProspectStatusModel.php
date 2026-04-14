@@ -21,6 +21,8 @@ final class ProspectStatusModel
         $stmt = $this->db->prepare('SELECT * FROM prospect_statuses ORDER BY sort_order ASC, id ASC');
         $stmt->execute();
 
-        return $stmt->fetchAll();
+        $rows = $stmt->fetchAll();
+
+        return is_array($rows) ? $rows : [];
     }
 }

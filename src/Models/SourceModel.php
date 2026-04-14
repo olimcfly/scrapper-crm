@@ -21,6 +21,8 @@ final class SourceModel
         $stmt = $this->db->prepare('SELECT * FROM sources ORDER BY name ASC');
         $stmt->execute();
 
-        return $stmt->fetchAll();
+        $rows = $stmt->fetchAll();
+
+        return is_array($rows) ? $rows : [];
     }
 }
