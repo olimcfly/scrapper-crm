@@ -93,7 +93,7 @@
       <!-- EMPTY -->
       <?php if (empty($prospects)): ?>
 
-        <div class="empty-state">
+        <div class="empty-state" data-empty-state>
           <p>Aucun prospect trouvé</p>
           <a class="btn btn-primary" href="/prospects/create">Créer un prospect</a>
         </div>

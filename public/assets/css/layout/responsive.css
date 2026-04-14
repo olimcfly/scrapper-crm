@@ -1,49 +1,37 @@
-@media (max-width: 1100px) {
-  .app-shell {
-    grid-template-columns: 88px minmax(0, 1fr);
-  }
+.page {
+  width: 100%;
+}
 
-  .sidebar {
-    padding-inline: 10px;
-  }
+.page-header {
+  margin-bottom: 14px;
+}
 
-  .sidebar-brand > div,
-  .sidebar-section-title,
-  .sidebar-link-left span:last-child,
-  .sidebar-link .badge,
-  .sidebar-footer > .user > div {
-    display: none;
-  }
+.page-header h1 {
+  font-size: 1.25rem;
+}
 
-  .sidebar-brand,
-  .sidebar-link,
-  .sidebar-link-left,
-  .sidebar-footer,
-  .user {
-    justify-content: center;
-  }
+.page-header .subtitle {
+  margin-top: 6px;
+  font-size: 0.88rem;
+}
 
-  .page-content,
-  .topbar {
+.grid {
+  display: grid;
+  gap: 14px;
+}
+
+@media (min-width: 768px) {
+  .page-content {
     padding-inline: 18px;
+  }
+
+  .grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
   }
 }
 
-@media (max-width: 768px) {
-  .app-shell {
-    grid-template-columns: 1fr;
-  }
-
-  .sidebar {
-    display: none;
-  }
-
-  .topbar {
-    position: static;
-    padding-inline: 14px;
-  }
-
+@media (min-width: 1200px) {
   .page-content {
-    padding: 14px 12px 90px;
+    padding-inline: 24px;
   }
 }

@@ -16,6 +16,10 @@
 <?php
 $isLoginPage = in_array($title ?? '', ['Connexion', 'Vérification'], true);
 $isAuthenticated = is_array($authUser ?? null) && isset($authUser['id']);
+
+$currentPath = isset($currentPath) && is_string($currentPath)
+  ? $currentPath
+  : (parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH) ?: '');
 ?>
 
 <?php if ($isLoginPage): ?>

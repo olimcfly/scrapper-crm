@@ -115,7 +115,7 @@ $zoneValue = (string) ($sheetFilters['zone_scope'] ?? '');
   </div>
 
   <div class="sheet-actions">
-    <button class="btn secondary" type="button" style="flex:1;" data-reset-filters>Réinitialiser</button>
-    <button class="finder-btn secondary" type="submit" style="flex:1;" data-apply-filters>Appliquer les filtres</button>
+    <button class="btn btn-secondary" type="button" style="flex:1;" data-reset-filters>Réinitialiser</button>
+    <button class="btn btn-primary" type="submit" style="flex:1;" data-apply-filters>Appliquer les filtres</button>
   </div>
 </form>

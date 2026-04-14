@@ -9,8 +9,7 @@ body {
 }
 
 .app-shell {
-  display: grid;
-  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  display: block;
   min-height: 100vh;
 }
 
@@ -18,13 +17,12 @@ body {
   min-width: 0;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  gap: 0;
 }
 
 .page-content {
   min-width: 0;
   width: 100%;
-  padding: 24px;
+  padding: 12px 12px calc(92px + env(safe-area-inset-bottom));
   background:
     radial-gradient(circle at top right, rgba(37, 99, 235, 0.06), transparent 25%),
     var(--color-bg);
@@ -46,4 +44,15 @@ body {
   align-items: center;
   justify-content: center;
   padding: 24px;
+}
+
+@media (min-width: 992px) {
+  .app-shell {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  }
+
+  .page-content {
+    padding: 24px;
+  }
 }
