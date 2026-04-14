@@ -18,7 +18,7 @@ final class ApifyClient
         $this->token = trim((string) ($config['token'] ?? ''));
 
         if ($this->token === '') {
-            throw new RuntimeException('APIFY_API_TOKEN manquant dans la configuration d’environnement.');
+            throw new RuntimeException('Token Apify manquant. Définir APIFY_API_TOKEN (ou APIFY_TOKEN) dans .env.');
         }
     }
 
@@ -80,7 +80,15 @@ final class ApifyClient
 
         if ($httpCode >= 400) {
             $message = (string) ($json['error']['message'] ?? ('Erreur Apify HTTP ' . $httpCode));
-            throw new RuntimeException($message);
+            $responseExcerpt = mb_substr(trim($raw), 0, 500);
+            throw new RuntimeException(sprintf(
+                'Apify %s %s -> HTTP %d. Message: %s. Body: %s',
+                strtoupper($method),
+                $url,
+                $httpCode,
+                $message,
+                $responseExcerpt
+            ));
         }
 
         return $json;

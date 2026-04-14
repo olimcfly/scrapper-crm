@@ -54,6 +54,7 @@ function loadEnvFile(string $path): void
 }
 
 loadEnvFile(dirname(__DIR__, 2) . '/.env');
+loadEnvFile(dirname(__DIR__, 2) . '/public/.env');
 
 // Composer autoloader (PHPMailer, etc.)
 $vendorAutoload = dirname(__DIR__, 2) . '/vendor/autoload.php';

@@ -22,7 +22,7 @@ final class ApifyRunService
 
     public function runActor(string $source, array $input = [], ?int $waitForFinish = null): array
     {
-        $actorId = trim((string) ($this->actors[$source] ?? ''));
+        $actorId = $this->normalizeActorId((string) ($this->actors[$source] ?? ''));
         if ($actorId === '') {
             throw new RuntimeException('Source Apify non configurée: ' . $source);
         }
@@ -76,5 +76,26 @@ final class ApifyRunService
         ], $input, [
             'hashtags' => $hashtags,
         ]);
+    }
+
+    private function normalizeActorId(string $rawActorId): string
+    {
+        $actorId = trim($rawActorId);
+        if ($actorId === '') {
+            return '';
+        }
+
+        if (str_contains($actorId, '://')) {
+            throw new RuntimeException(sprintf(
+                'Actor ID invalide pour Apify: "%s". Attendu: "username~actor-name" ou un ID acteur.',
+                $actorId
+            ));
+        }
+
+        if (str_contains($actorId, '/')) {
+            $actorId = preg_replace('/\//', '~', $actorId, 1) ?? $actorId;
+        }
+
+        return trim($actorId);
     }
 }
