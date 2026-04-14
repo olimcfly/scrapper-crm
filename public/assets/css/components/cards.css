@@ -1,22 +1,60 @@
 .card {
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid var(--color-border);
-  border-radius: 22px;
-  padding: 22px;
-  margin-bottom: 20px;
-  box-shadow: var(--shadow-sm);
+  background: var(--color-surface);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  margin-bottom: 14px;
+  box-shadow: 0 8px 26px rgba(15, 23, 42, 0.06);
 }
 
-.card h3 {
+.card.small {
+  border-radius: var(--radius-md);
+  padding: 14px;
   margin-bottom: 10px;
 }
 
-.page-lead {
-  padding: 24px 24px 20px;
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
-.page-lead h2 {
-  margin-bottom: 8px;
+.card-header-inline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.text-link {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.text-link:hover {
+  text-decoration: underline;
+}
+
+.page-header {
+  margin-bottom: 14px;
+}
+
+.page-header .subtitle {
+  margin: 6px 0 0;
+  font-size: 0.92rem;
+  color: var(--color-text-muted);
+}
+
+.page-lead {
+  padding: 20px;
+}
+
+.stack > * + * {
+  margin-top: 12px;
 }
 
 .stack-sm > * + * {
@@ -25,4 +63,69 @@
 
 .stack-md > * + * {
   margin-top: 14px;
+}
+
+.empty-state {
+  padding: 18px;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-soft);
+}
+
+.empty-state.small {
+  padding: 12px;
+}
+
+.global-state {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+  background: var(--color-surface);
+}
+
+.global-state.success {
+  border-color: rgba(21, 128, 61, 0.2);
+  background: var(--color-success-soft);
+}
+
+.global-state.warning {
+  border-color: rgba(180, 83, 9, 0.2);
+  background: var(--color-warning-soft);
+}
+
+.global-state.error {
+  border-color: rgba(185, 28, 28, 0.2);
+  background: var(--color-danger-soft);
+}
+
+.state-dot {
+  flex: 0 0 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  margin-top: 7px;
+  background: var(--color-primary);
+}
+
+.global-state.success .state-dot {
+  background: var(--color-success);
+}
+
+.global-state.warning .state-dot {
+  background: var(--color-warning);
+}
+
+.global-state.error .state-dot {
+  background: var(--color-danger);
+}
+
+@media (min-width: 992px) {
+  .card {
+    padding: 20px;
+    margin-bottom: 16px;
+  }
 }
