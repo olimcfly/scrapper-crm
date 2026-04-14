@@ -222,3 +222,47 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+.dashboard-decision-center {
+  border-color: rgba(37, 99, 235, 0.22);
+  background: linear-gradient(180deg, #ffffff, #f4f8ff);
+}
+
+.dashboard-decision-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.decision-item {
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+}
+
+.decision-item strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.decision-item p {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.decision-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.decision-priority {
+  border-color: rgba(37, 99, 235, 0.32);
+}
+
+@media (min-width: 900px) {
+  .dashboard-decision-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

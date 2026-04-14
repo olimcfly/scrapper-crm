@@ -42,10 +42,13 @@ $channelValue = (string) ($selectedChannel ?? 'whatsapp');
     <?php if ($analysisData === [] || (int) ($analysisId ?? 0) <= 0): ?>
 
       <div class="card">
-        <div class="empty-state">
-          <p>Aucune analyse disponible</p>
-          <a class="btn btn-primary" href="/strategie">Créer une analyse</a>
-        </div>
+        <?php
+          $emptyTitle = 'Aucune analyse disponible';
+          $emptyDescription = 'Démarre dans Stratégie pour générer des messages IA personnalisés.';
+          $emptyCtaHref = '/strategie';
+          $emptyCtaLabel = 'Créer une analyse';
+          require __DIR__ . '/../components/states/empty_state_guided.php';
+        ?>
       </div>
 
     <?php else: ?>
@@ -91,9 +94,13 @@ $channelValue = (string) ($selectedChannel ?? 'whatsapp');
 
             <?php if ($historyData === []): ?>
 
-              <div class="empty-state">
-                <p>Aucun message généré</p>
-              </div>
+              <?php
+                $emptyTitle = 'Aucun brouillon généré';
+                $emptyDescription = 'Choisis un type de message puis lance une génération pour alimenter ton historique.';
+                $emptyCtaHref = '/messages-ia';
+                $emptyCtaLabel = 'Générer un brouillon';
+                require __DIR__ . '/../components/states/empty_state_guided.php';
+              ?>
 
             <?php else: ?>
 

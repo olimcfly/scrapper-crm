@@ -80,7 +80,7 @@ $pipelineHeat = (string) ($iaSuggestion['heat'] ?? '❄️ froid');
         <?php endif; ?>
 
         <div class="stack-sm">
-          <p><strong>Next action :</strong> <?= htmlspecialchars((string) ($iaSuggestion['next_action'] ?? '')) ?></p>
+          <p><strong>Prochaine meilleure action :</strong> <?= htmlspecialchars((string) ($iaSuggestion['next_action'] ?? '')) ?></p>
 
           <div class="card small">
             <p><?= nl2br(htmlspecialchars((string) ($iaSuggestion['message_suggestion'] ?? ''))) ?></p>
@@ -91,9 +91,12 @@ $pipelineHeat = (string) ($iaSuggestion['heat'] ?? '❄️ froid');
             <pre><?= htmlspecialchars((string) ($iaSuggestion['prompt'] ?? '')) ?></pre>
           </details>
 
+
+          <a class="btn btn-primary" href="/messages-ia?type=relance">Lancer une relance maintenant</a>
+
           <form method="post" action="/prospects/<?= (int) $prospect['id'] ?>/suggest-next-action">
             <input type="hidden" name="_csrf" value="<?= htmlspecialchars((string) ($csrfToken ?? '')) ?>">
-            <button class="btn btn-secondary" type="submit">Suggérer nouvelle action</button>
+            <button class="btn btn-secondary" type="submit">Rafraîchir la suggestion IA</button>
           </form>
         </div>
       </div>

@@ -57,3 +57,14 @@
   border-radius: 8px;
   font-size: 0.76rem;
 }
+
+.btn:focus-visible,
+.bottom-nav-link:focus-visible,
+.global-fab:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.35);
+  outline-offset: 2px;
+}
+
+.btn:active {
+  transform: translateY(1px) scale(0.99);
+}

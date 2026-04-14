@@ -62,14 +62,23 @@ final class StrategyController
             return;
         }
 
+        $businessType = trim((string) ($input['business_type'] ?? ''));
+        $city = trim((string) ($input['city'] ?? ''));
+        $target = trim((string) ($input['target'] ?? ''));
+        $painPoint = trim((string) ($input['pain_point'] ?? ''));
+
         $profile = trim((string) ($input['profile'] ?? ''));
         if ($profile === '') {
-            Response::json(['error' => 'Le profil est requis.'], 422);
-            return;
+            if ($businessType === '' || $city === '' || $target === '' || $painPoint === '') {
+                Response::json(['error' => 'Complétez les 4 champs du brief guidé.'], 422);
+                return;
+            }
+
+            $profile = $this->buildStructuredProfilePrompt($businessType, $city, $target, $painPoint);
         }
 
         if (mb_strlen($profile) < 40) {
-            Response::json(['error' => 'Le profil est trop court pour une analyse utile (min 40 caractères).'], 422);
+            Response::json(['error' => 'Le brief est trop court pour une analyse utile (min 40 caractères).'], 422);
             return;
         }
 
@@ -207,6 +216,18 @@ final class StrategyController
         }
 
         return null;
+    }
+
+
+    private function buildStructuredProfilePrompt(string $businessType, string $city, string $target, string $painPoint): string
+    {
+        return trim(sprintf(
+            "Tu es un stratège commercial orienté action.\nType de métier: %s\nVille: %s\nCible: %s\nProblématique: %s\n\nRetourne un JSON strict avec: awareness_level, summary, pain_points, desires, content_angles, recommended_hooks.",
+            $businessType,
+            $city,
+            $target,
+            $painPoint
+        ));
     }
 
     private function isMissingApiKeyError(Throwable $e): bool
