@@ -184,8 +184,9 @@
 <script>
   (function () {
     const popup = document.getElementById('welcome-popup');
+    const shouldShowWelcome = <?= !empty($showWelcomePopup) ? 'true' : 'false' ?>;
 
-    if (!popup) {
+    if (!popup || !shouldShowWelcome) {
       return;
     }
 

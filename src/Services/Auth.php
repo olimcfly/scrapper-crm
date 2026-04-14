@@ -12,6 +12,7 @@ final class Auth
 {
     private const SESSION_KEY = 'auth_user';
     private const LAST_ACTIVITY_KEY = 'auth_last_activity';
+    private const SHOW_WELCOME_POPUP_KEY = 'show_welcome_popup';
 
     private UserModel $users;
     private int $idleTimeoutSeconds;
@@ -55,6 +56,7 @@ final class Auth
             'email' => (string) $user['email'],
         ];
         $_SESSION[self::LAST_ACTIVITY_KEY] = time();
+        $_SESSION[self::SHOW_WELCOME_POPUP_KEY] = true;
 
         $this->users->updateLastLogin($userId);
 
@@ -131,6 +133,7 @@ final class Auth
             'email' => (string) $user['email'],
         ];
         $_SESSION[self::LAST_ACTIVITY_KEY] = time();
+        $_SESSION[self::SHOW_WELCOME_POPUP_KEY] = true;
 
         $this->users->updateLastLogin($userId);
 
