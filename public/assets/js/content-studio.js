@@ -2,69 +2,123 @@
   const tabs = Array.from(document.querySelectorAll('[data-studio-tab]'));
   const panels = Array.from(document.querySelectorAll('[data-studio-panel]'));
 
+  function activateTab(target) {
+    tabs.forEach((tab) => tab.classList.toggle('is-active', tab.getAttribute('data-studio-tab') === target));
+    panels.forEach((panel) => {
+      const isActive = panel.getAttribute('data-studio-panel') === target;
+      panel.hidden = !isActive;
+      panel.classList.toggle('is-active', isActive);
+    });
+  }
+
   if (tabs.length > 0 && panels.length > 0) {
     tabs.forEach((tab) => {
       tab.addEventListener('click', () => {
-        const target = tab.getAttribute('data-studio-tab');
-
-        tabs.forEach((item) => item.classList.toggle('is-active', item === tab));
-        panels.forEach((panel) => {
-          const isActive = panel.getAttribute('data-studio-panel') === target;
-          panel.hidden = !isActive;
-          panel.classList.toggle('is-active', isActive);
-        });
+        activateTab(tab.getAttribute('data-studio-tab') || 'creer');
       });
     });
   }
 
-  document.querySelectorAll('[data-expand-id]').forEach((button) => {
+  const form = document.getElementById('studio-generate-form');
+  const frameworkInput = document.getElementById('studio-framework');
+  const focusInput = document.getElementById('studio-focus-input');
+  const contentType = document.getElementById('studio-content-type');
+  const channel = document.getElementById('studio-channel');
+  const objective = document.getElementById('studio-objective');
+  const tone = document.getElementById('studio-tone');
+
+  function applyMethodPreset(source) {
+    if (!source) return;
+
+    const framework = source.getAttribute('data-framework') || '';
+    const focus = source.getAttribute('data-focus') || '';
+
+    if (frameworkInput) frameworkInput.value = framework;
+    if (focusInput && focus !== '') focusInput.value = focus;
+
+    const typeVal = source.getAttribute('data-content-type');
+    const channelVal = source.getAttribute('data-channel');
+    const objectiveVal = source.getAttribute('data-objective');
+    const toneVal = source.getAttribute('data-tone');
+
+    if (contentType && typeVal) contentType.value = typeVal;
+    if (channel && channelVal) channel.value = channelVal;
+    if (objective && objectiveVal) objective.value = objectiveVal;
+    if (tone && toneVal) tone.value = toneVal;
+  }
+
+  document.querySelectorAll('[data-use-method]').forEach((button) => {
     button.addEventListener('click', () => {
-      const id = button.getAttribute('data-expand-id');
-      if (!id) return;
-      const target = document.getElementById(id);
+      applyMethodPreset(button);
+      activateTab('creer');
+      form?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      focusInput?.focus();
+    });
+  });
+
+  document.querySelectorAll('[data-generate-method]').forEach((button) => {
+    button.addEventListener('click', () => {
+      applyMethodPreset(button);
+      activateTab('creer');
+      if (form) form.submit();
+    });
+  });
+
+  document.querySelectorAll('[data-copy-target]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const targetId = button.getAttribute('data-copy-target');
+      if (!targetId) return;
+      const target = document.getElementById(targetId);
       if (!target) return;
 
-      const nowHidden = !target.hidden;
-      target.hidden = nowHidden;
-      button.textContent = nowHidden ? 'Développer' : 'Réduire';
-    });
-  });
-
-  document.querySelectorAll('[data-copy-text]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const content = button.getAttribute('data-copy-text') || '';
-      if (content === '') return;
-
       try {
-        await navigator.clipboard.writeText(content);
+        await navigator.clipboard.writeText(target.innerText.trim());
         button.textContent = 'Copié';
         setTimeout(() => {
           button.textContent = 'Copier';
         }, 1200);
-      } catch (error) {
+      } catch (_error) {
         window.alert('Copie impossible pour le moment.');
       }
     });
   });
 
-  document.querySelectorAll('[data-copy-section]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const id = button.getAttribute('data-copy-section');
-      if (!id) return;
+  const assistantInput = document.getElementById('assistant-input');
+  const assistantGenerate = document.getElementById('assistant-generate');
+  const assistantSave = document.getElementById('assistant-save');
+  const assistantResult = document.getElementById('assistant-result');
+  const assistantResultText = document.getElementById('assistant-result-text');
 
-      const section = document.getElementById(id);
-      if (!section) return;
+  assistantGenerate?.addEventListener('click', () => {
+    const idea = (assistantInput?.value || '').trim();
+    if (idea === '') {
+      window.alert('Ajoute une idée avant de générer.');
+      return;
+    }
 
-      try {
-        await navigator.clipboard.writeText(section.innerText.trim());
-        button.textContent = 'Copié';
-        setTimeout(() => {
-          button.textContent = 'Copier';
-        }, 1200);
-      } catch (error) {
-        window.alert('Copie impossible pour le moment.');
-      }
-    });
+    if (assistantResult && assistantResultText) {
+      assistantResult.hidden = false;
+      assistantResultText.textContent = `Brouillon assistant: ${idea} — Angle conseillé: commence par la douleur principale, ajoute une preuve courte, puis termine avec un CTA simple.`;
+    }
+  });
+
+  assistantSave?.addEventListener('click', () => {
+    const result = (assistantResultText?.textContent || '').trim();
+    if (!result) {
+      window.alert('Génère d’abord un résultat à sauvegarder.');
+      return;
+    }
+
+    if (focusInput) {
+      focusInput.value = result;
+    }
+
+    if (frameworkInput && frameworkInput.value === '') {
+      frameworkInput.value = 'Assistant IA';
+    }
+
+    activateTab('creer');
+    form?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
   const historySearch = document.getElementById('history-search-analysis');
@@ -94,14 +148,6 @@
     if (!field) return;
     field.addEventListener('input', applyHistoryFilters);
     field.addEventListener('change', applyHistoryFilters);
-  });
-
-  document.querySelectorAll('[data-local-delete]').forEach((button) => {
-    button.addEventListener('click', () => {
-      const card = button.closest('.studio-history-item');
-      if (!card) return;
-      card.remove();
-    });
   });
 
   document.querySelectorAll('[data-export-item]').forEach((button) => {

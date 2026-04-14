@@ -54,6 +54,9 @@ final class ContentController
                         'objective' => (string) ($draft['objective'] ?? 'attirer'),
                         'tone' => (string) ($draft['tone'] ?? 'simple'),
                         'length' => 'moyenne',
+                        'framework' => '',
+                        'focus_input' => '',
+                        'guided_mode' => '0',
                     ];
                     $generated = [
                         'content' => (string) ($draft['generated_content'] ?? ''),
@@ -153,6 +156,15 @@ final class ContentController
             return;
         }
 
+        $variant = trim((string) ($input['variant'] ?? ''));
+        $framework = trim((string) ($input['framework'] ?? ''));
+        if ($variant === '' && $framework !== '') {
+            $variant = 'Méthode ' . $framework;
+        }
+        if ($variant === '') {
+            $variant = 'Variante 1';
+        }
+
         $this->drafts->create([
             'user_id' => (int) $user['id'],
             'analysis_id' => $analysisId,
@@ -161,11 +173,11 @@ final class ContentController
             'objective' => $options['objective'],
             'tone' => $options['tone'],
             'generated_content' => (string) ($generated['content'] ?? ''),
-            'variant_label' => trim((string) ($input['variant'] ?? 'Variante 1')),
+            'variant_label' => $variant,
         ]);
     }
 
-    /** @return array{content_type:string,channel:string,objective:string,tone:string,length:string} */
+    /** @return array{content_type:string,channel:string,objective:string,tone:string,length:string,framework:string,focus_input:string,guided_mode:string} */
     private function defaultOptions(): array
     {
         return [
@@ -174,10 +186,13 @@ final class ContentController
             'objective' => 'attirer',
             'tone' => 'simple',
             'length' => 'moyenne',
+            'framework' => '',
+            'focus_input' => '',
+            'guided_mode' => '0',
         ];
     }
 
-    /** @return array{content_type:string,channel:string,objective:string,tone:string,length:string} */
+    /** @return array{content_type:string,channel:string,objective:string,tone:string,length:string,framework:string,focus_input:string,guided_mode:string} */
     private function sanitizeOptions(array $input): array
     {
         $defaults = $this->defaultOptions();
@@ -196,6 +211,10 @@ final class ContentController
                 $options[$field] = $value;
             }
         }
+
+        $options['framework'] = trim((string) ($input['framework'] ?? ''));
+        $options['focus_input'] = trim((string) ($input['focus_input'] ?? ''));
+        $options['guided_mode'] = (($input['guided_mode'] ?? '') === '1') ? '1' : '0';
 
         return $options;
     }

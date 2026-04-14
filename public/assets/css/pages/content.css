@@ -1,18 +1,58 @@
 .studio-page {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 10px 0 28px;
+  padding: 12px 0 28px;
 }
 
 .studio-header {
-  padding: 12px 16px;
+  padding: 16px;
   margin-bottom: 12px;
+  background: linear-gradient(135deg, #0f172a, #1d4ed8);
+  color: #fff;
+}
+
+.studio-kicker {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.9;
 }
 
 .studio-header h1 {
+  margin: 4px 0;
+  font-size: 1.25rem;
+}
+
+.studio-subtitle {
   margin: 0;
-  text-align: center;
-  font-size: 1.15rem;
+  opacity: 0.92;
+  font-size: 0.9rem;
+}
+
+.studio-progress {
+  margin-top: 12px;
+}
+
+.studio-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 0.82rem;
+}
+
+.studio-progress-track {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  overflow: hidden;
+}
+
+.studio-progress-track span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #4ade80);
 }
 
 .studio-tabs {
@@ -38,38 +78,82 @@
   box-shadow: 0 8px 20px rgba(30, 64, 175, 0.28);
 }
 
-.studio-panel h2 {
-  margin: 0;
-  font-size: 1rem;
+.studio-layout {
+  display: grid;
+  gap: 12px;
 }
 
-.studio-brief-grid,
+.studio-main,
+.studio-panel,
 .studio-model-grid,
-.studio-resource-grid,
+.studio-method-grid,
 .studio-history-list,
-.studio-idea-list {
+.studio-brief-grid,
+.studio-form-grid {
   display: grid;
   gap: 10px;
 }
 
 .studio-brief-item,
 .studio-model-card,
-.studio-resource-card,
-.studio-history-item,
-.studio-idea-card {
-  width: 100%;
+.studio-method-card,
+.studio-history-item {
   border: 1px solid var(--color-border);
   border-radius: 14px;
   padding: 14px;
   background: linear-gradient(180deg, #ffffff, #fbfdff);
 }
 
-.studio-idea-card h3,
+.studio-brief-item.full,
+.form-field.full {
+  grid-column: 1 / -1;
+}
+
+.studio-method-icon {
+  margin: 0;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+.studio-method-card h3,
 .studio-model-card h3,
-.studio-resource-card h3,
 .studio-history-item h3 {
-  margin: 0 0 8px;
-  font-size: 0.95rem;
+  margin: 4px 0 8px;
+  font-size: 1rem;
+}
+
+.studio-method-block {
+  margin-top: 10px;
+}
+
+.studio-method-block h4 {
+  margin: 0 0 6px;
+  font-size: 0.88rem;
+}
+
+.studio-method-block ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.studio-highlight {
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.studio-guided-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px dashed var(--color-border);
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.studio-guided-switch input {
+  margin: 0;
 }
 
 .studio-actions {
@@ -82,45 +166,6 @@
   flex-wrap: wrap;
 }
 
-.studio-expand {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--color-border);
-}
-
-.studio-framework-block + .studio-framework-block {
-  margin-top: 8px;
-}
-
-.studio-framework-block h4 {
-  margin: 0 0 4px;
-  font-size: 0.86rem;
-}
-
-.studio-framework-block ul {
-  margin: 0;
-  padding-left: 18px;
-}
-
-.studio-framework-block li {
-  margin-bottom: 6px;
-}
-
-.studio-fab {
-  background: rgba(37, 99, 235, 0.06);
-  border-radius: 12px;
-  padding: 10px;
-}
-
-.studio-generator-form {
-  display: block;
-}
-
-.studio-form-grid {
-  display: grid;
-  gap: 10px;
-}
-
 .studio-output {
   margin-top: 12px;
   border-top: 1px solid var(--color-border);
@@ -131,11 +176,29 @@
   margin: 0;
   white-space: pre-wrap;
   font-family: inherit;
-  line-height: 1.6;
+  line-height: 1.55;
   padding: 14px;
   border-radius: 12px;
   border: 1px solid var(--color-border);
   background: #f8fbff;
+}
+
+.studio-assistant {
+  align-self: start;
+  padding: 14px;
+}
+
+.studio-assistant-form {
+  display: grid;
+  gap: 10px;
+}
+
+.studio-assistant-result {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
 }
 
 .studio-history-filters {
@@ -144,26 +207,26 @@
   margin-bottom: 12px;
 }
 
-@media (min-width: 900px) {
-  .studio-header {
-    padding: 14px 20px;
-  }
-
-  .studio-header h1 {
-    font-size: 1.28rem;
-  }
-
+@media (min-width: 760px) {
   .studio-tabs {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
+  .studio-form-grid,
   .studio-brief-grid,
   .studio-model-grid,
-  .studio-resource-grid {
+  .studio-method-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .studio-history-filters {
     grid-template-columns: 1.2fr 0.8fr 0.8fr;
+  }
+}
+
+@media (min-width: 1080px) {
+  .studio-layout {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
   }
 }
