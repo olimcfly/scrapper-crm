@@ -14,17 +14,23 @@ use App\Models\StrategyAnalysisModel;
 use App\Services\Auth;
 use App\Services\Logger;
 use App\Services\OpenAiClient;
+use App\Services\StrategyAnalysisBuilderService;
 use Throwable;
 
 final class StrategyController
 {
     private OpenAiClient $openAiClient;
+    private StrategyAnalysisBuilderService $builder;
     private ?StrategyAnalysisModel $analyses = null;
     private ?Auth $auth = null;
+
+    /** @var array<string,mixed>|null */
+    private ?array $strategyConfig = null;
 
     public function __construct()
     {
         $this->openAiClient = new OpenAiClient();
+        $this->builder = new StrategyAnalysisBuilderService();
     }
 
     public function index(Request $request): void
@@ -50,6 +56,7 @@ final class StrategyController
         View::render('strategie/index', [
             'title' => 'Stratégie prospect',
             'history' => $history,
+            'strategyCatalog' => $this->strategyConfig(),
         ]);
     }
 
@@ -62,31 +69,45 @@ final class StrategyController
             return;
         }
 
-        $businessType = trim((string) ($input['business_type'] ?? ''));
-        $city = trim((string) ($input['city'] ?? ''));
-        $target = trim((string) ($input['target'] ?? ''));
-        $painPoint = trim((string) ($input['pain_point'] ?? ''));
+        $profileInput = trim((string) ($input['profile'] ?? ''));
+        $config = $this->strategyConfig();
+        $selection = $this->builder->normalizeSelection($input, $config);
 
-        $profile = trim((string) ($input['profile'] ?? ''));
-        if ($profile === '') {
-            if ($businessType === '' || $city === '' || $target === '' || $painPoint === '') {
-                Response::json(['error' => 'Complétez les 4 champs du brief guidé.'], 422);
-                return;
-            }
-
-            $profile = $this->buildStructuredProfilePrompt($businessType, $city, $target, $painPoint);
+        $hasGuidedMinimum = $selection['objective'] !== '' && $selection['persona_group'] !== '';
+        if ($profileInput === '' && !$hasGuidedMinimum) {
+            Response::json(['error' => 'Choisis au moins un objectif et une cible pour lancer l’analyse.'], 422);
+            return;
         }
 
+        if (!$selection['quick_mode'] && $profileInput === '') {
+            $missing = [];
+            foreach (['offer_type', 'maturity_level', 'contact_intention'] as $key) {
+                if (($selection[$key] ?? '') === '') {
+                    $missing[] = $key;
+                }
+            }
+
+            if ($missing !== []) {
+                Response::json(['error' => 'Complète les étapes restantes ou active le mode rapide.'], 422);
+                return;
+            }
+        }
+
+        $profile = $profileInput !== ''
+            ? $profileInput
+            : $this->builder->buildProfileText($selection, $config);
+
         if (mb_strlen($profile) < 40) {
-            Response::json(['error' => 'Le brief est trop court pour une analyse utile (min 40 caractères).'], 422);
+            Response::json(['error' => 'Le cadrage est trop court pour une analyse utile.'], 422);
             return;
         }
 
         try {
             $raw = $this->openAiClient->generateStructuredAnalysis($profile);
             $analysis = $this->normalizeAnalysis($raw['output_text']);
+            $analysis['guided_summary'] = $this->builder->buildHumanSummary($selection, $config);
 
-            $analysisId = $this->storeAnalysisSafely($profile, $analysis);
+            $analysisId = $this->storeAnalysisSafely($profile, $analysis, $selection);
 
             Response::json([
                 'success' => true,
@@ -106,6 +127,7 @@ final class StrategyController
 
             if ($shouldFallback) {
                 $analysis = $this->buildFallbackAnalysis($profile);
+                $analysis['guided_summary'] = $this->builder->buildHumanSummary($selection, $config);
                 Response::json([
                     'success' => true,
                     'data' => $analysis,
@@ -196,7 +218,8 @@ final class StrategyController
         return $items;
     }
 
-    private function storeAnalysisSafely(string $profile, array $analysis): ?int
+    /** @param array<string,mixed> $selection */
+    private function storeAnalysisSafely(string $profile, array $analysis, array $selection): ?int
     {
         try {
             if (!$this->auth instanceof Auth) {
@@ -209,7 +232,7 @@ final class StrategyController
 
             $user = $this->auth->user();
             if (is_array($user) && isset($user['id'])) {
-                return $this->analyses->create((int) $user['id'], $profile, $analysis);
+                return $this->analyses->create((int) $user['id'], $profile, $analysis, $selection);
             }
         } catch (Throwable $e) {
             Logger::error('Strategy analysis persistence skipped: ' . $e->getMessage());
@@ -275,5 +298,19 @@ final class StrategyController
                 'Comment passer d’un profil flou à un message qui convertit.',
             ],
         ];
+    }
+
+    /** @return array<string,mixed> */
+    private function strategyConfig(): array
+    {
+        if (is_array($this->strategyConfig)) {
+            return $this->strategyConfig;
+        }
+
+        $path = dirname(__DIR__, 2) . '/config/strategy.php';
+        $config = is_file($path) ? require $path : [];
+        $this->strategyConfig = is_array($config) ? $config : [];
+
+        return $this->strategyConfig;
     }
 }

@@ -313,6 +313,12 @@ CREATE TABLE strategy_profile_analyses (
   id                  INT UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id             INT UNSIGNED NOT NULL,
   profile_text        TEXT         NOT NULL,
+  objective           VARCHAR(80)  NOT NULL DEFAULT '',
+  persona_group       VARCHAR(80)  NOT NULL DEFAULT '',
+  persona_subtype     VARCHAR(80)  NOT NULL DEFAULT '',
+  offer_type          VARCHAR(80)  NOT NULL DEFAULT '',
+  maturity_level      VARCHAR(80)  NOT NULL DEFAULT '',
+  contact_intention   VARCHAR(80)  NOT NULL DEFAULT '',
   awareness_level     VARCHAR(120) NOT NULL DEFAULT '',
   summary             TEXT         NULL,
   pain_points_json    JSON         NULL,
@@ -323,6 +329,8 @@ CREATE TABLE strategy_profile_analyses (
   PRIMARY KEY (id),
   KEY idx_strategy_user_id (user_id),
   KEY idx_strategy_created_at (created_at),
+  KEY idx_strategy_objective (objective),
+  KEY idx_strategy_persona_group (persona_group),
   CONSTRAINT fk_strategy_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

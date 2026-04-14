@@ -1,214 +1,201 @@
 <?php
-$history = is_array($history ?? null) ? $history : [];
+$catalog = is_array($strategyCatalog ?? null) ? $strategyCatalog : [];
+$objectives = (array) ($catalog['objectives'] ?? []);
+$personaGroups = (array) ($catalog['persona_groups'] ?? []);
+$personaSubtypes = (array) ($catalog['persona_subtypes'] ?? []);
+$offerTypes = (array) ($catalog['offer_types'] ?? []);
+$maturityLevels = (array) ($catalog['maturity_levels'] ?? []);
+$intentions = (array) ($catalog['intentions'] ?? []);
+$defaultsByPersona = (array) ($catalog['defaults_by_persona'] ?? []);
 ?>
 
-<div class="page strategy-page">
-  <div class="container">
+<div class="strategy-page">
+  <section class="page-header strategy-page-header">
+    <h1>Assistant stratégique guidé</h1>
+    <p class="subtitle">Cadre ton analyse en 4 étapes pour obtenir une réponse IA plus utile, plus cohérente et plus actionnable.</p>
+  </section>
 
-    <div class="page-header">
-      <h1>Stratégie orientée action</h1>
-      <p class="subtitle">Décris ton marché en 4 champs, l’IA structure ton angle et tes prochaines actions.</p>
-    </div>
-
-    <div class="card strategy-form-card">
-      <div class="card-header">
-        <h3>Brief guidé</h3>
+  <div class="strategy-guided-layout">
+    <section class="card strategy-guided-card">
+      <div class="strategy-flow-head">
+        <div>
+          <p class="strategy-overline">Analyse prospect</p>
+          <h2>Construis ton cadrage avant de lancer l’IA</h2>
+          <p class="strategy-help">Avant de lancer l’analyse, vérifie si ce cadrage te semble juste.</p>
+        </div>
+        <button type="button" id="strategy-quick-mode" class="btn btn-secondary btn-compact">Mode rapide</button>
       </div>
 
-      <form id="strategy-analysis-form" method="post" action="/strategie/analyse" class="stack">
-        <input type="hidden" name="_csrf" value="<?= htmlspecialchars((string) ($csrfToken ?? '')) ?>">
+      <div class="strategy-stepper" id="strategy-stepper" aria-label="Étapes d'analyse"></div>
 
-        <div class="strategy-form-grid">
-          <div class="form-group">
-            <label for="business_type">Type de métier</label>
-            <select id="business_type" name="business_type" class="input" required>
-              <option value="">Choisir un métier</option>
-              <option value="Coach">Coach</option>
-              <option value="Thérapeute">Thérapeute</option>
-              <option value="Consultant">Consultant</option>
-              <option value="Agence">Agence</option>
-              <option value="Freelance">Freelance</option>
-              <option value="Autre">Autre</option>
+      <form id="strategy-analysis-form" method="post" action="/strategie/analyse" class="stack-md" novalidate>
+        <input type="hidden" name="_csrf" value="<?= htmlspecialchars((string) ($csrfToken ?? '')) ?>">
+        <input type="hidden" name="quick_mode" id="quick_mode" value="0">
+
+        <section class="strategy-step is-active" data-step="1">
+          <header class="strategy-step-head">
+            <h3>Que veux-tu obtenir avec cette analyse ?</h3>
+            <p>Choisis l’objectif principal, même si tu en as plusieurs.</p>
+          </header>
+          <div class="strategy-option-grid" data-name="objective">
+            <?php foreach ($objectives as $key => $item): ?>
+              <button type="button" class="strategy-option" data-value="<?= htmlspecialchars((string) $key) ?>">
+                <strong><?= htmlspecialchars((string) ($item['label'] ?? '')) ?></strong>
+                <span><?= htmlspecialchars((string) ($item['hint'] ?? '')) ?></span>
+              </button>
+            <?php endforeach; ?>
+          </div>
+          <input type="hidden" name="objective" id="objective" value="">
+        </section>
+
+        <section class="strategy-step" data-step="2">
+          <header class="strategy-step-head">
+            <h3>Qui cherches-tu à comprendre ou approcher ?</h3>
+            <p>Le type de cible aide l’IA à mieux comprendre le contexte métier.</p>
+          </header>
+          <div class="strategy-option-grid" data-name="persona_group">
+            <?php foreach ($personaGroups as $key => $item): ?>
+              <button type="button" class="strategy-option" data-value="<?= htmlspecialchars((string) $key) ?>">
+                <strong><?= htmlspecialchars((string) ($item['label'] ?? '')) ?></strong>
+                <span><?= htmlspecialchars((string) ($item['hint'] ?? '')) ?></span>
+              </button>
+            <?php endforeach; ?>
+          </div>
+          <input type="hidden" name="persona_group" id="persona_group" value="">
+
+          <div class="strategy-subtype" id="persona-subtype-wrap" hidden>
+            <label for="persona_subtype">Sous-catégorie</label>
+            <select name="persona_subtype" id="persona_subtype" class="input">
+              <option value="">Choisir</option>
             </select>
           </div>
+        </section>
 
-          <div class="form-group">
-            <label for="city">Ville</label>
-            <input id="city" name="city" class="input" placeholder="Ex : Lyon" required>
+        <section class="strategy-step" data-step="3">
+          <header class="strategy-step-head">
+            <h3>Que proposes-tu à cette cible ?</h3>
+            <p>Une offre claire améliore la précision des recommandations.</p>
+          </header>
+          <div class="strategy-option-grid" data-name="offer_type">
+            <?php foreach ($offerTypes as $key => $label): ?>
+              <button type="button" class="strategy-option" data-value="<?= htmlspecialchars((string) $key) ?>">
+                <strong><?= htmlspecialchars((string) $label) ?></strong>
+              </button>
+            <?php endforeach; ?>
           </div>
+          <input type="hidden" name="offer_type" id="offer_type" value="">
+        </section>
 
-          <div class="form-group form-field-full">
-            <label for="target">Cible principale</label>
-            <input id="target" name="target" class="input" placeholder="Ex : femmes actives 30-45 ans, stressées" required>
+        <section class="strategy-step" data-step="4">
+          <header class="strategy-step-head">
+            <h3>À ton avis, où en est cette personne aujourd’hui ?</h3>
+            <p>Le niveau de maturité permet d’éviter des messages mal calibrés.</p>
+          </header>
+          <div class="strategy-option-list" data-name="maturity_level">
+            <?php foreach ($maturityLevels as $key => $label): ?>
+              <button type="button" class="strategy-option strategy-option-row" data-value="<?= htmlspecialchars((string) $key) ?>">
+                <strong><?= htmlspecialchars((string) $label) ?></strong>
+              </button>
+            <?php endforeach; ?>
           </div>
+          <input type="hidden" name="maturity_level" id="maturity_level" value="">
 
-          <div class="form-group form-field-full">
-            <label for="pain_point">Problématique principale</label>
-            <textarea id="pain_point" name="pain_point" class="input" rows="4" placeholder="Ex : elles hésitent longtemps avant de réserver un premier RDV" required></textarea>
+          <div class="strategy-intention-wrap">
+            <label>Ton intention</label>
+            <div class="strategy-option-list" data-name="contact_intention">
+              <?php foreach ($intentions as $key => $label): ?>
+                <button type="button" class="strategy-option strategy-option-row" data-value="<?= htmlspecialchars((string) $key) ?>">
+                  <strong><?= htmlspecialchars((string) $label) ?></strong>
+                </button>
+              <?php endforeach; ?>
+            </div>
           </div>
+          <input type="hidden" name="contact_intention" id="contact_intention" value="">
+
+          <div class="form-field">
+            <label for="custom_context">Contexte complémentaire (optionnel)</label>
+            <textarea id="custom_context" name="custom_context" rows="4" class="input" placeholder="Ex : zone géographique, saisonnalité, contrainte budgétaire, nuance métier..."></textarea>
+          </div>
+        </section>
+
+        <section class="strategy-step" data-step="5">
+          <header class="strategy-step-head">
+            <h3>Synthèse avant lancement</h3>
+          </header>
+
+          <div class="strategy-synthesis" id="strategy-synthesis"></div>
+
+          <div class="strategy-recommendation" id="strategy-recommendation">
+            <strong>Stratégie recommandée</strong>
+            <p id="strategy-recommendation-text">Sélectionne au moins un objectif et une cible pour obtenir une recommandation dynamique.</p>
+          </div>
+        </section>
+
+        <div class="strategy-flow-actions">
+          <button type="button" id="strategy-prev" class="btn btn-secondary">Retour</button>
+          <button type="button" id="strategy-next" class="btn btn-primary">Suivant</button>
+          <button type="submit" id="strategy-submit" class="btn btn-primary" hidden>Lancer l’analyse IA</button>
         </div>
 
-        <div class="strategy-highlight" id="generated-prompt-preview">
-          Le prompt IA structuré apparaîtra ici pendant que tu complètes le brief.
-        </div>
-
-        <button type="submit" class="btn btn-primary">Analyser et générer des actions</button>
+        <p id="analysis-error" class="strategy-feedback error" hidden></p>
+        <p id="analysis-warning" class="strategy-feedback warning" hidden></p>
       </form>
+    </section>
 
-      <p id="analysis-error" class="text-error" style="display:none;"></p>
-      <p id="analysis-warning" class="text-warning" style="display:none;"></p>
-    </div>
-
-    <div id="analysis-result" class="card strategy-analysis-card" style="display:none;">
-      <div class="card-header">
-        <h3>Lecture IA du marché</h3>
-        <span id="awareness-badge" class="badge"></span>
-      </div>
-
-      <section class="card small ai-suggestion-block">
-        <p class="ai-suggestion-title">Suggestion IA</p>
-        <p id="ai-human-message">Je te propose de commencer par une relance empathique puis d’enchaîner sur une preuve sociale locale.</p>
+    <aside class="strategy-side-panel">
+      <section class="card strategy-result-card" id="analysis-result" hidden>
+        <div class="card-header">
+          <h3>Résultat de l’analyse</h3>
+          <span id="awareness-badge" class="badge"></span>
+        </div>
+        <p id="guided-summary" class="strategy-guided-summary"></p>
+        <div class="strategy-result-grid">
+          <article><h4>Résumé</h4><p id="summary"></p></article>
+          <article><h4>Pain points</h4><ul id="pain-points"></ul></article>
+          <article><h4>Désirs profonds</h4><ul id="desires"></ul></article>
+          <article><h4>Angles de contenu</h4><ul id="content-angles"></ul></article>
+          <article><h4>Hooks marketing</h4><ul id="recommended-hooks"></ul></article>
+        </div>
       </section>
 
-      <div class="grid">
-        <div class="card small"><h4>Résumé</h4><p id="summary"></p></div>
-        <div class="card small"><h4>Pain points</h4><ul id="pain-points"></ul></div>
-        <div class="card small"><h4>Désirs profonds</h4><ul id="desires"></ul></div>
-        <div class="card small"><h4>Angles de contenu</h4><ul id="content-angles"></ul></div>
-        <div class="card small"><h4>Hooks marketing</h4><ul id="recommended-hooks"></ul></div>
-      </div>
-
-      <div class="stack" style="margin-top:16px;">
-        <a class="btn btn-primary" href="/contenu">Générer du contenu</a>
-        <a id="create-message-cta" class="btn btn-secondary" href="/messages-ia">Créer un message</a>
-      </div>
-    </div>
-
-    <div class="card strategy-history-card">
-      <div class="card-header"><h3>Historique des analyses</h3></div>
-
-      <?php if ($history === []): ?>
-        <?php
-          $emptyTitle = 'Aucune stratégie enregistrée';
-          $emptyDescription = 'Crée ton premier brief guidé pour obtenir des actions prêtes à exécuter.';
-          $emptyCtaHref = '/strategie';
-          $emptyCtaLabel = 'Démarrer un brief';
-          require __DIR__ . '/../components/states/empty_state_guided.php';
-        ?>
-      <?php else: ?>
-        <div class="stack">
-          <?php foreach ($history as $item): ?>
-            <article class="card small">
-              <p class="muted"><?= htmlspecialchars((string) $item['created_at']) ?> · <?= htmlspecialchars((string) ($item['awareness_level'] ?? 'N/A')) ?></p>
-              <p><?= htmlspecialchars((string) ($item['summary'] ?? '')) ?></p>
-              <details>
-                <summary>Voir le brief source</summary>
-                <pre><?= htmlspecialchars((string) ($item['profile_text'] ?? '')) ?></pre>
-              </details>
-            </article>
-          <?php endforeach; ?>
+      <section class="card">
+        <div class="card-header">
+          <h3>Historique des analyses</h3>
         </div>
-      <?php endif; ?>
-    </div>
+
+        <?php if (($history ?? []) === []): ?>
+          <div class="empty-state small">
+            <p class="muted">Aucune analyse pour le moment. Lance ton premier cadrage guidé.</p>
+          </div>
+        <?php else: ?>
+          <div class="strategy-history stack-sm">
+            <?php foreach (($history ?? []) as $item): ?>
+              <?php
+                $objectiveKey = (string) ($item['objective'] ?? '');
+                $objectiveLabel = (string) (($objectives[$objectiveKey]['label'] ?? '') ?: 'Analyse libre');
+              ?>
+              <article class="strategy-history-item">
+                <p class="muted"><?= htmlspecialchars((string) ($item['created_at'] ?? '')) ?></p>
+                <strong><?= htmlspecialchars($objectiveLabel) ?></strong>
+                <p><?= htmlspecialchars((string) ($item['summary'] ?? '')) ?></p>
+              </article>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+      </section>
+    </aside>
   </div>
 </div>
 
 <script>
-(() => {
-  const form = document.querySelector('#strategy-analysis-form');
-  if (!form) return;
-
-  const fields = {
-    businessType: form.querySelector('#business_type'),
-    city: form.querySelector('#city'),
-    target: form.querySelector('#target'),
-    painPoint: form.querySelector('#pain_point'),
-  };
-
-  const preview = document.querySelector('#generated-prompt-preview');
-  const errorEl = document.querySelector('#analysis-error');
-  const warningEl = document.querySelector('#analysis-warning');
-  const result = document.querySelector('#analysis-result');
-  const awareness = document.querySelector('#awareness-badge');
-  const aiHumanMessage = document.querySelector('#ai-human-message');
-
-  const listMap = {
-    'pain-points': 'pain_points',
-    'desires': 'desires',
-    'content-angles': 'content_angles',
-    'recommended-hooks': 'recommended_hooks',
-  };
-
-  const buildPrompt = () => {
-    const payload = {
-      business_type: fields.businessType.value.trim(),
-      city: fields.city.value.trim(),
-      target: fields.target.value.trim(),
-      pain_point: fields.painPoint.value.trim(),
-    };
-
-    return `Tu es un stratège commercial orienté action.\nMétier: ${payload.business_type || '[à définir]'}\nVille: ${payload.city || '[à définir]'}\nCible: ${payload.target || '[à définir]'}\nProblématique: ${payload.pain_point || '[à définir]'}\n\nRetourne: niveau de conscience, résumé, pain points, désirs, angles de contenu, hooks.`;
-  };
-
-  const refreshPromptPreview = () => {
-    if (!preview) return;
-    preview.textContent = buildPrompt();
-  };
-
-  Object.values(fields).forEach((field) => field?.addEventListener('input', refreshPromptPreview));
-  refreshPromptPreview();
-
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-
-    errorEl.style.display = 'none';
-    warningEl.style.display = 'none';
-
-    const formData = new FormData(form);
-
-    try {
-      const response = await fetch(form.action, {
-        method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        body: formData,
-      });
-
-      const payload = await response.json();
-
-      if (!response.ok || !payload.success) {
-        errorEl.textContent = payload.error || 'Analyse impossible, réessaie dans quelques instants.';
-        errorEl.style.display = 'block';
-        return;
-      }
-
-      if (payload.meta?.warning) {
-        warningEl.textContent = payload.meta.warning;
-        warningEl.style.display = 'block';
-      }
-
-      const data = payload.data || {};
-      result.style.display = 'block';
-      awareness.textContent = data.awareness_level || 'N/A';
-      document.querySelector('#summary').textContent = data.summary || '';
-
-      Object.entries(listMap).forEach(([id, key]) => {
-        const node = document.querySelector(`#${id}`);
-        if (!node) return;
-        node.innerHTML = '';
-        (Array.isArray(data[key]) ? data[key] : []).forEach((item) => {
-          const li = document.createElement('li');
-          li.textContent = item;
-          node.appendChild(li);
-        });
-      });
-
-      aiHumanMessage.textContent = `Je te conseille de prioriser la cible "${fields.target.value.trim()}" à ${fields.city.value.trim()} avec une relance centrée sur le problème exprimé.`;
-      document.querySelector('#create-message-cta')?.setAttribute('href', '/messages-ia?type=relance');
-      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } catch (error) {
-      errorEl.textContent = 'Erreur réseau. Vérifie ta connexion puis réessaie.';
-      errorEl.style.display = 'block';
-    }
-  });
-})();
+window.STRATEGY_CATALOG = <?= json_encode([
+    'objectives' => $objectives,
+    'persona_groups' => $personaGroups,
+    'persona_subtypes' => $personaSubtypes,
+    'offer_types' => $offerTypes,
+    'maturity_levels' => $maturityLevels,
+    'intentions' => $intentions,
+    'defaults_by_persona' => $defaultsByPersona,
+], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
 </script>
+<script src="/assets/js/strategy-guided.js"></script>
