@@ -1,40 +1,16 @@
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
+<section class="dashboard-mobile-first stack-lg">
+  <header class="dashboard-mobile-header card">
+    <p class="eyebrow">Dashboard</p>
+    <h1>Priorités du jour</h1>
+    <p class="muted">Une vue claire pour agir vite depuis votre téléphone.</p>
 
-  <link rel="stylesheet" href="/assets/css/dashboard.css">
-</head>
+    <div class="dashboard-header-cta">
+      <a class="btn btn-primary" href="/prospects/create">+ Ajouter un prospect</a>
+      <a class="btn btn-secondary" href="/prospects?filter=hot">Voir les prospects chauds</a>
+    </div>
+  </header>
 
-<section class="dashboard-shell stack-lg">
-  <div class="dashboard-top-grid">
-    <article class="card dashboard-hero">
-      <p class="eyebrow">Focus du jour</p>
-      <h1>Relancer 3 prospects chauds</h1>
-      <p class="hero-text">
-        Concentrez-vous sur les actions à fort impact pour faire avancer votre pipeline avant midi.
-      </p>
-      <div class="hero-actions">
-        <a class="btn primary" href="/prospects?filter=hot">Ouvrir les prospects chauds</a>
-        <a class="btn secondary" href="/pipeline">Voir le pipeline</a>
-      </div>
-    </article>
-
-    <article class="card ai-card">
-      <div class="card-header-inline">
-        <h3>Recommandation IA</h3>
-        <span class="badge badge-high">Priorité haute</span>
-      </div>
-      <p>
-        Sophie Martin montre un signal fort : visite répétée, interaction récente et profil aligné.
-      </p>
-      <div class="hero-actions">
-        <a class="btn secondary" href="/messages-ia">Préparer un message</a>
-      </div>
-    </article>
-  </div>
-
-  <section class="dashboard-kpis">
+  <section class="dashboard-kpis" aria-label="Indicateurs clés">
     <article class="dashboard-kpi-card">
       <p class="muted">Prospects actifs</p>
       <p class="metric-value">24</p>
@@ -54,33 +30,56 @@
     </article>
   </section>
 
-  <article class="card stack-sm">
+  <section class="card stack-sm dashboard-day-actions" aria-label="Actions rapides du jour">
     <div class="card-header-inline">
-      <h3>Aperçu pipeline</h3>
-      <a class="text-link" href="/pipeline">Ouvrir</a>
+      <h3>Actions du jour</h3>
+      <a class="text-link" href="/pipeline">Pipeline</a>
     </div>
-    <div class="pipeline-preview-grid">
-      <div class="pipeline-stage"><span>Nouveaux</span><strong>8</strong></div>
-      <div class="pipeline-stage"><span>À contacter</span><strong>6</strong></div>
-      <div class="pipeline-stage"><span>En échange</span><strong>4</strong></div>
-      <div class="pipeline-stage"><span>Chauds</span><strong>3</strong></div>
-      <div class="pipeline-stage"><span>Gagnés</span><strong>2</strong></div>
-    </div>
-  </article>
 
-  <article class="card stack-sm">
-    <h3>Actions rapides</h3>
     <div class="quick-actions-grid premium-actions">
-      <a class="action-tile" href="/prospects/create">+ Prospect</a>
-      <a class="action-tile" href="/strategie">Stratégie</a>
-      <a class="action-tile" href="/messages-ia">Messages IA</a>
-      <a class="action-tile" href="/pipeline">Pipeline</a>
+      <a class="action-tile" href="/prospects?filter=hot">Relancer les chauds</a>
+      <a class="action-tile" href="/messages-ia">Préparer un message IA</a>
+      <a class="action-tile" href="/strategie">Mettre à jour la stratégie</a>
+      <a class="action-tile" href="/prospects/create">Créer un prospect</a>
     </div>
-  </article>
+  </section>
+
+  <section class="card stack-sm" aria-label="Prospects récents">
+    <div class="card-header-inline">
+      <h3>Prospects récents</h3>
+      <a class="text-link" href="/prospects">Voir tout</a>
+    </div>
+
+    <div class="dashboard-list">
+      <article class="dashboard-list-item">
+        <div class="dashboard-list-item-main">
+          <p class="dashboard-list-item-title">Sophie Martin</p>
+          <p class="dashboard-list-item-text">Coach bien-être · Lyon</p>
+        </div>
+        <a class="btn btn-secondary" href="/prospects?filter=hot">Ouvrir</a>
+      </article>
+
+      <article class="dashboard-list-item">
+        <div class="dashboard-list-item-main">
+          <p class="dashboard-list-item-title">Espace Harmonie</p>
+          <p class="dashboard-list-item-text">Praticienne SPA · Nantes</p>
+        </div>
+        <a class="btn btn-secondary" href="/pipeline">Suivre</a>
+      </article>
+
+      <article class="dashboard-list-item">
+        <div class="dashboard-list-item-main">
+          <p class="dashboard-list-item-title">Julie Bernard</p>
+          <p class="dashboard-list-item-text">Naturopathe · Bordeaux</p>
+        </div>
+        <a class="btn btn-secondary" href="/messages-ia">Contacter</a>
+      </article>
+    </div>
+  </section>
 
   <article class="card stack-sm">
     <h3>Statut des modules</h3>
-    <div class="dashboard-kpis">
+    <div class="dashboard-kpis dashboard-kpis-modules">
       <div class="dashboard-kpi-card">
         <p class="muted">Actifs</p>
         <p class="metric-value"><?= (int) ($statusCounters['active'] ?? 0) ?></p>
