@@ -58,6 +58,12 @@ $query = is_array($query ?? null) ? $query : $filters;
           </div>
         </div>
 
+        <div class="finder-primary-cta">
+          <a class="btn btn-primary finder-main-cta" href="/prospects/create">
+            Trouver / collecter des prospects
+          </a>
+        </div>
+
         <div class="category-scroll">
           <?php foreach ($categoryOrder as $category): ?>
             <?php $isActive = $category === $activeCategory; ?>
@@ -79,10 +85,6 @@ $query = is_array($query ?? null) ? $query : $filters;
             <button type="button" class="btn btn-secondary" data-open-sheet>
               Filtres<?= count($cleanFilters) > 0 ? ' (' . count($cleanFilters) . ')' : '' ?>
             </button>
-
-            <a class="btn btn-primary" href="/prospects/create">
-              + Nouveau prospect
-            </a>
           </div>
         </div>
 
