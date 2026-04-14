@@ -14,7 +14,7 @@ final class ApifyClient
     public function __construct()
     {
         $config = require dirname(__DIR__, 3) . '/config/apify.php';
-        $this->baseUrl = (string) ($config['base_url'] ?? 'https://api.apify.com');
+        $this->baseUrl = rtrim((string) ($config['base_url'] ?? 'https://api.apify.com'), '/');
         $this->token = trim((string) ($config['token'] ?? ''));
 
         if ($this->token === '') {
@@ -32,12 +32,25 @@ final class ApifyClient
         return $this->request('POST', $path, $payload, $query);
     }
 
-    private function request(string $method, string $path, ?array $payload = null, array $query = []): array
+    /**
+     * @param array<string, scalar|null> $query
+     */
+    public static function composeUrl(string $baseUrl, string $path, array $query = []): string
     {
-        $url = $this->baseUrl . '/' . ltrim($path, '/');
+        $normalizedBase = rtrim($baseUrl, '/');
+        $normalizedPath = self::normalizePath($normalizedBase, $path);
+
+        $url = $normalizedBase . $normalizedPath;
         if ($query !== []) {
             $url .= '?' . http_build_query($query);
         }
+
+        return $url;
+    }
+
+    private function request(string $method, string $path, ?array $payload = null, array $query = []): array
+    {
+        $url = self::composeUrl($this->baseUrl, $path, $query);
 
         $ch = curl_init($url);
         if ($ch === false) {
@@ -92,5 +105,25 @@ final class ApifyClient
         }
 
         return $json;
+    }
+
+    private static function normalizePath(string $baseUrl, string $path): string
+    {
+        $normalizedPath = '/' . ltrim($path, '/');
+        $baseHasV2 = preg_match('#/v2$#', $baseUrl) === 1;
+
+        if ($baseHasV2) {
+            if (preg_match('#^/v2(?:/|$)#', $normalizedPath) === 1) {
+                return substr($normalizedPath, 3) ?: '/';
+            }
+
+            return $normalizedPath;
+        }
+
+        if (preg_match('#^/v2(?:/|$)#', $normalizedPath) === 1) {
+            return $normalizedPath;
+        }
+
+        return '/v2' . $normalizedPath;
     }
 }
