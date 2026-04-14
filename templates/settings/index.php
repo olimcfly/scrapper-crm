@@ -3,9 +3,9 @@
 
     <!-- HEADER -->
     <div class="page-header">
-      <h1>Paramètres</h1>
+      <h1>Configuration de l’espace CRM</h1>
       <p class="subtitle">
-        Configuration et personnalisation de ton espace CRM
+        Centralise les préférences, modules et accès de ton équipe
       </p>
     </div>
 
