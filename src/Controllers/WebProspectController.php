@@ -97,11 +97,18 @@ final class WebProspectController
             return;
         }
 
-        unset($request);
+        $input = $request->input();
         View::render('prospects/form', [
             'title' => 'Nouveau prospect',
             'action' => '/prospects/create',
-            'prospect' => [],
+            'prospect' => [
+                'full_name' => trim((string) ($input['nom'] ?? '')),
+                'business_name' => trim((string) ($input['nom'] ?? '')),
+                'city' => trim((string) ($input['ville'] ?? '')),
+                'professional_phone' => trim((string) ($input['telephone'] ?? '')),
+                'professional_email' => trim((string) ($input['email'] ?? '')),
+                'score' => (int) ($input['score'] ?? 0),
+            ],
             'statuses' => $this->statuses->all(),
             'sources' => $this->sources->all(),
             'errors' => [],

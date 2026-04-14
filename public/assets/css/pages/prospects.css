@@ -458,3 +458,80 @@ body.bottom-sheet-open .bottom-sheet {
     width: 100%;
   }
 }
+
+.prospects-collections {
+  display: grid;
+  gap: 14px;
+}
+
+.collection-history,
+.collection-cards {
+  display: grid;
+  gap: 12px;
+}
+
+.collection-card {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+}
+
+.collection-main-link {
+  color: inherit;
+  text-decoration: none;
+  display: grid;
+  gap: 10px;
+}
+
+.collection-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.collection-source {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.collection-grid {
+  display: grid;
+  gap: 6px;
+}
+
+.collection-grid p {
+  margin: 0;
+}
+
+.collection-actions {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr;
+}
+
+.collection-actions .btn,
+.collection-cta-row .btn {
+  width: 100%;
+  min-height: 46px;
+}
+
+.collection-detail-header {
+  display: grid;
+  gap: 6px;
+}
+
+.collection-detail-header p {
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .collection-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .collection-cta-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

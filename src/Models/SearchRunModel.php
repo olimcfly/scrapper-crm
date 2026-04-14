@@ -53,4 +53,16 @@ final class SearchRunModel
 
         return $stmt->fetchAll();
     }
+
+    public function findByUser(int $userId, int $runId): ?array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM search_runs WHERE user_id = :user_id AND id = :id LIMIT 1');
+        $stmt->execute([
+            'user_id' => $userId,
+            'id' => $runId,
+        ]);
+
+        $run = $stmt->fetch();
+        return is_array($run) ? $run : null;
+    }
 }
