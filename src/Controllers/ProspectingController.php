@@ -41,7 +41,7 @@ final class ProspectingController
         $userId = (int) ($this->auth->id() ?? 0);
 
         View::render('prospects/source_selector', [
-            'title' => 'Trouver des prospects - Multi-sources',
+            'title' => 'Trouver des prospects',
             'sources' => $this->registry->all(),
             'connectedAccounts' => $this->connectedAccounts->byUser($userId),
             'searchRuns' => $this->searchRuns->latestByUser($userId),

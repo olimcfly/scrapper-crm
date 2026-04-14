@@ -19,9 +19,9 @@ $runsData = safe_array($searchRuns ?? null);
 
     <!-- HEADER -->
     <div class="page-header">
-      <h1>Prospection multi-sources</h1>
+      <h1>Trouver des prospects</h1>
       <p class="subtitle">
-        Connectez, testez et lancez vos recherches sur différentes plateformes
+        Choisissez une source et lancez votre collecte
       </p>
     </div>
 
@@ -52,7 +52,7 @@ $runsData = safe_array($searchRuns ?? null);
           </button>
 
           <button id="run-search" class="btn btn-primary" type="button">
-            Lancer recherche
+            Lancer la collecte
           </button>
         </div>
 
@@ -69,7 +69,7 @@ $runsData = safe_array($searchRuns ?? null);
       <div class="card">
 
         <div class="card-header">
-          <h3>Statut des connexions</h3>
+          <h3>Statut des sources de collecte</h3>
         </div>
 
         <?php if (empty($accountsData)): ?>
@@ -109,7 +109,7 @@ $runsData = safe_array($searchRuns ?? null);
       <div class="card">
 
         <div class="card-header">
-          <h3>Historique des recherches</h3>
+          <h3>Historique des collectes</h3>
         </div>
 
         <?php if (empty($runsData)): ?>
@@ -234,7 +234,8 @@ $runsData = safe_array($searchRuns ?? null);
       body: JSON.stringify(payload()),
     });
     const json = await res.json();
-    feedback.textContent = json.error || `Run ${json.data?.run_status} • ${json.data?.results_count ?? 0} résultats`;
+    const statut = json.data?.run_status === 'success' ? 'réussie' : (json.data?.run_status === 'failed' ? 'échouée' : 'en cours');
+    feedback.textContent = json.error || `Collecte ${statut} • ${json.data?.results_count ?? 0} résultats`;
   });
 
   if (sourceKeys.length > 0) {

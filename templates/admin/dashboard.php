@@ -25,7 +25,7 @@
       <p class="dashboard-hero-text">Collectez vite des prospects qualifiés, priorisez les plus chauds et passez à l’action commerciale immédiatement.</p>
 
       <div class="dashboard-hero-cta">
-        <a class="btn btn-primary hero-primary-cta" href="/prospects">Trouver des prospects</a>
+        <a class="btn btn-primary hero-primary-cta" href="/prospects/sources">Trouver des prospects</a>
         <a class="btn btn-secondary" href="/prospects?filter=hot">Voir les prospects chauds</a>
       </div>
     </div>
@@ -122,7 +122,7 @@
         <a class="action-tile" href="/prospects?filter=hot"><strong>Relancer les chauds</strong><span>Priorité haute</span></a>
         <a class="action-tile" href="/messages-ia"><strong>Préparer un message IA</strong><span>Script personnalisé</span></a>
         <a class="action-tile" href="/strategie"><strong>Mettre à jour la stratégie</strong><span>Angles et hooks</span></a>
-        <a class="action-tile" href="/prospects/create"><strong>Créer un prospect</strong><span>Entrée rapide</span></a>
+        <a class="action-tile" href="/prospects/create"><strong>Ajouter un prospect</strong><span>Saisie manuelle</span></a>
       </div>
     </article>
 

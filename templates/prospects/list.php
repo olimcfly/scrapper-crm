@@ -28,8 +28,8 @@ $query = is_array($query ?? null) ? $query : $filters;
 
     <!-- HEADER GLOBAL -->
     <div class="page-header">
-      <h1>Prospection intelligente</h1>
-      <p class="subtitle">Trouvez, analysez et convertissez vos prospects bien-être</p>
+      <h1>Prospection</h1>
+      <p class="subtitle">Trouvez, analysez et convertissez vos prospects</p>
     </div>
 
     <!-- FINDER -->
@@ -42,9 +42,11 @@ $query = is_array($query ?? null) ? $query : $filters;
 
         <div class="finder-toolbar-head">
           <div class="finder-title-row">
-            <h2>Trouver des praticiennes</h2>
+            <h2>Trouver des prospects</h2>
             <p class="finder-kpi"><?= $totalProspects ?> résultat(s)</p>
           </div>
+
+          <p class="finder-subtitle">Choisissez une source et lancez votre collecte</p>
 
           <div class="finder-search">
             <input
@@ -59,9 +61,26 @@ $query = is_array($query ?? null) ? $query : $filters;
         </div>
 
         <div class="finder-primary-cta">
-          <a class="btn btn-primary finder-main-cta" href="/prospects/create">
-            Trouver / collecter des prospects
+          <a class="btn btn-primary finder-main-cta" href="/prospects/sources">
+            Lancer une collecte
           </a>
+        </div>
+
+        <div class="finder-secondary-cta">
+          <a class="btn btn-secondary finder-secondary-btn" href="/prospects/create">
+            Ajouter manuellement
+          </a>
+          <a class="btn btn-secondary finder-secondary-btn" href="/prospects/import">
+            Importer un fichier
+          </a>
+        </div>
+
+        <div class="finder-source-grid" aria-label="Sources de collecte suggérées">
+          <?php foreach (['Google Maps', 'LinkedIn', 'Instagram', 'Facebook', 'TikTok', 'Google Business Profile'] as $sourceLabel): ?>
+            <article class="source-card">
+              <strong><?= htmlspecialchars($sourceLabel) ?></strong>
+            </article>
+          <?php endforeach; ?>
         </div>
 
         <div class="category-scroll">
@@ -79,7 +98,7 @@ $query = is_array($query ?? null) ? $query : $filters;
         </div>
 
         <div class="finder-toolbar">
-          <div class="finder-kpi">Base ciblée de professionnelles du bien-être</div>
+          <div class="finder-kpi">Base ciblée de prospects à qualifier</div>
 
           <div class="finder-actions">
             <button type="button" class="btn btn-secondary" data-open-sheet>
@@ -123,9 +142,9 @@ $query = is_array($query ?? null) ? $query : $filters;
         <div data-empty-state>
           <?php
             $emptyTitle = 'Aucun prospect trouvé';
-            $emptyDescription = 'Ajoute un prospect ou ajuste tes filtres pour faire apparaître des opportunités.';
-            $emptyCtaHref = '/prospects/create';
-            $emptyCtaLabel = 'Créer un prospect';
+            $emptyDescription = 'Lancez une collecte ou ajustez vos filtres pour faire apparaître des opportunités.';
+            $emptyCtaHref = '/prospects/sources';
+            $emptyCtaLabel = 'Lancer une collecte';
             require __DIR__ . '/../components/states/empty_state_guided.php';
           ?>
         </div>

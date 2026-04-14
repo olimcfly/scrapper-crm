@@ -11,9 +11,9 @@ $showError = (bool) ($showError ?? false);
 <?php if ($showEmpty): ?>
   <?php
     $emptyTitle = 'Aucune donnée disponible';
-    $emptyDescription = 'Commencez par ajouter un prospect pour activer le flux prospect-first.';
-    $emptyCtaLabel = 'Créer un prospect';
-    $emptyCtaHref = '/prospects/create';
+    $emptyDescription = 'Commencez par lancer une collecte pour alimenter votre base de prospection.';
+    $emptyCtaLabel = 'Lancer une collecte';
+    $emptyCtaHref = '/prospects/sources';
     require __DIR__ . '/states/empty_state_guided.php';
   ?>
 <?php endif; ?>

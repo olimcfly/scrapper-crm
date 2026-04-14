@@ -12,7 +12,7 @@ final class AdminModules
    public static function all(): array
 {
     return [
-        ['key' => 'dashboard', 'label' => 'Dashboard', 'icon' => '🏠', 'description' => 'Vue globale', 'path' => '/dashboard', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'main'],
+        ['key' => 'dashboard', 'label' => 'Tableau de bord', 'icon' => '🏠', 'description' => 'Vue globale', 'path' => '/dashboard', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'main'],
 
         ['key' => 'collecte-profils', 'label' => 'Prospects', 'icon' => '👥', 'description' => 'Collecte multi-source', 'path' => '/prospects/sources', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'main'],
 
@@ -20,9 +20,9 @@ final class AdminModules
 
         ['key' => 'generation-contenu', 'label' => 'Contenu', 'icon' => '✍️', 'description' => 'Création ciblée', 'path' => '/contenu', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'main'],
 
-        ['key' => 'messages-ia', 'label' => 'Messages IA', 'icon' => '💬', 'description' => 'Générer et envoyer', 'path' => '/messages-ia', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'main'],
+        ['key' => 'messages-ia', 'label' => 'Messages', 'icon' => '💬', 'description' => 'Générer et envoyer', 'path' => '/messages-ia', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'main'],
 
-        ['key' => 'pipeline', 'label' => 'Pipeline', 'icon' => '📈', 'description' => 'Suivi conversion', 'path' => '/pipeline', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'main'],
+        ['key' => 'pipeline', 'label' => 'Pipeline commercial', 'icon' => '📈', 'description' => 'Suivi conversion', 'path' => '/pipeline', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'main'],
 
         // SECONDARY
         ['key' => 'contacts', 'label' => 'Contacts', 'icon' => '📇', 'description' => 'Suivi actionnable', 'path' => '/admin/modules/contacts', 'status' => 'mvp', 'core' => true, 'ready' => false, 'nav' => 'secondary'],

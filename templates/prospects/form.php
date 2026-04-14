@@ -4,7 +4,7 @@
     <!-- HEADER -->
     <div class="page-header">
       <h1><?= htmlspecialchars($title ?? 'Prospect') ?></h1>
-      <p class="subtitle">Créer ou modifier un prospect avec stratégie intégrée</p>
+      <p class="subtitle">Ajoutez un prospect manuellement</p>
     </div>
 
     <!-- ERRORS -->
@@ -82,7 +82,7 @@
           </div>
 
           <div class="form-group">
-            <label>Status</label>
+            <label>Statut</label>
             <select class="input" name="status_id">
               <?php foreach (($statuses ?? []) as $s): ?>
                 <option value="<?= (int)$s['id'] ?>" <?= ((int)($prospect['status_id'] ?? 0) === (int)$s['id']) ? 'selected' : '' ?>>
