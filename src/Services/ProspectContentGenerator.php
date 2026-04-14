@@ -20,7 +20,10 @@ final class ProspectContentGenerator
      *  channel:string,
      *  objective:string,
      *  tone:string,
-     *  length:string
+     *  length:string,
+     *  framework:string,
+     *  focus_input:string,
+     *  guided_mode:string
      * } $options
      * @return array{content:string,meta:array{source:string,warning?:string}}
      */
@@ -51,7 +54,10 @@ final class ProspectContentGenerator
      *  channel:string,
      *  objective:string,
      *  tone:string,
-     *  length:string
+     *  length:string,
+     *  framework:string,
+     *  focus_input:string,
+     *  guided_mode:string
      * } $options
      */
     private function buildFallbackContent(array $analysis, array $options): string
@@ -64,21 +70,38 @@ final class ProspectContentGenerator
         $lines = [
             '🎯 Canal: ' . ucfirst($options['channel']) . ' | Format: ' . $options['content_type'],
             'Niveau de conscience: ' . $analysis['awareness_level'],
-            '',
-            $hook,
-            '',
-            'Si aujourd’hui ' . $painPoint . ', vous n’êtes pas seul.',
-            'La bonne nouvelle: il est possible de ' . mb_strtolower($desire) . '.',
-            'Angle recommandé: ' . $angle . '.',
-            '',
-            '👉 Objectif du message: ' . $options['objective'] . '.',
-            '👉 Tonalité: ' . $options['tone'] . '.',
         ];
+
+        if (trim((string) ($options['framework'] ?? '')) !== '') {
+            $lines[] = 'Framework activé: ' . $options['framework'];
+        }
+
+        if (trim((string) ($options['focus_input'] ?? '')) !== '') {
+            $lines[] = 'Demande atelier: ' . $options['focus_input'];
+        }
+
+        $lines[] = '';
+        $lines[] = $hook;
+        $lines[] = '';
+        $lines[] = 'Si aujourd’hui ' . $painPoint . ', vous n’êtes pas seul.';
+        $lines[] = 'La bonne nouvelle: il est possible de ' . mb_strtolower($desire) . '.';
+        $lines[] = 'Angle recommandé: ' . $angle . '.';
+        $lines[] = '';
+        $lines[] = '👉 Objectif du message: ' . $options['objective'] . '.';
+        $lines[] = '👉 Tonalité: ' . $options['tone'] . '.';
 
         if ($options['length'] !== 'courte') {
             $lines[] = '';
             $lines[] = 'Résumé prospect: ' . $analysis['summary'];
             $lines[] = 'Prochaine action: proposez un échange rapide avec une promesse concrète liée à son besoin principal.';
+        }
+
+        if (($options['guided_mode'] ?? '0') === '1') {
+            $lines[] = '';
+            $lines[] = 'Mode apprentissage guidé:';
+            $lines[] = '1) Reformulez le problème du prospect en une phrase simple.';
+            $lines[] = '2) Ajoutez une preuve terrain ou un mini cas.';
+            $lines[] = '3) Terminez par un CTA unique et mesurable.';
         }
 
         if ($options['length'] === 'longue') {

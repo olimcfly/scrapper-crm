@@ -31,109 +31,105 @@ $primaryDesire = $desires[0] ?? 'générer des conversations qualifiées sans y 
 $secondaryDesire = $desires[1] ?? 'avoir des messages plus clairs et crédibles';
 $primaryAngle = $contentAngles[0] ?? 'clarifier la promesse et le passage à l’action';
 
-$ideas3R = [
+$methodCards = [
     [
-        'title' => 'Réalité: "Pourquoi vos prospects restent silencieux même après un bon premier contact"',
-        'angle' => 'Partir de la situation terrain: messages envoyés, peu de réponses, pipeline qui ralentit.',
-        'motivation' => 'Montrer que le problème n’est pas le prospect mais le cadrage du message.',
-        'explication' => [
-            'internes' => [
-                'Le prospect craint de se tromper de priorité et repousse la décision.',
-                'Il ne voit pas encore clairement le gain immédiat pour son activité.',
-            ],
-            'externes' => [
-                'Il reçoit trop de sollicitations similaires chaque semaine.',
-                'Son agenda opérationnel écrase son temps de réflexion.',
-            ],
-            'injustices' => [
-                'Des offres moins pertinentes passent devant grâce à un meilleur storytelling.',
-                'Le prospect paie le prix d’informations incomplètes ou biaisées.',
-            ],
+        'key' => '3R',
+        'icon' => '🎯',
+        'title' => '3R: capter l’attention en 3 angles qui convertissent',
+        'subtitle' => 'Trouve le bon titre à partir de la Réalité, de la Réponse et du Risque.',
+        'method' => [
+            'Réalité: parle d’une situation vécue par le prospect.',
+            'Réponse: propose une solution simple et crédible.',
+            'Risque: montre ce qui se passe s’il ne change rien.',
         ],
-        'recette' => 'Segmenter le message en 3 blocs: contexte réel, micro-victoire, prochaine étape concrète.',
-        'exercice' => 'Réécris ton dernier message en retirant tout jargon et ajoute une preuve terrain en 1 phrase.',
-        'fab' => [
-            'feature' => 'Analyse prospect connectée aux pain points et aux désirs réels.',
-            'advantage' => 'Chaque proposition de contenu part d’un besoin concret plutôt que d’un template générique.',
-            'benefit' => 'Le prospect se sent compris, répond plus vite et la relation avance vers un rendez-vous qualifié.',
-        ],
+        'example' => '"Réalité: vos leads répondent peu" → "Réponse: une séquence de 3 messages" → "Risque: pipeline à l’arrêt".',
+        'exercise' => 'Écris 3 titres pour un même sujet en utilisant les 3R en moins de 5 minutes.',
+        'focus' => 'Créer un hook 3R pour attirer plus de réponses qualifiées.',
+        'content_type' => 'post',
+        'channel' => 'linkedin',
+        'objective' => 'attirer',
+        'tone' => 'directe',
     ],
     [
-        'title' => 'Recherche de solution: "La structure simple qui transforme une idée floue en contenu qui convertit"',
-        'angle' => 'Positionner la méthode M.E.R.E comme accélérateur de clarté éditoriale.',
-        'motivation' => 'Donner une méthode immédiatement actionnable pour éviter la page blanche.',
-        'explication' => [
-            'internes' => [
-                'Le prospect doute de sa capacité à publier régulièrement.',
-                'Il confond encore valeur perçue et longueur du contenu.',
-            ],
-            'externes' => [
-                'Les algorithmes favorisent les contenus structurés et précis.',
-                'Les équipes commerciales demandent des supports réutilisables vite.',
-            ],
-            'injustices' => [
-                'Les experts terrain restent invisibles face aux créateurs plus bruyants.',
-                'Un bon service est souvent jugé sur une communication trop faible.',
-            ],
+        'key' => 'MERE',
+        'icon' => '🧩',
+        'title' => 'M.E.R.E: structurer un contenu pédagogique prêt à publier',
+        'subtitle' => 'Passe d’une idée floue à un contenu guidé et actionnable.',
+        'method' => [
+            'Motivation: relie le sujet à une frustration réelle.',
+            'Explication: clarifie le pourquoi en langage simple.',
+            'Recette: donne une trame en étapes concrètes.',
+            'Exercice: fais passer immédiatement à l’action.',
         ],
-        'recette' => 'Utilise M pour capter le besoin, E pour expliquer, R pour guider, E pour faire passer à l’action.',
-        'exercice' => 'Prends une idée de post LinkedIn et transforme-la en 4 paragraphes M.E.R.E en 10 minutes.',
-        'fab' => [
-            'feature' => 'Génération de structures éditoriales prêtes à adapter par canal.',
-            'advantage' => 'Tu gardes une cohérence de message entre post, email et vidéo sans repartir de zéro.',
-            'benefit' => 'Ton équipe publie plus sereinement, gagne du temps et crée enfin une continuité dans le tunnel de conversion.',
-        ],
+        'example' => 'Post LinkedIn: 1 paragraphe par lettre M.E.R.E avec un CTA final concret.',
+        'exercise' => 'Prends ton dernier contenu et réécris-le en 4 blocs M.E.R.E.',
+        'focus' => 'Transformer une idée brute en contenu M.E.R.E clair et actionnable.',
+        'content_type' => 'post',
+        'channel' => 'linkedin',
+        'objective' => 'faire_reagir',
+        'tone' => 'simple',
     ],
     [
-        'title' => 'Risque à éviter: "Créer du contenu sans angle prospect = produire beaucoup, convaincre peu"',
-        'angle' => 'Alerter sur le coût caché du contenu non relié à la réalité commerciale.',
-        'motivation' => 'Prévenir la dispersion et recentrer sur la stratégie prospect.',
-        'explication' => [
-            'internes' => [
-                'Le prospect perçoit un message trop centré sur l’offre et décroche.',
-                'Il manque un fil conducteur entre problème et solution proposée.',
-            ],
-            'externes' => [
-                'Les décisions d’achat sont plus lentes et demandent plus de preuves.',
-                'La concurrence multiplie les contenus mais peu sont réellement utiles.',
-            ],
-            'injustices' => [
-                'Des acheteurs motivés passent à côté d’une vraie solution par manque de pédagogie.',
-                'Les équipes commerciales compensent par plus de relances au lieu de meilleurs contenus.',
-            ],
+        'key' => 'FAB',
+        'icon' => '⚙️',
+        'title' => 'FAB: vendre la transformation, pas les fonctionnalités',
+        'subtitle' => 'Traduis ton offre en bénéfice concret pour ton prospect.',
+        'method' => [
+            'Feature: ce que ton offre fait concrètement.',
+            'Advantage: pourquoi c’est mieux que l’approche actuelle.',
+            'Benefit: quel résultat tangible le prospect obtient.',
         ],
-        'recette' => 'Avant publication: vérifier 1 problème réel, 1 bénéfice transformationnel, 1 CTA concret.',
-        'exercice' => 'Audit de ton dernier contenu: coche ce qui parle du prospect et retire ce qui parle uniquement de toi.',
-        'fab' => [
-            'feature' => 'Historique des contenus avec recherche par analyse, type et date.',
-            'advantage' => 'Tu identifies vite ce qui performe et tu dupliques les formats gagnants.',
-            'benefit' => 'Au lieu de repartir de zéro, tu construis une machine de contenu cumulative orientée résultats commerciaux.',
+        'example' => 'Feature: génération IA → Advantage: gain de temps → Benefit: plus de RDV qualifiés.',
+        'exercise' => 'Liste 3 features de ton offre puis convertis-les en bénéfices clients.',
+        'focus' => 'Reformuler mon offre avec FAB pour augmenter la conversion.',
+        'content_type' => 'email',
+        'channel' => 'email',
+        'objective' => 'convertir',
+        'tone' => 'experte',
+    ],
+    [
+        'key' => 'Psychologie',
+        'icon' => '🧠',
+        'title' => 'Psychologie: lever les blocages internes, externes et systémiques',
+        'subtitle' => 'Rends ton message plus humain, plus crédible, plus convaincant.',
+        'method' => [
+            'Interne: identifie la peur ou le doute principal.',
+            'Externe: contextualise les contraintes terrain.',
+            'Injustice: nomme ce qui freine injustement la décision.',
         ],
+        'example' => 'Interne: peur de se tromper · Externe: surcharge · Injustice: bruit concurrentiel.',
+        'exercise' => 'Écris 1 phrase par type de blocage pour ton prospect principal.',
+        'focus' => 'Créer un message qui répond aux freins psychologiques de mon prospect.',
+        'content_type' => 'message_court',
+        'channel' => 'whatsapp',
+        'objective' => 'rassurer',
+        'tone' => 'chaleureuse',
     ],
 ];
 
 $templateCards = [
-    ['name' => '3R', 'definition' => 'Structure de titres orientée réalité, solution, risque.', 'purpose' => 'Créer des hooks alignés au vécu prospect.', 'when' => 'Avant de rédiger un post, email ou script.', 'example' => '"Réalité: vos leads répondent peu" → "Solution: 1 séquence simple" → "Risque: relancer sans angle."'],
-    ['name' => 'MERE', 'definition' => 'Motivation, Explication, Recette, Exercice.', 'purpose' => 'Transformer une idée en contenu pédagogique et actionnable.', 'when' => 'Pour des contenus éducatifs à forte valeur.', 'example' => 'Motiver sur un blocage réel, expliquer, donner le plan, proposer un exercice rapide.'],
-    ['name' => 'FAB', 'definition' => 'Feature, Advantage, Benefit (transformation).', 'purpose' => 'Passer des caractéristiques produit aux bénéfices vécus.', 'when' => 'Pages offres, emails commerciaux, scripts de vente.', 'example' => 'Feature: dashboard IA → Advantage: priorisation auto → Benefit: moins de relances inutiles, plus de rendez-vous qualifiés.'],
-    ['name' => 'AIDA', 'definition' => 'Attention, Intérêt, Désir, Action.', 'purpose' => 'Structurer un message de conversion simple.', 'when' => 'Landing pages, séquences d’emails, annonces.', 'example' => 'Attention par une vérité terrain, désir via preuve, action avec CTA unique.'],
-    ['name' => 'PAS', 'definition' => 'Problème, Agitation, Solution.', 'purpose' => 'Rendre un problème tangible puis proposer une issue.', 'when' => 'Posts courts et accroches vidéo.', 'example' => 'Problème: peu de réponses, agitation: pipeline qui stagne, solution: framework 3R + MERE.'],
+    ['name' => '3R', 'definition' => 'Réalité, Réponse, Risque', 'purpose' => 'Hooks orientés terrain', 'when' => 'Accroches post, email, vidéo', 'example' => 'Réalité actuelle + piste claire + coût de l’inaction'],
+    ['name' => 'MERE', 'definition' => 'Motivation, Explication, Recette, Exercice', 'purpose' => 'Contenu éducatif prêt à agir', 'when' => 'Posts pédagogiques, carrousels, newsletter', 'example' => '4 blocs courts qui guident le lecteur'],
+    ['name' => 'FAB', 'definition' => 'Feature, Advantage, Benefit', 'purpose' => 'Transformer l’offre en impact client', 'when' => 'Pages offres, séquences de vente', 'example' => 'Caractéristique → avantage → bénéfice business'],
+    ['name' => 'Psychologie', 'definition' => 'Interne, Externe, Injustice', 'purpose' => 'Messages plus persuasifs', 'when' => 'Objections, relances, scripts', 'example' => 'Répondre à la peur, au contexte et à la perception'],
 ];
 
-$resourceCards = [
-    ['title' => 'Comprendre la formule 3R', 'explanation' => 'Les 3R servent à créer des titres qui collent à la réalité commerciale du prospect.', 'example' => 'Exemple: "Réalité: vos relances restent sans réponse".', 'checklist' => ['Parle d’une situation vécue.', 'Promet une piste claire.', 'Montre un risque réel à éviter.']],
-    ['title' => 'Comprendre la structure MERE', 'explanation' => 'MERE guide la pédagogie: motiver, expliquer, donner la recette puis faire pratiquer.', 'example' => 'Exemple: post LinkedIn en 4 paragraphes, chacun avec une fonction claire.', 'checklist' => ['1 idée par section.', 'Explication concrète.', 'Exercice réalisable en moins de 10 min.']],
-    ['title' => 'Transformer une caractéristique en bénéfice avec FAB', 'explanation' => 'Le bénéfice doit raconter un changement vécu côté prospect.', 'example' => '"Automatisation des brouillons" devient "2h gagnées pour préparer les rendez-vous chauds".', 'checklist' => ['Feature factuelle.', 'Advantage mesurable.', 'Benefit exprimé en transformation.']],
-    ['title' => 'Interne, externe, injustice: faire la différence', 'explanation' => 'Un message fort combine les freins psychologiques, contextuels et systémiques.', 'example' => 'Interne: peur de mal choisir / Externe: manque de temps / Injustice: meilleur acteur moins visible.', 'checklist' => ['2 problèmes internes.', '2 externes.', '2 injustices.']],
-    ['title' => 'Adapter le message selon le canal', 'explanation' => 'Le fond reste identique, la forme change selon la plateforme.', 'example' => 'LinkedIn: preuve + perspective. Email: clarté + CTA unique. WhatsApp: court + concret.', 'checklist' => ['Facebook: ton conversationnel.', 'LinkedIn: posture experte.', 'Email: structure lisible.', 'WhatsApp: phrases courtes.', 'Vidéo: hook dans les 5 premières secondes.']],
-    ['title' => 'Exemples avant / après', 'explanation' => 'Comparer deux versions accélère la montée en compétence.', 'example' => 'Avant: "Notre outil est innovant." Après: "Vous transformez vos notes prospects en messages prêts à envoyer."', 'checklist' => ['Version avant trop vague.', 'Version après orientée résultat.', 'CTA clair en fin de message.']],
-    ['title' => 'Mini exercices pratiques', 'explanation' => 'Pratiquer régulièrement crée des automatismes éditoriaux solides.', 'example' => 'Exercice: reformuler un argument produit en bénéfice transformationnel.', 'checklist' => ['Timer 7 minutes.', '1 canal cible.', '1 CTA final.']],
-];
+$progressRatio = $generatedData !== null ? 100 : ($analysisData === [] ? 15 : 55);
 ?>
 
 <div class="studio-page">
   <header class="studio-header card">
+    <p class="studio-kicker">Atelier IA</p>
     <h1>Studio de Contenu IA</h1>
+    <p class="studio-subtitle">Crée du contenu qui attire, engage et convertit avec des méthodes simples et guidées</p>
+
+    <div class="studio-progress" aria-label="Progression atelier">
+      <div class="studio-progress-meta">
+        <strong>Progression atelier</strong>
+        <span><?= (int) $progressRatio ?>%</span>
+      </div>
+      <div class="studio-progress-track"><span style="width: <?= (int) $progressRatio ?>%"></span></div>
+    </div>
   </header>
 
   <?php if (!empty($successMessage)): ?>
@@ -153,283 +149,295 @@ $resourceCards = [
   <nav class="studio-tabs" aria-label="Sections du studio">
     <button type="button" class="studio-tab is-active" data-studio-tab="creer">Créer</button>
     <button type="button" class="studio-tab" data-studio-tab="modeles">Modèles</button>
-    <button type="button" class="studio-tab" data-studio-tab="ressources">Ressources</button>
+    <button type="button" class="studio-tab" data-studio-tab="methodes">Méthodes</button>
     <button type="button" class="studio-tab" data-studio-tab="historique">Historique</button>
   </nav>
 
-  <section class="studio-panel is-active" data-studio-panel="creer">
-    <?php if ($analysisData === []): ?>
-      <div class="card empty-state-guided">
-        <div class="empty-icon">🎯</div>
-        <h2 class="empty-title">Aucune analyse prospect connectée</h2>
-        <p class="empty-message">Le Studio s’appuie sur l’analyse stratégique pour générer des contenus plus pertinents et orientés conversion.</p>
-        <a class="btn btn-primary empty-cta" href="/strategie">Créer une analyse prospect</a>
-      </div>
-    <?php else: ?>
-      <article class="card studio-brief-card">
-        <div class="card-header">
-          <div>
-            <h2>Point de départ stratégique</h2>
-            <p class="muted">Analyse connectée: contenu orienté réalité terrain.</p>
+  <div class="studio-layout">
+    <div class="studio-main">
+      <section class="studio-panel is-active" data-studio-panel="creer">
+        <?php if ($analysisData === []): ?>
+          <div class="card empty-state-guided">
+            <div class="empty-icon">🎯</div>
+            <h2 class="empty-title">Aucune analyse prospect connectée</h2>
+            <p class="empty-message">Le Studio s’appuie sur l’analyse stratégique pour générer des contenus plus pertinents et orientés conversion.</p>
+            <a class="btn btn-primary empty-cta" href="/strategie">Créer une analyse prospect</a>
           </div>
-          <span class="badge"><?= safe_string($analysisData['awareness_level'] ?? 'Niveau non défini') ?></span>
-        </div>
+        <?php else: ?>
+          <article class="card studio-brief-card">
+            <div class="card-header">
+              <div>
+                <h2>Point de départ stratégique</h2>
+                <p class="muted">Atelier guidé par ton analyse prospect.</p>
+              </div>
+              <span class="badge"><?= safe_string($analysisData['awareness_level'] ?? 'Niveau non défini') ?></span>
+            </div>
 
-        <div class="studio-brief-grid">
-          <div class="studio-brief-item">
-            <strong>Résumé prospect</strong>
-            <p><?= nl2br(safe_string($analysisData['summary'] ?? '')) ?></p>
-          </div>
-          <div class="studio-brief-item">
-            <strong>Douleurs prioritaires</strong>
-            <p><?= safe_string($primaryPain) ?></p>
-            <p><?= safe_string($secondaryPain) ?></p>
-          </div>
-          <div class="studio-brief-item">
-            <strong>Résultats recherchés</strong>
-            <p><?= safe_string($primaryDesire) ?></p>
-            <p><?= safe_string($secondaryDesire) ?></p>
-          </div>
-          <div class="studio-brief-item">
-            <strong>Angle suggéré</strong>
-            <p><?= safe_string($primaryAngle) ?></p>
-          </div>
-        </div>
-      </article>
+            <div class="studio-brief-grid">
+              <div class="studio-brief-item"><strong>Douleur #1</strong><p><?= safe_string($primaryPain) ?></p></div>
+              <div class="studio-brief-item"><strong>Douleur #2</strong><p><?= safe_string($secondaryPain) ?></p></div>
+              <div class="studio-brief-item"><strong>Désir #1</strong><p><?= safe_string($primaryDesire) ?></p></div>
+              <div class="studio-brief-item"><strong>Désir #2</strong><p><?= safe_string($secondaryDesire) ?></p></div>
+              <div class="studio-brief-item full"><strong>Angle recommandé</strong><p><?= safe_string($primaryAngle) ?></p></div>
+            </div>
+          </article>
 
-      <article class="card">
-        <div class="card-header">
-          <div>
-            <h2>Idées de titres 3R</h2>
-            <p class="muted">Chaque idée inclut un angle clair, puis un développement M.E.R.E + FAB.</p>
-          </div>
-        </div>
+          <article class="card studio-create-card" id="atelier-create-form">
+            <div class="card-header">
+              <div>
+                <h2>Créer mon contenu (mode atelier)</h2>
+                <p class="muted">Sélectionne ton objectif, ajoute ton idée, puis génère immédiatement un brouillon sauvegardé.</p>
+              </div>
+            </div>
 
-        <div class="studio-idea-list">
-          <?php foreach ($ideas3R as $index => $idea): ?>
-            <article class="studio-idea-card">
-              <h3><?= safe_string($idea['title']) ?></h3>
-              <p class="muted"><?= safe_string($idea['angle']) ?></p>
+            <form method="post" action="/contenu/generer" class="studio-generator-form" id="studio-generate-form">
+              <input type="hidden" name="_csrf" value="<?= safe_string($csrfToken ?? '') ?>">
+              <input type="hidden" name="framework" id="studio-framework" value="<?= safe_string($optionsData['framework'] ?? '') ?>">
 
-              <div class="studio-actions">
-                <button class="btn btn-secondary btn-compact" type="button" data-copy-text="<?= safe_string($idea['title'] . ' — ' . $idea['angle']) ?>">Copier</button>
-                <button class="btn btn-primary btn-compact" type="button" data-expand-id="mere-<?= $index ?>">Développer</button>
+              <div class="studio-form-grid">
+                <label class="form-field"><span>Type de contenu</span>
+                  <select name="content_type" id="studio-content-type" class="input select">
+                    <option value="post" <?= ($optionsData['content_type'] ?? 'post') === 'post' ? 'selected' : '' ?>>Post</option>
+                    <option value="email" <?= ($optionsData['content_type'] ?? '') === 'email' ? 'selected' : '' ?>>Email</option>
+                    <option value="message_court" <?= ($optionsData['content_type'] ?? '') === 'message_court' ? 'selected' : '' ?>>Message court</option>
+                  </select>
+                </label>
+
+                <label class="form-field"><span>Canal</span>
+                  <select name="channel" id="studio-channel" class="input select">
+                    <option value="linkedin" <?= ($optionsData['channel'] ?? 'linkedin') === 'linkedin' ? 'selected' : '' ?>>LinkedIn</option>
+                    <option value="facebook" <?= ($optionsData['channel'] ?? '') === 'facebook' ? 'selected' : '' ?>>Facebook</option>
+                    <option value="instagram" <?= ($optionsData['channel'] ?? '') === 'instagram' ? 'selected' : '' ?>>Instagram</option>
+                    <option value="email" <?= ($optionsData['channel'] ?? '') === 'email' ? 'selected' : '' ?>>Email</option>
+                    <option value="whatsapp" <?= ($optionsData['channel'] ?? '') === 'whatsapp' ? 'selected' : '' ?>>WhatsApp</option>
+                  </select>
+                </label>
+
+                <label class="form-field"><span>Objectif</span>
+                  <select name="objective" id="studio-objective" class="input select">
+                    <option value="attirer" <?= ($optionsData['objective'] ?? 'attirer') === 'attirer' ? 'selected' : '' ?>>Attirer</option>
+                    <option value="faire_reagir" <?= ($optionsData['objective'] ?? '') === 'faire_reagir' ? 'selected' : '' ?>>Faire réagir</option>
+                    <option value="rassurer" <?= ($optionsData['objective'] ?? '') === 'rassurer' ? 'selected' : '' ?>>Rassurer</option>
+                    <option value="convertir" <?= ($optionsData['objective'] ?? '') === 'convertir' ? 'selected' : '' ?>>Convertir</option>
+                  </select>
+                </label>
+
+                <label class="form-field"><span>Ton</span>
+                  <select name="tone" id="studio-tone" class="input select">
+                    <option value="simple" <?= ($optionsData['tone'] ?? 'simple') === 'simple' ? 'selected' : '' ?>>Simple</option>
+                    <option value="directe" <?= ($optionsData['tone'] ?? '') === 'directe' ? 'selected' : '' ?>>Direct</option>
+                    <option value="experte" <?= ($optionsData['tone'] ?? '') === 'experte' ? 'selected' : '' ?>>Expert</option>
+                    <option value="chaleureuse" <?= ($optionsData['tone'] ?? '') === 'chaleureuse' ? 'selected' : '' ?>>Chaleureux</option>
+                  </select>
+                </label>
+
+                <label class="form-field full"><span>Idée / offre / message à travailler</span>
+                  <textarea name="focus_input" id="studio-focus-input" class="input" rows="3" placeholder="Ex: Je veux transformer mes appels découverte en messages LinkedIn qui prennent des RDV."><?= safe_string($optionsData['focus_input'] ?? '') ?></textarea>
+                </label>
+
+                <label class="form-field full studio-guided-switch">
+                  <input type="checkbox" name="guided_mode" value="1" <?= (($optionsData['guided_mode'] ?? '0') === '1') ? 'checked' : '' ?>>
+                  <span>Mode apprentissage guidé (ajoute des étapes pédagogiques dans la sortie)</span>
+                </label>
               </div>
 
-              <section class="studio-expand" id="mere-<?= $index ?>" hidden>
-                <div class="studio-framework-block">
-                  <h4>M — Motivation</h4>
-                  <p><?= safe_string($idea['motivation']) ?></p>
+              <div class="studio-actions">
+                <button class="btn btn-primary" type="submit">Générer avec IA</button>
+              </div>
+            </form>
+
+            <?php if ($generatedData !== null): ?>
+              <div class="studio-output" id="studio-generated-output">
+                <div class="card-header">
+                  <div>
+                    <h3>Résultat généré</h3>
+                    <p class="muted">Brouillon sauvegardé automatiquement dans l’historique.</p>
+                  </div>
                 </div>
-                <div class="studio-framework-block">
-                  <h4>E — Explication</h4>
+                <pre><?= safe_string((string) ($generatedData['content'] ?? '')) ?></pre>
+                <div class="studio-actions wrap">
+                  <button class="btn btn-secondary btn-compact" type="button" data-copy-target="studio-generated-output">Copier</button>
+                  <a href="/messages-ia" class="btn btn-secondary btn-compact">Réutiliser dans Messages IA</a>
+                  <a href="/contenu" class="btn btn-primary btn-compact">Réutiliser dans Contenu</a>
+                </div>
+              </div>
+            <?php endif; ?>
+          </article>
+        <?php endif; ?>
+      </section>
+
+      <section class="studio-panel" data-studio-panel="modeles" hidden>
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <h2>Modèles prêts à actionner</h2>
+              <p class="muted">Sélectionne une structure, puis envoie-la directement dans l’atelier.</p>
+            </div>
+          </div>
+
+          <div class="studio-model-grid">
+            <?php foreach ($templateCards as $template): ?>
+              <article class="studio-model-card">
+                <h3><?= safe_string($template['name']) ?></h3>
+                <p><strong>Méthode:</strong> <?= safe_string($template['definition']) ?></p>
+                <p><strong>But:</strong> <?= safe_string($template['purpose']) ?></p>
+                <p><strong>Quand:</strong> <?= safe_string($template['when']) ?></p>
+                <p><strong>Exemple:</strong> <?= safe_string($template['example']) ?></p>
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-compact"
+                  data-use-method
+                  data-framework="<?= safe_string($template['name']) ?>"
+                  data-focus="<?= safe_string('Appliquer le modèle ' . $template['name'] . ' à mon offre actuelle.') ?>"
+                >Créer mon contenu</button>
+              </article>
+            <?php endforeach; ?>
+          </div>
+        </article>
+      </section>
+
+      <section class="studio-panel" data-studio-panel="methodes" hidden>
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <h2>Méthodes actionnables</h2>
+              <p class="muted">Chaque carte est un mini atelier: apprendre, pratiquer, générer.</p>
+            </div>
+          </div>
+
+          <div class="studio-method-grid">
+            <?php foreach ($methodCards as $method): ?>
+              <article class="studio-method-card">
+                <p class="studio-method-icon"><?= safe_string($method['icon']) ?> <?= safe_string($method['key']) ?></p>
+                <h3><?= safe_string($method['title']) ?></h3>
+                <p class="muted"><?= safe_string($method['subtitle']) ?></p>
+
+                <div class="studio-method-block">
+                  <h4>Méthode</h4>
                   <ul>
-                    <?php foreach (($idea['explication']['internes'] ?? []) as $item): ?><li><strong>Interne:</strong> <?= safe_string($item) ?></li><?php endforeach; ?>
-                    <?php foreach (($idea['explication']['externes'] ?? []) as $item): ?><li><strong>Externe:</strong> <?= safe_string($item) ?></li><?php endforeach; ?>
-                    <?php foreach (($idea['explication']['injustices'] ?? []) as $item): ?><li><strong>Injustice:</strong> <?= safe_string($item) ?></li><?php endforeach; ?>
+                    <?php foreach (($method['method'] ?? []) as $line): ?>
+                      <li><?= safe_string($line) ?></li>
+                    <?php endforeach; ?>
                   </ul>
                 </div>
-                <div class="studio-framework-block">
-                  <h4>R — Recette</h4>
-                  <p><?= safe_string($idea['recette']) ?></p>
-                </div>
-                <div class="studio-framework-block">
-                  <h4>E — Exercice</h4>
-                  <p><?= safe_string($idea['exercice']) ?></p>
+
+                <div class="studio-method-block studio-highlight">
+                  <h4>Exemple concret</h4>
+                  <p><?= safe_string($method['example']) ?></p>
                 </div>
 
-                <div class="studio-framework-block studio-fab">
-                  <h4>FAB orienté transformation</h4>
-                  <p><strong>Feature:</strong> <?= safe_string($idea['fab']['feature'] ?? '') ?></p>
-                  <p><strong>Advantage:</strong> <?= safe_string($idea['fab']['advantage'] ?? '') ?></p>
-                  <p><strong>Benefit (transformation):</strong> <?= safe_string($idea['fab']['benefit'] ?? '') ?></p>
+                <div class="studio-method-block">
+                  <h4>Exercice rapide</h4>
+                  <p><?= safe_string($method['exercise']) ?></p>
                 </div>
 
                 <div class="studio-actions wrap">
-                  <button class="btn btn-secondary btn-compact" type="button" data-copy-section="mere-<?= $index ?>">Copier</button>
-                  <button class="btn btn-secondary btn-compact" type="button">Transformer en post</button>
-                  <button class="btn btn-secondary btn-compact" type="button">Transformer en email</button>
-                  <button class="btn btn-secondary btn-compact" type="button">Transformer en script vidéo</button>
-                  <button class="btn btn-primary btn-compact" type="button">Générer message</button>
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-compact"
+                    data-generate-method
+                    data-framework="<?= safe_string($method['key']) ?>"
+                    data-focus="<?= safe_string($method['focus']) ?>"
+                    data-content-type="<?= safe_string($method['content_type']) ?>"
+                    data-channel="<?= safe_string($method['channel']) ?>"
+                    data-objective="<?= safe_string($method['objective']) ?>"
+                    data-tone="<?= safe_string($method['tone']) ?>"
+                  >Générer avec IA</button>
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-compact"
+                    data-use-method
+                    data-framework="<?= safe_string($method['key']) ?>"
+                    data-focus="<?= safe_string($method['focus']) ?>"
+                    data-content-type="<?= safe_string($method['content_type']) ?>"
+                    data-channel="<?= safe_string($method['channel']) ?>"
+                    data-objective="<?= safe_string($method['objective']) ?>"
+                    data-tone="<?= safe_string($method['tone']) ?>"
+                  >Créer mon contenu</button>
                 </div>
-              </section>
-            </article>
-          <?php endforeach; ?>
-        </div>
-      </article>
-
-      <article class="card">
-        <div class="card-header">
-          <div>
-            <h2>Génération rapide connectée</h2>
-            <p class="muted">Transforme l’analyse en brouillon exploitable immédiatement.</p>
+              </article>
+            <?php endforeach; ?>
           </div>
-        </div>
+        </article>
+      </section>
 
-        <form method="post" action="/contenu/generer" class="studio-generator-form">
-          <input type="hidden" name="_csrf" value="<?= safe_string($csrfToken ?? '') ?>">
-          <div class="studio-form-grid">
-            <label class="form-field"><span>Type de contenu</span>
-              <select name="content_type" class="input select">
-                <option value="post" <?= ($optionsData['content_type'] ?? 'post') === 'post' ? 'selected' : '' ?>>Post</option>
-                <option value="email" <?= ($optionsData['content_type'] ?? '') === 'email' ? 'selected' : '' ?>>Email</option>
-                <option value="message_court" <?= ($optionsData['content_type'] ?? '') === 'message_court' ? 'selected' : '' ?>>Message court</option>
-              </select>
-            </label>
-
-            <label class="form-field"><span>Canal</span>
-              <select name="channel" class="input select">
-                <option value="linkedin" <?= ($optionsData['channel'] ?? 'linkedin') === 'linkedin' ? 'selected' : '' ?>>LinkedIn</option>
-                <option value="facebook" <?= ($optionsData['channel'] ?? '') === 'facebook' ? 'selected' : '' ?>>Facebook</option>
-                <option value="instagram" <?= ($optionsData['channel'] ?? '') === 'instagram' ? 'selected' : '' ?>>Instagram</option>
-                <option value="email" <?= ($optionsData['channel'] ?? '') === 'email' ? 'selected' : '' ?>>Email</option>
-                <option value="whatsapp" <?= ($optionsData['channel'] ?? '') === 'whatsapp' ? 'selected' : '' ?>>WhatsApp</option>
-              </select>
-            </label>
-
-            <label class="form-field"><span>Objectif</span>
-              <select name="objective" class="input select">
-                <option value="attirer" <?= ($optionsData['objective'] ?? 'attirer') === 'attirer' ? 'selected' : '' ?>>Attirer</option>
-                <option value="faire_reagir" <?= ($optionsData['objective'] ?? '') === 'faire_reagir' ? 'selected' : '' ?>>Faire réagir</option>
-                <option value="convertir" <?= ($optionsData['objective'] ?? '') === 'convertir' ? 'selected' : '' ?>>Convertir</option>
-              </select>
-            </label>
-
-            <label class="form-field"><span>Ton</span>
-              <select name="tone" class="input select">
-                <option value="simple" <?= ($optionsData['tone'] ?? 'simple') === 'simple' ? 'selected' : '' ?>>Simple</option>
-                <option value="directe" <?= ($optionsData['tone'] ?? '') === 'directe' ? 'selected' : '' ?>>Direct</option>
-                <option value="experte" <?= ($optionsData['tone'] ?? '') === 'experte' ? 'selected' : '' ?>>Expert</option>
-                <option value="chaleureuse" <?= ($optionsData['tone'] ?? '') === 'chaleureuse' ? 'selected' : '' ?>>Chaleureux</option>
-              </select>
-            </label>
-          </div>
-
-          <div class="studio-actions">
-            <button class="btn btn-primary" type="submit">Générer un brouillon</button>
-          </div>
-        </form>
-
-        <?php if ($generatedData !== null): ?>
-          <div class="studio-output">
-            <h3>Résultat généré</h3>
-            <pre><?= safe_string((string) ($generatedData['content'] ?? '')) ?></pre>
-          </div>
-        <?php endif; ?>
-      </article>
-    <?php endif; ?>
-  </section>
-
-  <section class="studio-panel" data-studio-panel="modeles" hidden>
-    <article class="card">
-      <div class="card-header">
-        <div>
-          <h2>Bibliothèque de modèles</h2>
-          <p class="muted">Des structures prêtes à l’emploi pour accélérer création et conversion.</p>
-        </div>
-      </div>
-
-      <div class="studio-model-grid">
-        <?php foreach ($templateCards as $template): ?>
-          <article class="studio-model-card">
-            <h3><?= safe_string($template['name']) ?></h3>
-            <p><strong>Définition:</strong> <?= safe_string($template['definition']) ?></p>
-            <p><strong>Utilité:</strong> <?= safe_string($template['purpose']) ?></p>
-            <p><strong>Quand l’utiliser:</strong> <?= safe_string($template['when']) ?></p>
-            <p><strong>Mini exemple:</strong> <?= safe_string($template['example']) ?></p>
-          </article>
-        <?php endforeach; ?>
-      </div>
-    </article>
-  </section>
-
-  <section class="studio-panel" data-studio-panel="ressources" hidden>
-    <article class="card">
-      <div class="card-header">
-        <div>
-          <h2>Ressources & Méthodes de Contenu</h2>
-          <p class="muted">Apprendre à mieux écrire, mieux structurer et mieux convertir sans jargon inutile.</p>
-        </div>
-      </div>
-
-      <div class="studio-resource-grid">
-        <?php foreach ($resourceCards as $resource): ?>
-          <article class="studio-resource-card">
-            <h3><?= safe_string($resource['title']) ?></h3>
-            <p><?= safe_string($resource['explanation']) ?></p>
-            <p><strong>Exemple concret:</strong> <?= safe_string($resource['example']) ?></p>
+      <section class="studio-panel" data-studio-panel="historique" hidden>
+        <article class="card">
+          <div class="card-header">
             <div>
-              <strong>Checklist / mini exercice</strong>
-              <ul>
-                <?php foreach (($resource['checklist'] ?? []) as $line): ?>
-                  <li><?= safe_string($line) ?></li>
-                <?php endforeach; ?>
-              </ul>
+              <h2>Historique des contenus générés</h2>
+              <p class="muted">Retrouve, filtre et réutilise tes contenus dans tes autres modules.</p>
             </div>
-          </article>
-        <?php endforeach; ?>
-      </div>
-    </article>
-  </section>
+          </div>
 
-  <section class="studio-panel" data-studio-panel="historique" hidden>
-    <article class="card">
+          <?php if ($historyData === []): ?>
+            <div class="empty-state"><p>Aucun contenu généré pour le moment.</p></div>
+          <?php else: ?>
+            <div class="studio-history-filters">
+              <input type="search" class="input" id="history-search-analysis" placeholder="Rechercher par analyse">
+              <select class="input select" id="history-filter-type">
+                <option value="">Type de contenu</option>
+                <option value="post">Post</option>
+                <option value="email">Email</option>
+                <option value="message_court">Message court</option>
+              </select>
+              <input type="date" class="input" id="history-filter-date">
+            </div>
+
+            <div class="studio-history-list" id="studio-history-list">
+              <?php foreach ($historyData as $item): ?>
+                <?php
+                  $analysisSummary = (string) ($item['analysis_summary'] ?? 'Analyse non précisée');
+                  $contentType = (string) ($item['content_type'] ?? 'post');
+                  $createdAt = (string) ($item['created_at'] ?? '');
+                  $isoDate = $createdAt !== '' ? substr($createdAt, 0, 10) : '';
+                ?>
+                <article class="studio-history-item" data-analysis="<?= safe_string(mb_strtolower($analysisSummary)) ?>" data-type="<?= safe_string($contentType) ?>" data-date="<?= safe_string($isoDate) ?>">
+                  <p class="muted"><?= safe_string($createdAt) ?> · <?= safe_string($contentType) ?></p>
+                  <h3><?= safe_string($analysisSummary) ?></h3>
+                  <p><?= nl2br(safe_string($item['generated_content'] ?? '')) ?></p>
+                  <div class="studio-actions wrap">
+                    <a href="/contenu?draft_id=<?= (int) ($item['id'] ?? 0) ?>" class="btn btn-secondary btn-compact">Réouvrir</a>
+                    <a href="/messages-ia" class="btn btn-secondary btn-compact">Vers Messages IA</a>
+                    <form method="post" action="/contenu/dupliquer">
+                      <input type="hidden" name="_csrf" value="<?= safe_string($csrfToken ?? '') ?>">
+                      <input type="hidden" name="draft_id" value="<?= (int) ($item['id'] ?? 0) ?>">
+                      <button class="btn btn-secondary btn-compact" type="submit">Dupliquer</button>
+                    </form>
+                    <button class="btn btn-primary btn-compact" type="button" data-export-item="1">Exporter</button>
+                  </div>
+                </article>
+              <?php endforeach; ?>
+            </div>
+          <?php endif; ?>
+        </article>
+      </section>
+    </div>
+
+    <aside class="studio-assistant card" id="studio-assistant-panel">
       <div class="card-header">
         <div>
-          <h2>Historique des contenus générés</h2>
-          <p class="muted">Retrouve, filtre et réutilise tes contenus par analyse, type et date.</p>
+          <h2>Assistant IA</h2>
+          <p class="muted">Teste une idée et génère un brouillon immédiatement.</p>
         </div>
       </div>
 
-      <?php if ($historyData === []): ?>
-        <div class="empty-state">
-          <p>Aucun contenu généré pour le moment.</p>
+      <div class="studio-assistant-form">
+        <label class="form-field"><span>Offre / message / idée</span>
+          <textarea class="input" id="assistant-input" rows="4" placeholder="Ex: Je veux un email de relance qui rassure un prospect hésitant."></textarea>
+        </label>
+        <div class="studio-actions wrap">
+          <button type="button" class="btn btn-primary btn-compact" id="assistant-generate">Générer</button>
+          <button type="button" class="btn btn-secondary btn-compact" id="assistant-save">Sauvegarder</button>
         </div>
-      <?php else: ?>
-        <div class="studio-history-filters">
-          <input type="search" class="input" id="history-search-analysis" placeholder="Rechercher par analyse">
-          <select class="input select" id="history-filter-type">
-            <option value="">Type de contenu</option>
-            <option value="post">Post</option>
-            <option value="email">Email</option>
-            <option value="message_court">Message court</option>
-          </select>
-          <input type="date" class="input" id="history-filter-date">
-        </div>
+      </div>
 
-        <div class="studio-history-list" id="studio-history-list">
-          <?php foreach ($historyData as $item): ?>
-            <?php
-              $analysisSummary = (string) ($item['analysis_summary'] ?? 'Analyse non précisée');
-              $contentType = (string) ($item['content_type'] ?? 'post');
-              $createdAt = (string) ($item['created_at'] ?? '');
-              $isoDate = $createdAt !== '' ? substr($createdAt, 0, 10) : '';
-            ?>
-            <article
-              class="studio-history-item"
-              data-analysis="<?= safe_string(mb_strtolower($analysisSummary)) ?>"
-              data-type="<?= safe_string($contentType) ?>"
-              data-date="<?= safe_string($isoDate) ?>"
-            >
-              <p class="muted"><?= safe_string($createdAt) ?> · <?= safe_string($contentType) ?></p>
-              <h3><?= safe_string($analysisSummary) ?></h3>
-              <p><?= nl2br(safe_string($item['generated_content'] ?? '')) ?></p>
-              <div class="studio-actions wrap">
-                <a href="/contenu?draft_id=<?= (int) ($item['id'] ?? 0) ?>" class="btn btn-secondary btn-compact">Réouvrir</a>
-                <form method="post" action="/contenu/dupliquer">
-                  <input type="hidden" name="_csrf" value="<?= safe_string($csrfToken ?? '') ?>">
-                  <input type="hidden" name="draft_id" value="<?= (int) ($item['id'] ?? 0) ?>">
-                  <button class="btn btn-secondary btn-compact" type="submit">Dupliquer</button>
-                </form>
-                <button class="btn btn-secondary btn-compact" type="button" data-local-delete="1">Supprimer</button>
-                <button class="btn btn-primary btn-compact" type="button" data-export-item="1">Exporter</button>
-              </div>
-            </article>
-          <?php endforeach; ?>
-        </div>
-      <?php endif; ?>
-    </article>
-  </section>
+      <div class="studio-assistant-result" id="assistant-result" hidden>
+        <h3>Résultat Assistant</h3>
+        <p id="assistant-result-text"></p>
+      </div>
+    </aside>
+  </div>
 </div>
 
 <script src="/assets/js/content-studio.js"></script>
