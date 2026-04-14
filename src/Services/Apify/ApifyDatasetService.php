@@ -15,7 +15,7 @@ final class ApifyDatasetService
 
     public function getDatasetItems(string $datasetId, int $limit = 50, int $offset = 0): array
     {
-        return $this->client->get('/v2/datasets/' . rawurlencode($datasetId) . '/items', [
+        return $this->client->get('/datasets/' . rawurlencode($datasetId) . '/items', [
             'clean' => 'true',
             'format' => 'json',
             'limit' => max(1, min(500, $limit)),

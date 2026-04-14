@@ -8,13 +8,14 @@ use RuntimeException;
 
 final class ApifyClient
 {
-    private string $baseUrl;
+    private ApifyUrlBuilder $urlBuilder;
     private string $token;
 
     public function __construct()
     {
         $config = require dirname(__DIR__, 3) . '/config/apify.php';
-        $this->baseUrl = (string) ($config['base_url'] ?? 'https://api.apify.com');
+        $baseUrl = (string) ($config['base_url'] ?? 'https://api.apify.com');
+        $this->urlBuilder = new ApifyUrlBuilder($baseUrl);
         $this->token = trim((string) ($config['token'] ?? ''));
 
         if ($this->token === '') {
@@ -34,10 +35,7 @@ final class ApifyClient
 
     private function request(string $method, string $path, ?array $payload = null, array $query = []): array
     {
-        $url = $this->baseUrl . '/' . ltrim($path, '/');
-        if ($query !== []) {
-            $url .= '?' . http_build_query($query);
-        }
+        $url = $this->urlBuilder->build($path, $query);
 
         $ch = curl_init($url);
         if ($ch === false) {
