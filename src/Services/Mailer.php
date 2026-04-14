@@ -47,9 +47,9 @@ final class Mailer
             $mail->addAddress($toEmail);
 
             $mail->isHTML(true);
-            $mail->Subject = 'Votre code de connexion — CRM Coralie Montreuil';
+            $mail->Subject = 'Votre code de connexion';
             $mail->Body = self::htmlBody($code);
-            $mail->AltBody = "Votre code de connexion : {$code}\n\nCe code expire dans 15 minutes.\nNe le communiquez à personne.";
+            $mail->AltBody = self::textBody($code);
 
             $ok = $mail->send();
 
@@ -72,47 +72,47 @@ final class Mailer
         return <<<HTML
 <!DOCTYPE html>
 <html lang="fr">
-<head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#f7f3eb;font-family:Georgia,serif;">
-  <table width="100%" cellpadding="0" cellspacing="0">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background-color:#f5f7fb;">
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color:#f5f7fb;">
     <tr>
-      <td align="center" style="padding:48px 16px;">
-        <table width="480" cellpadding="0" cellspacing="0" style="background:#fdfaf4;border-radius:16px;border:1px solid #ece5d9;box-shadow:0 8px 24px rgba(105,116,95,.10);">
+      <td align="center" style="padding:24px 12px;">
+        <table width="560" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;max-width:560px;background-color:#ffffff;border:1px solid #e6ebf2;border-radius:12px;">
           <tr>
-            <td style="padding:36px 40px 8px;">
-              <p style="margin:0;font-family:'Cormorant Garamond',Georgia,serif;font-size:1.7rem;color:#2e4036;font-weight:600;">
-                Coralie Montreuil
-              </p>
-              <p style="margin:4px 0 0;color:#68776b;font-size:.9rem;letter-spacing:.5px;">
-                Massage &amp; Bien-être
+            <td style="padding:28px 24px 12px 24px;font-family:Arial,Helvetica,sans-serif;">
+              <p style="margin:0;font-size:20px;line-height:28px;color:#13233a;font-weight:700;">
+                Code de connexion
               </p>
             </td>
           </tr>
           <tr>
-            <td style="padding:24px 40px 8px;">
-              <p style="margin:0;color:#33483d;font-size:1rem;line-height:1.6;">
-                Voici votre code de connexion à votre espace de gestion :
+            <td style="padding:4px 24px 0 24px;font-family:Arial,Helvetica,sans-serif;">
+              <p style="margin:0;font-size:15px;line-height:22px;color:#3a4b63;">
+                Utilisez le code ci-dessous pour finaliser votre connexion.
               </p>
             </td>
           </tr>
           <tr>
-            <td style="padding:8px 40px 24px;">
-              <div style="background:#f0ece3;border-radius:14px;padding:22px;text-align:center;">
-                <span style="font-size:2.6rem;letter-spacing:14px;font-weight:700;color:#2e4036;font-family:monospace;">
+            <td align="center" style="padding:20px 24px;">
+              <table cellpadding="0" cellspacing="0" role="presentation" style="border-radius:10px;background-color:#f3f6fb;border:1px solid #dbe4f0;">
+                <tr>
+                  <td align="center" style="padding:16px 24px;font-family:'Courier New',Courier,monospace;font-size:34px;line-height:40px;letter-spacing:8px;color:#10213a;font-weight:700;">
                   {$code}
-                </span>
-              </div>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
           <tr>
-            <td style="padding:0 40px 32px;">
-              <p style="margin:0;color:#68776b;font-size:.88rem;line-height:1.6;">
-                Ce code est valable <strong>15 minutes</strong>.<br>
-                Ne le communiquez à personne.
+            <td style="padding:0 24px 24px 24px;font-family:Arial,Helvetica,sans-serif;">
+              <p style="margin:0 0 10px 0;font-size:14px;line-height:21px;color:#4b5d78;">
+                Ce code est temporaire et expire dans <strong>15 minutes</strong>.
               </p>
-              <hr style="border:none;border-top:1px solid #e8e2d8;margin:24px 0 16px;">
-              <p style="margin:0;color:#9aa39d;font-size:.8rem;">
-                Espace réservé — Bien-être &amp; Sérénité
+              <p style="margin:0;font-size:14px;line-height:21px;color:#4b5d78;">
+                Si vous n&rsquo;&ecirc;tes pas &agrave; l&rsquo;origine de cette demande, ignorez simplement cet email.
               </p>
             </td>
           </tr>
@@ -123,5 +123,13 @@ final class Mailer
 </body>
 </html>
 HTML;
+    }
+
+    private static function textBody(string $code): string
+    {
+        return "Votre code de connexion\n\n" .
+            "Code OTP : {$code}\n\n" .
+            "Ce code est temporaire et expire dans 15 minutes.\n" .
+            "Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email.";
     }
 }
