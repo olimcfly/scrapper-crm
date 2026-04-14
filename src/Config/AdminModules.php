@@ -18,7 +18,7 @@ final class AdminModules
 
         ['key' => 'strategie-prospect', 'label' => 'Stratégie', 'icon' => '🎯', 'description' => 'Analyse prospect', 'path' => '/strategie', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'main'],
 
-        ['key' => 'generation-contenu', 'label' => 'Contenu', 'icon' => '✍️', 'description' => 'Création ciblée', 'path' => '/contenu', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'main'],
+        ['key' => 'generation-contenu', 'label' => 'Studio de Contenu IA', 'icon' => '✍️', 'description' => 'Création stratégique orientée conversion', 'path' => '/contenu', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'main'],
 
         ['key' => 'messages-ia', 'label' => 'Messages', 'icon' => '💬', 'description' => 'Générer et envoyer', 'path' => '/messages-ia', 'status' => 'active', 'core' => true, 'ready' => true, 'nav' => 'main'],
 
