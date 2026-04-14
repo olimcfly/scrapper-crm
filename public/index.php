@@ -80,6 +80,7 @@ $router->add('POST', '/logout', fn (Request $req) => (new AuthController())->log
 $router->add('GET', '/prospects', $guard->protect(fn (Request $req) => (new WebProspectController())->index($req)));
 
 $router->add('GET', '/prospects/sources', $guard->protect(fn (Request $req) => (new ProspectingController())->sources($req)));
+$router->add('GET', '/prospects/collectes/{id}', $guard->protect(fn (Request $req, array $params) => (new ProspectingController())->collectionDetail($req, (int) $params['id'])));
 
 $router->add('GET', '/prospects/create', $guard->protect(fn (Request $req) => (new WebProspectController())->create($req)));
 $router->add('POST', '/prospects/create', $guard->protect(fn (Request $req) => (new WebProspectController())->store($req)));

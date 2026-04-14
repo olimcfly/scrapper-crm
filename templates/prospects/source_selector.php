@@ -8,6 +8,47 @@ function safe_string($value) {
   return htmlspecialchars((string) ($value ?? ''));
 }
 
+function readable_source(string $source): string {
+  return match ($source) {
+    'google_maps_scraper' => 'Google Maps',
+    'instagram' => 'Instagram',
+    default => ucwords(str_replace('_', ' ', $source)),
+  };
+}
+
+function readable_type(string $type): string {
+  return match ($type) {
+    'keyword' => 'Mot-clé',
+    'city' => 'Ville',
+    'hashtag' => 'Hashtag',
+    default => ucfirst($type),
+  };
+}
+
+function readable_status(string $status): string {
+  return match ($status) {
+    'success' => 'Réussi',
+    'failed' => 'Échec',
+    default => ucfirst($status),
+  };
+}
+
+function extraction_parameter(array $run): string {
+  $filters = json_decode((string) ($run['filters_json'] ?? '{}'), true);
+  if (!is_array($filters)) {
+    $filters = [];
+  }
+
+  foreach (['city', 'keyword', 'hashtag', 'query', 'location'] as $key) {
+    $value = trim((string) ($filters[$key] ?? ''));
+    if ($value !== '') {
+      return $value;
+    }
+  }
+
+  return 'Non renseigné';
+}
+
 $sourcesData = safe_array($sources ?? null);
 $accountsData = safe_array($connectedAccounts ?? null);
 $runsData = safe_array($searchRuns ?? null);
@@ -15,25 +56,19 @@ $runsData = safe_array($searchRuns ?? null);
 ?>
 
 <div class="page">
-  <div class="container">
+  <div class="container prospects-collections">
 
-    <!-- HEADER -->
     <div class="page-header">
       <h1>Trouver des prospects</h1>
-      <p class="subtitle">
-        Choisissez une source et lancez votre collecte
-      </p>
+      <p class="subtitle">Lancez une collecte puis passez immédiatement à l’action commerciale.</p>
     </div>
 
-    <!-- CONFIG -->
     <div class="card">
-
       <div class="card-header">
-        <h3>Configuration de la recherche</h3>
+        <h3>Nouvelle collecte</h3>
       </div>
 
       <div class="stack">
-
         <div class="form-group">
           <label for="source">Source</label>
           <select id="source" class="input"></select>
@@ -46,110 +81,84 @@ $runsData = safe_array($searchRuns ?? null);
 
         <div id="dynamic-fields" class="stack"></div>
 
-        <div class="row">
-          <button id="test-connection" class="btn btn-secondary" type="button">
-            Tester connexion
-          </button>
-
-          <button id="run-search" class="btn btn-primary" type="button">
-            Lancer la collecte
-          </button>
+        <div class="row collection-cta-row">
+          <button id="test-connection" class="btn btn-secondary" type="button">Tester la connexion</button>
+          <button id="run-search" class="btn btn-primary" type="button">Lancer la collecte</button>
         </div>
 
         <p id="run-feedback" class="muted"></p>
-
       </div>
-
     </div>
 
-    <!-- GRID -->
-    <div class="grid">
-
-      <!-- STATUT -->
-      <div class="card">
-
-        <div class="card-header">
-          <h3>Statut des sources de collecte</h3>
-        </div>
-
-        <?php if (empty($accountsData)): ?>
-
-          <div class="empty-state">
-            <p class="muted">Aucune connexion enregistrée</p>
-          </div>
-
-        <?php else: ?>
-
-          <div class="table-wrapper">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Source</th>
-                  <th>Statut</th>
-                  <th>Erreur</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($accountsData as $account): ?>
-                  <tr>
-                    <td><?= safe_string($account['source'] ?? '') ?></td>
-                    <td><?= safe_string($account['status'] ?? '') ?></td>
-                    <td><?= safe_string($account['error_message'] ?? '') ?></td>
-                  </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>
-          </div>
-
-        <?php endif; ?>
-
+    <div class="card">
+      <div class="card-header">
+        <h3>État des connexions</h3>
       </div>
 
-      <!-- RUNS -->
-      <div class="card">
-
-        <div class="card-header">
-          <h3>Historique des collectes</h3>
+      <?php if (empty($accountsData)): ?>
+        <div class="empty-state">
+          <p class="muted">Aucune connexion enregistrée.</p>
         </div>
-
-        <?php if (empty($runsData)): ?>
-
-          <div class="empty-state">
-            <p class="muted">Aucune recherche lancée</p>
-          </div>
-
-        <?php else: ?>
-
-          <div class="table-wrapper">
-            <table class="table">
-              <thead>
+      <?php else: ?>
+        <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Source</th>
+                <th>Statut</th>
+                <th>Détail</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($accountsData as $account): ?>
                 <tr>
-                  <th>Source</th>
-                  <th>Type</th>
-                  <th>Statut</th>
-                  <th>Résultats</th>
-                  <th>Erreur</th>
+                  <td><?= safe_string(readable_source((string) ($account['source'] ?? ''))) ?></td>
+                  <td><?= safe_string((string) ($account['status'] ?? '')) ?></td>
+                  <td><?= safe_string((string) ($account['error_message'] ?? 'Connectée')) ?></td>
                 </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($runsData as $run): ?>
-                  <tr>
-                    <td><?= safe_string($run['source'] ?? '') ?></td>
-                    <td><?= safe_string($run['search_type'] ?? '') ?></td>
-                    <td><?= safe_string($run['status'] ?? '') ?></td>
-                    <td><?= safe_string($run['results_count'] ?? '0') ?></td>
-                    <td><?= safe_string($run['error_message'] ?? '') ?></td>
-                  </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>
-          </div>
-
-        <?php endif; ?>
-
-      </div>
-
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+      <?php endif; ?>
     </div>
+
+    <section class="collection-history" aria-label="Historique des collectes">
+      <div class="card-header">
+        <h3>Historique des collectes</h3>
+      </div>
+
+      <?php if (empty($runsData)): ?>
+        <div class="card empty-state">
+          <p class="muted">Aucune collecte pour le moment.</p>
+        </div>
+      <?php else: ?>
+        <div class="collection-cards">
+          <?php foreach ($runsData as $run): ?>
+            <article class="card collection-card">
+              <a href="/prospects/collectes/<?= (int) ($run['id'] ?? 0) ?>" class="collection-main-link">
+                <div class="collection-head">
+                  <p class="collection-source"><?= safe_string(readable_source((string) ($run['source'] ?? ''))) ?></p>
+                  <span class="status-pill"><?= safe_string(readable_status((string) ($run['status'] ?? ''))) ?></span>
+                </div>
+
+                <div class="collection-grid">
+                  <p><strong>Type :</strong> <?= safe_string(readable_type((string) ($run['search_type'] ?? ''))) ?></p>
+                  <p><strong>Paramètre :</strong> <?= safe_string(extraction_parameter($run)) ?></p>
+                  <p><strong>Prospects trouvés :</strong> <?= (int) ($run['results_count'] ?? 0) ?></p>
+                </div>
+              </a>
+
+              <div class="collection-actions">
+                <a class="btn btn-secondary" href="/prospects/collectes/<?= (int) ($run['id'] ?? 0) ?>">Voir les prospects</a>
+                <a class="btn btn-secondary" href="/strategie">Lancer une analyse</a>
+                <a class="btn btn-primary" href="/prospects/import">Importer dans le CRM</a>
+              </div>
+            </article>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+    </section>
 
   </div>
 </div>
@@ -162,12 +171,18 @@ $runsData = safe_array($searchRuns ?? null);
   const fieldsWrap = document.getElementById('dynamic-fields');
   const feedback = document.getElementById('run-feedback');
 
+  const typeLabels = {
+    keyword: 'Mot-clé',
+    city: 'Ville',
+    hashtag: 'Hashtag',
+  };
+
   const sourceKeys = Object.keys(sources);
 
   sourceKeys.forEach((key) => {
     const option = document.createElement('option');
     option.value = key;
-    option.textContent = `${sources[key].label} (${sources[key].kind})`;
+    option.textContent = `${sources[key].label}`;
     sourceSelect.appendChild(option);
   });
 
@@ -180,7 +195,7 @@ $runsData = safe_array($searchRuns ?? null);
     (config.search_types || []).forEach((type) => {
       const option = document.createElement('option');
       option.value = type;
-      option.textContent = type;
+      option.textContent = typeLabels[type] || type;
       typeSelect.appendChild(option);
     });
 
@@ -234,8 +249,8 @@ $runsData = safe_array($searchRuns ?? null);
       body: JSON.stringify(payload()),
     });
     const json = await res.json();
-    const statut = json.data?.run_status === 'success' ? 'réussie' : (json.data?.run_status === 'failed' ? 'échouée' : 'en cours');
-    feedback.textContent = json.error || `Collecte ${statut} • ${json.data?.results_count ?? 0} résultats`;
+    const statut = json.data?.run_status === 'success' ? 'Réussi' : (json.data?.run_status === 'failed' ? 'Échec' : 'En cours');
+    feedback.textContent = json.error || `Collecte ${statut} • ${json.data?.results_count ?? 0} prospects`;
   });
 
   if (sourceKeys.length > 0) {

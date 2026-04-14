@@ -42,4 +42,12 @@ final class SourceResultModel
 
         return (int) ($row['c'] ?? 0);
     }
+
+    public function byRun(int $runId): array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM source_results WHERE search_run_id = :id ORDER BY id DESC');
+        $stmt->execute(['id' => $runId]);
+
+        return $stmt->fetchAll();
+    }
 }

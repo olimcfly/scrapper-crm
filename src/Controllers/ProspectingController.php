@@ -33,7 +33,6 @@ final class ProspectingController
         $this->sourceResults = new SourceResultModel();
     }
 
-    // ✅ PAGE UI (avec sidebar)
     public function sources(Request $request): void
     {
         unset($request);
@@ -48,7 +47,49 @@ final class ProspectingController
         ]);
     }
 
-    // ✅ API JSON (séparée)
+    public function collectionDetail(Request $request, int $runId): void
+    {
+        unset($request);
+
+        if (!$this->requireAuth()) {
+            return;
+        }
+
+        $userId = (int) ($this->auth->id() ?? 0);
+        $run = $this->searchRuns->findByUser($userId, $runId);
+
+        if (!is_array($run)) {
+            http_response_code(404);
+            View::render('errors/not-found', ['title' => 'Collecte introuvable']);
+            return;
+        }
+
+        $rawResults = $this->sourceResults->byRun($runId);
+        $prospects = [];
+
+        foreach ($rawResults as $row) {
+            $payload = json_decode((string) ($row['normalized_payload_json'] ?? '{}'), true);
+            if (!is_array($payload)) {
+                $payload = [];
+            }
+
+            $prospects[] = [
+                'name' => $this->valueFromPayload($payload, ['full_name', 'business_name', 'username', 'name'], 'Prospect sans nom'),
+                'phone' => $this->valueFromPayload($payload, ['phone', 'phone_number', 'professional_phone'], 'Non renseigné'),
+                'email' => $this->valueFromPayload($payload, ['email', 'professional_email'], 'Non renseigné'),
+                'city' => $this->valueFromPayload($payload, ['city', 'location_city'], 'Non renseignée'),
+                'score' => $payload['score'] ?? null,
+                'activity' => $this->valueFromPayload($payload, ['activity'], ''),
+            ];
+        }
+
+        View::render('prospects/collection_detail', [
+            'title' => 'Détail collecte',
+            'run' => $run,
+            'prospects' => $prospects,
+        ]);
+    }
+
     public function sourcesApi(Request $request): void
     {
         unset($request);
@@ -172,6 +213,18 @@ final class ProspectingController
                 ],
             ], 500);
         }
+    }
+
+    private function valueFromPayload(array $payload, array $keys, string $fallback): string
+    {
+        foreach ($keys as $key) {
+            $value = trim((string) ($payload[$key] ?? ''));
+            if ($value !== '') {
+                return $value;
+            }
+        }
+
+        return $fallback;
     }
 
     private function requireAuth(): bool
