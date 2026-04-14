@@ -27,9 +27,9 @@ final class ProspectContentGenerator
      * } $options
      * @return array{content:string,meta:array{source:string,warning?:string}}
      */
-    public function generate(array $analysis, array $options): array
+    public function generate(array $analysis, array $options, array $foundation = []): array
     {
-        $content = $this->buildFallbackContent($analysis, $options);
+        $content = $this->buildFallbackContent($analysis, $options, $foundation);
 
         return [
             'content' => $content,
@@ -60,17 +60,28 @@ final class ProspectContentGenerator
      *  guided_mode:string
      * } $options
      */
-    private function buildFallbackContent(array $analysis, array $options): string
+    private function buildFallbackContent(array $analysis, array $options, array $foundation): string
     {
         $hook = $analysis['recommended_hooks'][0] ?? 'Vous voulez des actions simples qui donnent des résultats ?';
         $painPoint = $analysis['pain_points'][0] ?? 'vous perdez du temps avec des actions peu efficaces';
         $desire = $analysis['desires'][0] ?? 'obtenir des résultats réguliers';
         $angle = $analysis['content_angles'][0] ?? 'une méthode simple en 3 étapes';
 
-        $lines = [
+        $lines = [];
+        if (trim((string) ($foundation['business_name'] ?? '')) !== '') {
+            $lines[] = 'Marque: ' . $foundation['business_name'];
+        }
+        if (trim((string) ($foundation['offer_name'] ?? '')) !== '') {
+            $lines[] = 'Offre: ' . $foundation['offer_name'];
+        }
+        if (trim((string) ($foundation['promise'] ?? '')) !== '') {
+            $lines[] = 'Promesse: ' . $foundation['promise'];
+        }
+
+        $lines = array_merge($lines, [
             '🎯 Canal: ' . ucfirst($options['channel']) . ' | Format: ' . $options['content_type'],
             'Niveau de conscience: ' . $analysis['awareness_level'],
-        ];
+        ]);
 
         if (trim((string) ($options['framework'] ?? '')) !== '') {
             $lines[] = 'Framework activé: ' . $options['framework'];
