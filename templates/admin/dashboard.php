@@ -1,3 +1,22 @@
+<div id="welcome-popup" class="welcome-popup hidden" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+  <div class="welcome-card">
+    <button class="welcome-close" type="button" onclick="closeWelcome()" aria-label="Fermer la fenêtre de bienvenue">×</button>
+
+    <div class="welcome-content">
+      <h2 id="welcome-title">Bonjour Coralie 👋</h2>
+
+      <p class="welcome-quote">
+        "Le succès ne vient pas de ce que vous faites de temps en temps,
+        mais de ce que vous faites chaque jour."
+      </p>
+
+      <button class="btn-primary" type="button" onclick="closeWelcome()">
+        Commencer ma journée
+      </button>
+    </div>
+  </div>
+</div>
+
 <section class="dashboard-premium">
   <header class="dashboard-hero card">
     <div class="dashboard-hero-main">
@@ -139,3 +158,25 @@
     </aside>
   </section>
 </section>
+
+<script>
+  (function () {
+    const popup = document.getElementById('welcome-popup');
+
+    if (!popup) {
+      return;
+    }
+
+    popup.classList.remove('hidden');
+  })();
+
+  function closeWelcome() {
+    const popup = document.getElementById('welcome-popup');
+
+    if (!popup) {
+      return;
+    }
+
+    popup.classList.add('hidden');
+  }
+</script>
