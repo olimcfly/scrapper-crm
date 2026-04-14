@@ -4,9 +4,9 @@ $cleanPath = trim($rawPath, '/');
 $segments = $cleanPath === '' ? [] : array_values(array_filter(explode('/', $cleanPath), static fn (string $segment): bool => $segment !== ''));
 
 $sectionByRoot = [
-  'dashboard' => 'Dashboard',
+  'dashboard' => 'Tableau de bord',
   'prospects' => 'Prospects',
-  'pipeline' => 'Pipeline',
+  'pipeline' => 'Pipeline commercial',
   'messages-ia' => 'Messages',
   'messages' => 'Messages',
   'strategie' => 'Stratégie',

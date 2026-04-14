@@ -17,7 +17,7 @@ final class AdminController
         $state = strtolower((string) ($query['state'] ?? ''));
 
         View::render('admin/dashboard', [
-            'title' => 'Dashboard',
+            'title' => 'Tableau de bord',
             'modules' => AdminModules::all(),
             'coreModules' => AdminModules::coreModules(),
             'statusCounters' => AdminModules::statusCounters(),

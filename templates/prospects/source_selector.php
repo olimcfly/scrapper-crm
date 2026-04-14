@@ -70,7 +70,7 @@ $runsData = safe_array($searchRuns ?? null);
 
       <div class="stack">
         <div class="form-group">
-          <label for="source">Source</label>
+          <label for="source">Sources de collecte</label>
           <select id="source" class="input"></select>
         </div>
 
@@ -170,6 +170,8 @@ $runsData = safe_array($searchRuns ?? null);
   const typeSelect = document.getElementById('search_type');
   const fieldsWrap = document.getElementById('dynamic-fields');
   const feedback = document.getElementById('run-feedback');
+  const sourceGrid = document.getElementById('source-grid');
+  const runMainButton = document.getElementById('run-search-main');
 
   const typeLabels = {
     keyword: 'Mot-clé',
@@ -179,12 +181,49 @@ $runsData = safe_array($searchRuns ?? null);
 
   const sourceKeys = Object.keys(sources);
 
+  const sourcePresets = [
+    { key: 'google_maps_scraper', label: 'Google Maps' },
+    { key: 'linkedin', label: 'LinkedIn' },
+    { key: 'instagram', label: 'Instagram' },
+    { key: 'facebook', label: 'Facebook' },
+    { key: 'tiktok', label: 'TikTok' },
+    { key: 'google_business_profile', label: 'Google Business Profile' },
+  ];
+
+  const sourceLabels = {
+    google_maps_scraper: 'Google Maps',
+    google_search_scraper: 'Recherche Google',
+    google_business_profile: 'Google Business Profile',
+    linkedin: 'LinkedIn',
+    instagram: 'Instagram',
+    tiktok: 'TikTok',
+    facebook: 'Facebook',
+  };
+
   sourceKeys.forEach((key) => {
     const option = document.createElement('option');
     option.value = key;
     option.textContent = `${sources[key].label}`;
     sourceSelect.appendChild(option);
   });
+
+  const renderSourceCards = () => {
+    if (!sourceGrid) return;
+
+    const cards = sourcePresets
+      .filter((preset) => sourceKeys.includes(preset.key))
+      .map((preset) => {
+        const active = sourceSelect.value === preset.key ? 'true' : 'false';
+        return `
+          <button type="button" class="source-card" data-source-option="${preset.key}" aria-pressed="${active}">
+            <strong>${preset.label}</strong>
+          </button>
+        `;
+      })
+      .join('');
+
+    sourceGrid.innerHTML = cards;
+  };
 
   const render = () => {
     const source = sourceSelect.value;
@@ -216,6 +255,8 @@ $runsData = safe_array($searchRuns ?? null);
       box.appendChild(input);
       fieldsWrap.appendChild(box);
     });
+
+    renderSourceCards();
   };
 
   const payload = () => {
@@ -242,7 +283,7 @@ $runsData = safe_array($searchRuns ?? null);
     feedback.textContent = json.error || json.data?.message || 'Connexion testée';
   });
 
-  document.getElementById('run-search').addEventListener('click', async () => {
+  const runSearch = async () => {
     const res = await fetch('/api/prospecting/search', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
