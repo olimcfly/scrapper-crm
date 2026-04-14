@@ -8,7 +8,7 @@ use RuntimeException;
 
 final class ApifyClient
 {
-    private string $baseUrl;
+    private ApifyUrlBuilder $urlBuilder;
     private string $token;
 
     public function __construct()
