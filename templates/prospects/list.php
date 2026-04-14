@@ -1,3 +1,28 @@
+<?php
+$prospects = is_array($prospects ?? null) ? $prospects : [];
+$filters = is_array($filters ?? null) ? $filters : [];
+$statuses = is_array($statuses ?? null) ? $statuses : [];
+$sources = is_array($sources ?? null) ? $sources : [];
+$pagination = is_array($pagination ?? null) ? $pagination : [];
+
+$cleanFilters = is_array($cleanFilters ?? null)
+    ? $cleanFilters
+    : array_values(array_filter($filters, static fn ($value): bool => $value !== '' && $value !== 0 && $value !== '0'));
+
+$activeCategory = is_string($activeCategory ?? null) && $activeCategory !== ''
+    ? $activeCategory
+    : (is_string($filters['category'] ?? null) && $filters['category'] !== '' ? $filters['category'] : 'Tous');
+
+$categoryOrder = is_array($categoryOrder ?? null) && $categoryOrder !== []
+    ? $categoryOrder
+    : ['Tous'];
+
+$totalProspects = isset($totalProspects) ? (int) $totalProspects : (int) ($pagination['total'] ?? count($prospects));
+$currentPage = isset($currentPage) ? (int) $currentPage : (int) ($pagination['page'] ?? 1);
+$totalPages = isset($totalPages) ? (int) $totalPages : (int) ($pagination['pages'] ?? 1);
+$query = is_array($query ?? null) ? $query : $filters;
+?>
+
 <div class="page">
   <div class="container">
 

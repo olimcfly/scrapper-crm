@@ -60,23 +60,32 @@ final class WebProspectController
         $input = $request->input();
 
         $filters = [
-            'q'         => trim((string) ($input['q'] ?? '')),
+            'q' => trim((string) ($input['q'] ?? '')),
             'status_id' => (int) ($input['status_id'] ?? 0),
             'source_id' => (int) ($input['source_id'] ?? 0),
+            'city' => trim((string) ($input['city'] ?? '')),
+            'awareness_level' => trim((string) ($input['awareness_level'] ?? '')),
+            'social_presence' => trim((string) ($input['social_presence'] ?? '')),
+            'website_presence' => trim((string) ($input['website_presence'] ?? '')),
+            'priority' => trim((string) ($input['priority'] ?? '')),
+            'zone_scope' => trim((string) ($input['zone_scope'] ?? '')),
+            'category' => trim((string) ($input['category'] ?? 'Tous')),
         ];
 
-        $page    = max(1, (int) ($input['page'] ?? 1));
+        $page = max(1, (int) ($input['page'] ?? 1));
         $perPage = 20;
 
         $result = $this->prospects->search($filters, $page, $perPage);
+        $statuses = $this->statuses->all();
+        $sources = $this->sources->all();
 
         View::render('prospects/list', [
-            'title'          => 'Prospects',
-            'prospects'      => $result['items'],
-            'filters'        => $filters,
-            'statuses'       => $this->statuses->all(),
-            'sources'        => $this->sources->all(),
-            'pagination'     => $result,
+            'title' => 'Prospects',
+            'prospects' => is_array($result['items'] ?? null) ? $result['items'] : [],
+            'filters' => $filters,
+            'statuses' => is_array($statuses) ? $statuses : [],
+            'sources' => is_array($sources) ? $sources : [],
+            'pagination' => is_array($result) ? $result : [],
             'successMessage' => Session::consumeFlash('success'),
             'warningMessage' => Session::consumeFlash('warning'),
         ]);
