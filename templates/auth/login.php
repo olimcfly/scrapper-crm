@@ -1,115 +1,111 @@
-<link rel="stylesheet" href="/assets/css/main.css">
-<link rel="stylesheet" href="/assets/css/auth.css">
+<div class="auth-shell">
+  <div class="auth-background-glow auth-background-glow-1"></div>
+  <div class="auth-background-glow auth-background-glow-2"></div>
 
-<div class="login-page">
+  <div class="auth-layout">
+    <section class="auth-visual" aria-label="Présentation SCRAPPER CRM">
+      <div class="auth-visual-inner">
+        <span class="auth-badge">Prospection intelligente</span>
 
-  <section class="login-visual" aria-label="CRM">
-    <div class="login-visual-content">
+        <div class="auth-hero-copy">
+          <h1 class="auth-brand">SCRAPPER CRM</h1>
+          <p class="auth-tagline">
+            Centralisez vos prospects, pilotez vos relances et gardez une vue claire
+            sur votre activité depuis une interface pensée pour l’action.
+          </p>
+        </div>
 
-      <div class="login-visual-top">
-        <span class="login-eyebrow">Prospection organique assistée par IA</span>
-
-        <h1 class="login-title-main">MON CRM</h1>
-
-        <p class="login-description">
-          Centralisez vos prospects, pilotez vos relances et transformez votre activité
-          avec une interface pensée pour l'action.
-        </p>
-
-        <div class="login-features">
-          <div class="login-feature">
-            <span class="feature-dot"></span>
-            <span>Vue claire sur vos prospects et opportunités</span>
+        <div class="auth-feature-list">
+          <div class="auth-feature-item">
+            <span class="auth-feature-icon">✓</span>
+            <div>
+              <strong>Connexion rapide</strong>
+              <p>Accès sécurisé par code unique, sans mot de passe à retenir.</p>
+            </div>
           </div>
 
-          <div class="login-feature">
-            <span class="feature-dot"></span>
-            <span>Connexion rapide par code sécurisé</span>
+          <div class="auth-feature-item">
+            <span class="auth-feature-icon">✓</span>
+            <div>
+              <strong>Pilotage clair</strong>
+              <p>Prospects, pipeline et actions du jour dans un seul espace.</p>
+            </div>
           </div>
 
-          <div class="login-feature">
-            <span class="feature-dot"></span>
-            <span>Base évolutive vers un CRM intelligent</span>
+          <div class="auth-feature-item">
+            <span class="auth-feature-icon">✓</span>
+            <div>
+              <strong>Utilisable partout</strong>
+              <p>Expérience plus propre, plus lisible et plus premium sur mobile.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="auth-kpi-panel">
+          <div class="auth-kpi">
+            <strong>24</strong>
+            <span>Prospects actifs</span>
+          </div>
+          <div class="auth-kpi">
+            <strong>11</strong>
+            <span>Opportunités</span>
+          </div>
+          <div class="auth-kpi">
+            <strong>7</strong>
+            <span>Actions du jour</span>
           </div>
         </div>
       </div>
+    </section>
 
-      <div class="login-visual-bottom">
-        <div class="kpi-panel">
-          <p class="kpi-title">Activité</p>
-
-          <div class="kpi-grid">
-            <div class="kpi"><strong>24</strong><span>Prospects</span></div>
-            <div class="kpi"><strong>11</strong><span>Pipeline</span></div>
-            <div class="kpi"><strong>7</strong><span>Actions</span></div>
-          </div>
+    <section class="auth-panel">
+      <div class="auth-card">
+        <div class="auth-card-top">
+          <p class="auth-overline">Accès sécurisé</p>
+          <h2 class="auth-title">Connexion à votre espace</h2>
+          <p class="auth-subtitle">
+            Entrez votre email professionnel pour recevoir un code de connexion à usage unique.
+          </p>
         </div>
-      </div>
-
-    </div>
-  </section>
-
-  <section class="login-form-area">
-    <div class="login-form-shell">
-
-      <div class="login-mobile-brand">
-        <span class="brand-mark">SC</span>
-        <span>SCRAPPER CRM</span>
-      </div>
-
-      <div class="card login-card">
-
-        <p class="form-eyebrow">Accès sécurisé</p>
-
-        <h2 class="form-title">Connexion</h2>
-
-        <p class="form-description">
-          Entrez votre email pour recevoir un code temporaire sécurisé.
-        </p>
 
         <?php if (!empty($errors)): ?>
-          <div class="global-state global-error">
-            <span class="state-dot"></span>
-            <div class="state-content">
-              <strong class="state-title">Erreur</strong>
-              <div class="state-message">
-                Impossible de finaliser la connexion
-              </div>
-            </div>
+          <div class="auth-alert auth-alert-danger">
+            <strong>Impossible de vous connecter</strong>
+            <ul>
+              <?php foreach ($errors as $error): ?>
+                <li><?= htmlspecialchars($error) ?></li>
+              <?php endforeach; ?>
+            </ul>
           </div>
         <?php endif; ?>
 
-        <form method="post" action="/login" class="login-form">
-
+        <form method="post" action="/login" novalidate class="auth-form">
           <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken ?? '') ?>">
 
-          <div class="form-field">
-            <label class="form-label" for="email">Email</label>
-
-            <input 
-              class="form-input" 
-              id="email" 
-              type="email" 
+          <div class="auth-field">
+            <label class="auth-label" for="email">Email professionnel</label>
+            <input
+              class="auth-input"
+              id="email"
+              type="email"
               name="email"
-              placeholder="vous@entreprise.fr"
+              autocomplete="email"
               required
-              value="<?= htmlspecialchars((string)($old['email'] ?? '')) ?>"
+              value="<?= htmlspecialchars((string) ($old['email'] ?? '')) ?>"
+              placeholder="nom@entreprise.fr"
             >
           </div>
 
-          <button type="submit" class="btn btn-primary btn-cta">
-            Recevoir mon code
+          <button type="submit" class="auth-button">
+            Recevoir mon code de connexion
           </button>
-
-          <p class="form-footnote">
-            Connexion sécurisée · sans mot de passe
-          </p>
-
         </form>
 
+        <div class="auth-reassurance">
+          <span class="auth-reassurance-dot"></span>
+          <p>Authentification sans mot de passe · session sécurisée</p>
+        </div>
       </div>
-
-    </div>
-  </section>
-
+    </section>
+  </div>
 </div>

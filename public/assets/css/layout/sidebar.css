@@ -32,7 +32,7 @@
   .logo {
     width: 36px;
     height: 36px;
-    border-radius: 10px;
+    border-radius: 11px;
     display: grid;
     place-items: center;
     color: #fff;
@@ -121,7 +121,7 @@
 
   .muted {
     color: var(--color-text-muted);
-    font-size: 0.8rem;
+    font-size: 0.82rem;
   }
 }
 
