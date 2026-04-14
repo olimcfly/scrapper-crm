@@ -5,6 +5,57 @@
   gap: 16px;
 }
 
+.hidden {
+  display: none !important;
+}
+
+.welcome-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.48);
+}
+
+.welcome-card {
+  width: min(100%, 520px);
+  position: relative;
+  border-radius: 20px;
+  padding: 28px 24px;
+  background: linear-gradient(180deg, #ffffff, #f8faff);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.28);
+}
+
+.welcome-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  background: rgba(226, 232, 240, 0.75);
+}
+
+.welcome-content h2 {
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
+
+.welcome-quote {
+  margin: 0 0 20px;
+  color: var(--color-text-muted);
+  font-style: italic;
+  line-height: 1.6;
+}
+
 .dashboard-hero {
   display: grid;
   gap: 14px;
