@@ -99,6 +99,21 @@ final class ProspectModel
             $params['source_id'] = $sourceId;
         }
 
+
+        $city = trim((string) ($filters['city'] ?? ''));
+        if ($city !== '') {
+            $where[] = 'p.city LIKE :city';
+            $params['city'] = '%' . $city . '%';
+        }
+
+        if ((int) ($filters['has_email'] ?? 0) === 1) {
+            $where[] = "COALESCE(NULLIF(TRIM(p.professional_email), ''), '') <> ''";
+        }
+
+        if ((int) ($filters['has_phone'] ?? 0) === 1) {
+            $where[] = "COALESCE(NULLIF(TRIM(p.professional_phone), ''), '') <> ''";
+        }
+
         $whereClause = $where === [] ? '' : ' WHERE ' . implode(' AND ', $where);
 
         $countStmt = $this->db->prepare('SELECT COUNT(*) FROM prospects p' . $whereClause);
