@@ -16,12 +16,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-}
-
-.topbar-left,
-.topbar-right {
-  min-width: 0;
+  gap: 12px;
 }
 
 .topbar-title {
@@ -33,16 +28,17 @@
 .topbar-subtitle {
   margin: 2px 0 0;
   color: var(--color-text-muted);
-  font-size: 0.78rem;
+  font-size: 0.82rem;
 }
 
 .topbar-user {
   display: inline-flex;
   align-items: center;
-  padding: 4px 9px;
+  padding: 5px 10px;
   border-radius: 999px;
   background: var(--color-surface-soft);
-  font-size: 0.76rem;
+  border: 1px solid var(--color-border);
+  font-size: 0.8rem;
   color: var(--color-text-muted);
   white-space: nowrap;
 }
@@ -54,15 +50,5 @@
 
   .topbar-title {
     font-size: 1.1rem;
-  }
-
-  .topbar-subtitle {
-    margin-top: 4px;
-    font-size: 0.85rem;
-  }
-
-  .topbar-user {
-    padding: 6px 10px;
-    font-size: 0.8rem;
   }
 }
