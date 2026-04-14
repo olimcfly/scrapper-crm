@@ -1,7 +1,7 @@
 <header class="topbar">
   <div class="topbar-inner">
     <div class="topbar-left">
-      <h1 class="topbar-title"><?= htmlspecialchars($title ?? 'CRM') ?></h1>
+      <p class="topbar-title" role="heading" aria-level="1"><?= htmlspecialchars($title ?? 'CRM') ?></p>
       <?php if (!empty($pageDescription ?? '')): ?>
         <p class="topbar-subtitle"><?= htmlspecialchars((string) $pageDescription) ?></p>
       <?php endif; ?>

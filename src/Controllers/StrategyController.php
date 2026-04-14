@@ -241,6 +241,18 @@ final class StrategyController
         return null;
     }
 
+
+    private function buildStructuredProfilePrompt(string $businessType, string $city, string $target, string $painPoint): string
+    {
+        return trim(sprintf(
+            "Tu es un stratège commercial orienté action.\nType de métier: %s\nVille: %s\nCible: %s\nProblématique: %s\n\nRetourne un JSON strict avec: awareness_level, summary, pain_points, desires, content_angles, recommended_hooks.",
+            $businessType,
+            $city,
+            $target,
+            $painPoint
+        ));
+    }
+
     private function isMissingApiKeyError(Throwable $e): bool
     {
         return str_contains(mb_strtolower($e->getMessage()), 'openai_api_key');

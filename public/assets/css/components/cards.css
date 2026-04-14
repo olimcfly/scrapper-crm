@@ -129,3 +129,46 @@
     margin-bottom: 16px;
   }
 }
+
+.empty-state-guided {
+  text-align: left;
+  border-style: solid;
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
+}
+
+.empty-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(37, 99, 235, 0.12);
+  margin-bottom: 10px;
+}
+
+.empty-title {
+  margin-bottom: 6px;
+}
+
+.empty-message {
+  color: var(--color-text-muted);
+}
+
+.empty-cta {
+  margin-top: 12px;
+}
+
+.ai-suggestion-block {
+  border: 1px solid rgba(37, 99, 235, 0.24);
+  background: linear-gradient(135deg, rgba(219, 234, 254, 0.5), rgba(255, 255, 255, 0.9));
+  border-radius: 14px;
+}
+
+.ai-suggestion-title {
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #1e3a8a;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
