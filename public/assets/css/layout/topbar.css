@@ -21,6 +21,31 @@
 
 .topbar-left {
   min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.topbar-menu-btn {
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: #fff;
+  color: #334155;
+  border-radius: 10px;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.topbar-menu-btn:hover {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: rgba(100, 116, 139, 0.45);
 }
 
 .topbar-context {
@@ -87,6 +112,14 @@
 }
 
 @media (min-width: 992px) {
+  .topbar-left {
+    gap: 0;
+  }
+
+  .topbar-menu-btn {
+    display: none;
+  }
+
   .topbar {
     padding: 12px 24px;
   }

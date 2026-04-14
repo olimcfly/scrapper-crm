@@ -42,6 +42,16 @@ $contextLabel = count($segments) > 1 ? 'Section active' : 'Espace CRM';
 <header class="topbar" role="banner">
   <div class="topbar-inner">
     <div class="topbar-left">
+      <button
+        type="button"
+        class="topbar-menu-btn"
+        data-open-mobile-sidebar
+        aria-controls="mobile-sidebar-drawer"
+        aria-expanded="false"
+        aria-label="Ouvrir le menu de navigation"
+      >
+        ☰
+      </button>
       <p class="topbar-context"><?= htmlspecialchars($contextLabel) ?></p>
       <p class="topbar-breadcrumb" aria-label="Fil d’Ariane"><?= htmlspecialchars(implode(' / ', $breadcrumbItems)) ?></p>
     </div>
