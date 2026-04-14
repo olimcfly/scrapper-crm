@@ -20,6 +20,11 @@
 
       require __DIR__ . '/../components/navigation/bottom_nav.php';
     ?>
+
+    <a class="global-fab" href="/prospects/create" aria-label="Créer un prospect ou lancer une action">
+      <span aria-hidden="true">＋</span>
+      <span>Action</span>
+    </a>
   <?php endif; ?>
 <?php endif; ?>
 

@@ -264,3 +264,34 @@
     border-radius: 16px;
   }
 }
+.strategy-page .card {
+  margin-bottom: 12px;
+}
+
+.strategy-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.strategy-form-grid .form-field-full {
+  grid-column: auto;
+}
+
+.strategy-analysis-card .grid {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .strategy-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .strategy-form-grid .form-field-full {
+    grid-column: 1 / -1;
+  }
+
+  .strategy-analysis-card .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

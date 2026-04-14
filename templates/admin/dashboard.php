@@ -45,6 +45,31 @@
     </article>
   </section>
 
+
+  <section class="card dashboard-decision-center" aria-label="Centre de décisions">
+    <div class="card-header-inline">
+      <h3>Centre de décisions</h3>
+      <a class="text-link" href="/pipeline">Voir tout le pipeline</a>
+    </div>
+    <div class="dashboard-decision-grid">
+      <article class="decision-item decision-priority">
+        <p class="decision-label">Priorité #1</p>
+        <strong>Relancer 4 prospects en retard avant 17h</strong>
+        <p>Impact estimé : +2 rendez-vous cette semaine.</p>
+      </article>
+      <article class="decision-item">
+        <p class="decision-label">Priorité #2</p>
+        <strong>Basculer 3 prospects chauds en étape “Proposition”</strong>
+        <p>Action rapide depuis le pipeline mobile.</p>
+      </article>
+      <article class="decision-item ai-suggestion-block">
+        <p class="ai-suggestion-title">Suggestion IA</p>
+        <p>Je te recommande de démarrer par Sophie Martin : elle a ouvert ton dernier message il y a moins de 24h.</p>
+        <a class="btn btn-secondary" href="/messages-ia?type=relance">Rédiger une relance</a>
+      </article>
+    </div>
+  </section>
+
   <section class="dashboard-workspace" aria-label="Espace de travail principal">
     <article class="card dashboard-main-flow">
       <div class="card-header-inline">

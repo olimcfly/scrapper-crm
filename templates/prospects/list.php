@@ -118,9 +118,14 @@ $query = is_array($query ?? null) ? $query : $filters;
       <!-- EMPTY -->
       <?php if (empty($prospects)): ?>
 
-        <div class="empty-state" data-empty-state>
-          <p>Aucun prospect trouvé</p>
-          <a class="btn btn-primary" href="/prospects/create">Créer un prospect</a>
+        <div data-empty-state>
+          <?php
+            $emptyTitle = 'Aucun prospect trouvé';
+            $emptyDescription = 'Ajoute un prospect ou ajuste tes filtres pour faire apparaître des opportunités.';
+            $emptyCtaHref = '/prospects/create';
+            $emptyCtaLabel = 'Créer un prospect';
+            require __DIR__ . '/../components/states/empty_state_guided.php';
+          ?>
         </div>
 
       <?php else: ?>
