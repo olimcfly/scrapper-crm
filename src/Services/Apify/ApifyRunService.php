@@ -34,12 +34,12 @@ final class ApifyRunService
             $query['waitForFinish'] = $waitForFinish;
         }
 
-        return $this->client->post('/v2/acts/' . rawurlencode($actorId) . '/runs', $input, $query);
+        return $this->client->post('/acts/' . rawurlencode($actorId) . '/runs', $input, $query);
     }
 
     public function getRun(string $runId): array
     {
-        return $this->client->get('/v2/actor-runs/' . rawurlencode($runId));
+        return $this->client->get('/actor-runs/' . rawurlencode($runId));
     }
 
     /** @param array<string, mixed> $input */
