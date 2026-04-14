@@ -7,6 +7,7 @@ namespace App\Controllers;
 use App\Config\AdminModules;
 use App\Core\Request;
 use App\Core\Response;
+use App\Core\Session;
 use App\Core\View;
 
 final class AdminController
@@ -15,6 +16,8 @@ final class AdminController
     {
         $query = $request->input();
         $state = strtolower((string) ($query['state'] ?? ''));
+        $showWelcomePopup = (bool) Session::get('show_welcome_popup', false);
+        Session::forget('show_welcome_popup');
 
         View::render('admin/dashboard', [
             'title' => 'Tableau de bord',
@@ -26,6 +29,7 @@ final class AdminController
             'showLoading' => $state === 'loading',
             'showEmpty' => $state === 'empty',
             'showError' => $state === 'error',
+            'showWelcomePopup' => $showWelcomePopup,
         ]);
     }
 
