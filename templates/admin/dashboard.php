@@ -10,7 +10,7 @@
         mais de ce que vous faites chaque jour."
       </p>
 
-      <button class="btn btn-primary" type="button" onclick="closeWelcome()">
+      <button class="btn-primary" type="button" onclick="closeWelcome()">
         Commencer ma journée
       </button>
     </div>
